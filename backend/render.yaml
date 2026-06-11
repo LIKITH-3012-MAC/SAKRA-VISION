@@ -75,10 +75,10 @@ services:
         sync: false
 
       - key: RATE_LIMIT_CLIENTS
-        value: 10/minute
+        value: 30/minute
 
       - key: RATE_LIMIT_CHAT
-        value: 10/minute
+        value: 30/minute
 
       - key: REQUEST_BODY_LIMIT_BYTES
         value: 102400

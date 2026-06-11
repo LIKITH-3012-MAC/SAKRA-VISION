@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     CLOUDFLARE_API_TOKEN: str = ""
     CLOUDFLARE_ZONE_ID: str = ""
     TURNSTILE_SECRET_KEY: str = ""
+    RATE_LIMIT_CLIENTS: str = "30/minute"
+    RATE_LIMIT_CHAT: str = "30/minute"
 
     # Load from .env file
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")

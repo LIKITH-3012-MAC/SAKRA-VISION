@@ -76,7 +76,7 @@ async def health_check():
 
 # Protected Endpoint: Create Client Inquiry
 @app.post("/api/clients", dependencies=[Depends(verify_secret_token)])
-@limiter.limit("10/minute")
+@limiter.limit(settings.RATE_LIMIT_CLIENTS)
 async def create_client_inquiry(
     payload: schemas.ClientCreate,
     request: Request,
@@ -161,7 +161,7 @@ async def create_client_inquiry(
 
 # Protected Endpoint: Chatbot
 @app.post("/api/chat", response_model=schemas.ChatResponse, dependencies=[Depends(verify_secret_token)])
-@limiter.limit("10/minute")
+@limiter.limit(settings.RATE_LIMIT_CHAT)
 async def chatbot_chat(payload: schemas.ChatRequest, request: Request):
     bot_reply = chatbot_service.get_chatbot_reply(payload.message)
     return {
