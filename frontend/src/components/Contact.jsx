@@ -399,54 +399,17 @@ const Contact = () => {
                   </div>
 
                   {/* Turnstile Container / Success State */}
-                  <div className="mt-4 relative min-h-[75px] flex flex-col justify-center items-start">
+                  <div className="mt-4 relative min-h-[50px] flex flex-col justify-center items-start">
                     {!isVerified ? (
                       <div ref={turnstileContainerRef} className="cf-turnstile"></div>
                     ) : (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="w-full space-y-4"
+                        className="flex items-center gap-2 text-emerald-400 font-medium text-sm text-left"
                       >
-                        {/* Success Alert Banner */}
-                        <div className="flex items-center gap-3 p-4 rounded-xl bg-black/60 border border-blue-500/30 blue-rim text-left">
-                          <span className="text-lg flex-shrink-0">✅</span>
-                          <div>
-                            <h5 className="text-xs font-semibold text-white font-mono">Verification successful</h5>
-                            <p className="text-[11px] text-[#cbd5e1] mt-0.5">Secure human verification completed.</p>
-                          </div>
-                        </div>
-
-                        {/* Pipeline visualization */}
-                        <div className="p-4 rounded-xl bg-black/30 border border-white/5 text-left space-y-3 font-mono text-[10px]">
-                          <div className="text-slate-500 uppercase tracking-widest text-[9px] mb-1">Security Pipeline Status:</div>
-                          <div className="space-y-2.5">
-                            <div className="flex items-center gap-2 text-[#38bdf8]">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#38bdf8] animate-pulse"></span>
-                              <span>Frontend verification complete</span>
-                            </div>
-                            <div className="text-slate-600 pl-3">↓</div>
-                            <div className="flex items-center gap-2 text-[#38bdf8]">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#38bdf8] animate-pulse"></span>
-                              <span>Secure token generated</span>
-                            </div>
-                            <div className="text-slate-600 pl-3">↓</div>
-                            <div className="flex items-center gap-2 text-slate-400">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#0071e3]"></span>
-                              <span>Backend verification ready</span>
-                            </div>
-                            <div className="text-slate-600 pl-3">↓</div>
-                            <div className="flex items-center gap-2 text-emerald-400">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                              <span>Inquiry can now be submitted</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Informative text */}
-                        <p className="text-[11px] text-slate-400 text-left font-light leading-relaxed">
-                          Your request is verified and ready to be securely submitted to SAKRA VISION.
-                        </p>
+                        <span>✅</span>
+                        <span>Verification successful</span>
                       </motion.div>
                     )}
                   </div>
