@@ -3,12 +3,12 @@ import re
 # SAKRA VISION Knowledge Base definition
 sakra_knowledge = {
     "company": (
-        "SAKRA VISION is an AI product studio founded by Likith Naidu Anumakonda. "
-        "We build AI applications, computer vision systems, LLM/RAG tools, automation systems, "
-        "civic-tech platforms, event automation tools, and full-stack intelligent products."
+        "SAKRA VISION is an AI product studio established in 2026 by Likith Naidu Anumakonda. "
+        "We build practical intelligent systems using Artificial Intelligence, Machine Learning, Computer Vision, LLMs, RAG, automation, AI agents, and full-stack web technologies. "
+        "Our goal is simple: convert powerful ideas into useful, deployable, secure, and scalable real-world products."
     ),
     "founder": (
-        "SAKRA VISION was founded by Likith Naidu Anumakonda. He is an AI/ML Engineer, "
+        "SAKRA VISION was established in 2026 by Likith Naidu Anumakonda. He is an AI/ML Engineer, "
         "Python Full-Stack Developer, CSE-AI student, IIT Patna Certified learner, pianist, "
         "author, and builder of real-world intelligent systems."
     ),

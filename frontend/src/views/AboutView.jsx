@@ -27,7 +27,7 @@ export default function AboutView() {
             Engineering Intelligence Into Reality.
           </h2>
           <p className="text-lg md:text-xl text-[#94a3b8] font-light leading-relaxed mt-6 font-sans">
-            SAKRA VISION is a high-octane AI product studio and innovation laboratory founded by <strong>Likith Naidu Anumakonda</strong>. We bridge the gap between bleeding-edge machine learning and production-ready architectures, writing tools that reduce manual overhead, index intelligence, and automate complex processes.
+            SAKRA VISION is an AI product studio established in 2026 by <strong>Likith Naidu Anumakonda</strong>. We build practical intelligent systems using Artificial Intelligence, Machine Learning, Computer Vision, LLMs, RAG, automation, AI agents, and full-stack web technologies. Our goal is simple: convert powerful ideas into useful, deployable, secure, and scalable real-world products.
           </p>
         </div>
 

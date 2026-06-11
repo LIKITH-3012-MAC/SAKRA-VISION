@@ -1,6 +1,7 @@
 /* TEAM */
 
 Company: SAKRA VISION
+Established: 2026
 Founder: Likith Naidu Anumakonda
 Role: Founder & CEO
 Location: India

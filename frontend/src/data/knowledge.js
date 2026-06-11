@@ -1,10 +1,11 @@
 export const sakraKnowledge = {
   company: {
     name: "SAKRA VISION",
+    established: "2026",
     tagline: "From Ideas to Intelligent Systems",
     alternativeTagline: "Engineering Intelligence Into Reality",
     description:
-      "SAKRA VISION is an AI product studio founded by Likith Naidu Anumakonda. It builds AI applications, computer vision systems, LLM/RAG tools, automation systems, full-stack products, civic-tech platforms, event automation tools, and real-world intelligent systems.",
+      "SAKRA VISION is an AI product studio established in 2026 by Likith Naidu Anumakonda. We build practical intelligent systems using Artificial Intelligence, Machine Learning, Computer Vision, LLMs, RAG, automation, AI agents, and full-stack web technologies. Our goal is simple: convert powerful ideas into useful, deployable, secure, and scalable real-world products.",
     location: "India",
     contactEmail: "likith.anumakonda@gmail.com, likith.naidu@icloud.com",
   },

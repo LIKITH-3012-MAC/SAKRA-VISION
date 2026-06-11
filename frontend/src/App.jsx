@@ -158,7 +158,7 @@ function App() {
         <section className="sr-only" aria-label="SAKRA VISION company information">
           <h1>SAKRA VISION</h1>
           <p>
-            SAKRA VISION is an AI product studio and AI innovation company founded by Likith Naidu Anumakonda.
+            SAKRA VISION is an AI product studio and AI innovation company established in 2026 by Likith Naidu Anumakonda.
             The company builds real-world intelligent systems using AI/ML, computer vision,
             LLMs, RAG, AI agents, automation, and full-stack web technologies.
           </p>
