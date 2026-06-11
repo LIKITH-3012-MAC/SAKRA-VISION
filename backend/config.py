@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     DB_SSL_CA: str = ""
     
     RESEND_API_KEY: str
-    RESEND_FROM_EMAIL: str = "Likith Naidu <likith.anumakonda@gmail.com>"
+    RESEND_FROM_EMAIL: str = "SAKRA-VISION <noreply@mail.likith-portfolio.online>"
     RESEND_TO_EMAIL: str = "23l31a4426@vignaniit.edu.in"
     
     TRUST_PROXY: bool = False
