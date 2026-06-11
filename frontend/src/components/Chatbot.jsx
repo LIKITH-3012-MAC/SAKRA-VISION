@@ -94,8 +94,12 @@ const Chatbot = () => {
             <div className="p-4 bg-black/60 border-b border-white/5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-8 h-8 rounded-full bg-[#0071e3] flex items-center justify-center font-bold text-white text-xs">
-                    
+                  <div className="w-8 h-8 rounded-full overflow-hidden bg-black/40 border border-white/10 flex items-center justify-center">
+                    <img 
+                      src="/SAKRAVISION.png" 
+                      alt="SAKRA VISION Logo" 
+                      className="w-full h-full object-contain" 
+                    />
                   </div>
                   <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 rounded-full border border-black"></span>
                 </div>

@@ -180,10 +180,10 @@ function App() {
 
         {/* Global Footer */}
         <Footer />
-
-        {/* Interactive AI Agent Chatbot Overlay */}
-        <Chatbot />
       </motion.div>
+
+      {/* Interactive AI Agent Chatbot Overlay */}
+      {!showIntro && <Chatbot />}
     </div>
   );
 }

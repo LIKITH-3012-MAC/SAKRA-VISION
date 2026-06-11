@@ -1,9 +1,9 @@
 import axios from "axios";
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+  import.meta.env.VITE_API_BASE_URL || "https://sakra-vision.onrender.com";
 
-const SECRET_TOKEN = import.meta.env.VITE_SECRET_TOKEN || "";
+const SECRET_TOKEN = import.meta.env.VITE_SECRET_TOKEN || "shivayya";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
