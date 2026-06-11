@@ -58,3 +58,26 @@ def escape_html(text: str) -> str:
     if not isinstance(text, str):
         return str(text) if text is not None else ""
     return html.escape(text)
+
+async def verify_turnstile_token(token: str, ip: str) -> bool:
+    if not token:
+        return False
+    # Use standard Turnstile testing secret key if none configured
+    secret = settings.TURNSTILE_SECRET_KEY or "1x0000000000000000000000000000000AA"
+    try:
+        import httpx
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+                data={
+                    "secret": secret,
+                    "response": token,
+                    "remoteip": ip
+                },
+                timeout=5.0
+            )
+            result = response.json()
+            return result.get("success", False)
+    except Exception:
+        return False
+

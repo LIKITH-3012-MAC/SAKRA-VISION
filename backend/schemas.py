@@ -31,6 +31,7 @@ class ClientCreate(BaseModel):
     budget_range: Optional[str] = Field(None, max_length=100)
     timeline: Optional[str] = Field(None, max_length=100)
     message: str = Field(..., min_length=10, max_length=5000)
+    captcha_token: Optional[str] = Field(None)
 
     @field_validator("full_name", "phone", "company", "project_type", "budget_range", "timeline", "message")
     @classmethod

@@ -71,6 +71,9 @@ services:
       - key: CLOUDFLARE_ZONE_ID
         sync: false
 
+      - key: TURNSTILE_SECRET_KEY
+        sync: false
+
       - key: RATE_LIMIT_CLIENTS
         value: 10/minute
 

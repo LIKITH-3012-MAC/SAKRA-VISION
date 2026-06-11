@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     TRUST_PROXY: bool = False
     CLOUDFLARE_API_TOKEN: str = ""
     CLOUDFLARE_ZONE_ID: str = ""
+    TURNSTILE_SECRET_KEY: str = ""
 
     # Load from .env file
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")

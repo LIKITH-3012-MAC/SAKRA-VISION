@@ -79,7 +79,7 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-8 right-8 z-50 text-left">
       <AnimatePresence>
         {/* Chat Window (Apple Glass visual) */}
         {isOpen && (
@@ -88,7 +88,7 @@ const Chatbot = () => {
             animate={{ opacity: 1, scale: 1, rotateX: 0, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, rotateX: -10, y: 30 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="apple-glass w-[340px] sm:w-[380px] h-[520px] rounded-3xl overflow-hidden shadow-2xl flex flex-col mb-4"
+            className="apple-glass border border-[#0071e3]/20 blue-rim w-[340px] sm:w-[380px] h-[520px] rounded-3xl overflow-hidden shadow-2xl flex flex-col mb-4"
           >
             {/* Chat Header */}
             <div className="p-4 bg-black/60 border-b border-white/5 flex items-center justify-between">
@@ -155,7 +155,7 @@ const Chatbot = () => {
                     <button
                       key={idx}
                       onClick={() => handleSendMessage(sug.query)}
-                      className="text-[10px] px-2.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg text-slate-300 hover:text-white transition-all cursor-pointer font-sans"
+                      className="text-[10px] px-2.5 py-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg text-slate-300 hover:text-white transition-all cursor-pointer font-sans text-left"
                     >
                       {sug.label}
                     </button>
@@ -191,9 +191,15 @@ const Chatbot = () => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="w-12 h-12 rounded-full bg-black/80 hover:bg-black flex items-center justify-center text-white text-xl shadow-xl cursor-pointer border border-white/15 hover:border-[#0071e3]/50 transition-all duration-300 relative"
+        className="w-12 h-12 rounded-full bg-black/80 hover:bg-black flex items-center justify-center text-white text-xl shadow-xl cursor-pointer border border-white/15 hover:border-[#0071e3]/50 transition-all duration-300 relative blue-rim mx-auto"
       >
-        {isOpen ? '✕' : '💬'}
+        {isOpen ? (
+          <span className="text-sm font-mono font-light">✕</span>
+        ) : (
+          <svg className="w-5 h-5 text-[#38bdf8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        )}
         {!isOpen && (
           <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#38bdf8] opacity-75"></span>
@@ -203,6 +209,7 @@ const Chatbot = () => {
       </motion.button>
     </div>
   );
+
 };
 
 export default Chatbot;

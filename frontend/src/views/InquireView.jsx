@@ -17,19 +17,22 @@ export default function InquireView() {
   });
 
   const [turnstileToken, setTurnstileToken] = useState('');
+  const [isVerified, setIsVerified] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState('idle'); // 'idle', 'submitting', 'success', 'error'
   const [status, setStatus] = useState({ type: null, message: '' });
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     let widgetId = null;
     const renderInterval = setInterval(() => {
-      if (window.turnstile && turnstileContainerRef.current) {
+      if (window.turnstile && turnstileContainerRef.current && !isVerified) {
         clearInterval(renderInterval);
         try {
           widgetId = window.turnstile.render(turnstileContainerRef.current, {
-            sitekey: '1x0000000000000000000000000000000UNSAVED',
+            sitekey: '0x4AAAAAADitIbxDQDzUGUKm',
             callback: (token) => {
               setTurnstileToken(token);
+              setIsVerified(true);
             },
             'error-callback': () => {
               setStatus({ type: 'error', message: 'CAPTCHA load failed. Please refresh.' });
@@ -49,7 +52,7 @@ export default function InquireView() {
         } catch (e) {}
       }
     };
-  }, []);
+  }, [isVerified]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -59,23 +62,45 @@ export default function InquireView() {
     }));
   };
 
+  const handleReset = () => {
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      company: '',
+      project_type: 'AI Application',
+      budget_range: '₹15,000 - ₹50,000',
+      timeline: 'Within 1 month',
+      message: '',
+      consent: false
+    });
+    setTurnstileToken('');
+    setIsVerified(false);
+    setSubmitStatus('idle');
+    setStatus({ type: null, message: '' });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitStatus('submitting');
     setLoading(true);
     setStatus({ type: null, message: '' });
 
     if (formData.name.length < 2) {
       setStatus({ type: 'error', message: 'Name must be at least 2 characters.' });
+      setSubmitStatus('error');
       setLoading(false);
       return;
     }
     if (formData.message.length < 10) {
       setStatus({ type: 'error', message: 'Message must be at least 10 characters.' });
+      setSubmitStatus('error');
       setLoading(false);
       return;
     }
     if (!formData.consent) {
       setStatus({ type: 'error', message: 'You must consent to terms.' });
+      setSubmitStatus('error');
       setLoading(false);
       return;
     }
@@ -91,36 +116,19 @@ export default function InquireView() {
         timeline: formData.timeline,
         message: formData.message,
         consent: formData.consent,
-        turnstileToken: turnstileToken || undefined
+        captcha_token: turnstileToken
       });
 
       if (response.status === 200 || response.status === 201) {
-        setStatus({
-          type: 'success',
-          message: 'Your message has been delivered successfully! Check your email for receipt confirmation.'
-        });
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          company: '',
-          project_type: 'AI Application',
-          budget_range: '₹15,000 - ₹50,000',
-          timeline: 'Within 1 month',
-          message: '',
-          consent: false
-        });
-        if (window.turnstile) {
-          window.turnstile.reset();
-        }
-        setTurnstileToken('');
+        setSubmitStatus('success');
       }
     } catch (error) {
       console.error("Submission error:", error);
-      const backendError = error.response?.data?.detail;
+      setSubmitStatus('error');
+      const backendError = error.response?.data?.message || error.response?.data?.detail;
       setStatus({
         type: 'error',
-        message: typeof backendError === 'string' ? backendError : 'Failed to send message. Please try again later.'
+        message: typeof backendError === 'string' ? backendError : 'Something went wrong. Please try again later.'
       });
     } finally {
       setLoading(false);
@@ -191,181 +199,277 @@ export default function InquireView() {
           </div>
 
           {/* Form panel */}
-          <div className="lg:col-span-7 apple-glass p-8 rounded-3xl relative shadow-2xl">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                <div>
-                  <label htmlFor="name" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Name *</label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors"
-                    placeholder="Your name"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="email" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Email *</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    required
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors"
-                    placeholder="email@example.com"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                <div>
-                  <label htmlFor="phone" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Phone</label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors"
-                    placeholder="+91 XXXXX XXXXX"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="company" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Company</label>
-                  <input
-                    type="text"
-                    id="company"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors"
-                    placeholder="Enterprise Inc."
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
-                <div>
-                  <label htmlFor="project_type" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Project Type</label>
-                  <select
-                    id="project_type"
-                    name="project_type"
-                    value={formData.project_type}
-                    onChange={handleChange}
-                    className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 rounded-xl px-3 py-3 text-[#cbd5e1] text-xs md:text-sm focus:outline-none transition-colors cursor-pointer"
-                  >
-                    <option value="AI Application">AI Application</option>
-                    <option value="Computer Vision">Computer Vision</option>
-                    <option value="LLM & RAG Solution">LLM & RAG Solution</option>
-                    <option value="Automation System">Automation System</option>
-                    <option value="Full-Stack Product">Full-Stack Product</option>
-                    <option value="AI Agentic Workflow">AI Agentic Workflow</option>
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="budget_range" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Budget Range</label>
-                  <select
-                    id="budget_range"
-                    name="budget_range"
-                    value={formData.budget_range}
-                    onChange={handleChange}
-                    className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 rounded-xl px-3 py-3 text-[#cbd5e1] text-xs md:text-sm focus:outline-none transition-colors cursor-pointer"
-                  >
-                    <option value="Under ₹15,000">Under ₹15,000</option>
-                    <option value="₹15,000 - ₹50,000">₹15,000 - ₹50,000</option>
-                    <option value="₹50,000 - ₹1,50,000">₹50,000 - ₹1,50,000</option>
-                    <option value="₹1,50,000+">₹1,50,000+</option>
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="timeline" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Timeline</label>
-                  <select
-                    id="timeline"
-                    name="timeline"
-                    value={formData.timeline}
-                    onChange={handleChange}
-                    className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 rounded-xl px-3 py-3 text-[#cbd5e1] text-xs md:text-sm focus:outline-none transition-colors cursor-pointer"
-                  >
-                    <option value="Within 1 month">Within 1 month</option>
-                    <option value="1-3 months">1-3 months</option>
-                    <option value="3-6 months">3-6 months</option>
-                    <option value="Flexible">Flexible</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="text-left">
-                <label htmlFor="message" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Message *</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  required
-                  rows="4"
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors resize-none"
-                  placeholder="Describe your project specification details..."
-                />
-              </div>
-
-              <div className="flex items-start gap-3 text-left">
-                <input
-                  type="checkbox"
-                  id="consent"
-                  name="consent"
-                  required
-                  checked={formData.consent}
-                  onChange={handleChange}
-                  className="mt-1 accent-[#0071e3] bg-black border border-white/10 rounded cursor-pointer"
-                />
-                <label htmlFor="consent" className="text-xs text-slate-500 leading-relaxed cursor-pointer select-none">
-                  I agree to allow SAKRA VISION to contact me regarding this request.
-                </label>
-              </div>
-
-              <div className="py-1">
-                <div ref={turnstileContainerRef} className="cf-turnstile"></div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="apple-button w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <div className="lg:col-span-7 apple-glass p-8 rounded-3xl relative shadow-2xl min-h-[450px]">
+            <AnimatePresence mode="wait">
+              {submitStatus === 'success' ? (
+                <motion.div
+                  key="success-card"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4 }}
+                  className="py-12 px-4 text-center flex flex-col items-center justify-center min-h-[400px]"
+                >
+                  <div className="w-16 h-16 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-[#38bdf8] mb-6 blue-rim">
+                    <svg className="w-8 h-8 text-[#38bdf8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
-                    Processing...
-                  </span>
-                ) : 'Transmit Inquiry'}
-              </button>
-
-              <AnimatePresence mode="wait">
-                {status.type && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className={`p-4 rounded-xl border text-xs font-mono flex items-start gap-3 ${
-                      status.type === 'success' 
-                        ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
-                        : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-                    }`}
+                  </div>
+                  <h3 className="text-2xl font-bold text-white font-sans tracking-tight mb-3">Inquiry submitted successfully.</h3>
+                  <p className="text-[#cbd5e1] font-light text-sm leading-relaxed mb-8 max-w-sm font-sans mx-auto">
+                    SAKRA VISION received your project request and will contact you soon.
+                  </p>
+                  <button
+                    onClick={handleReset}
+                    className="apple-button w-full max-w-xs justify-center text-sm cursor-pointer"
                   >
-                    <span className="text-base">{status.type === 'success' ? '🔵' : '🚨'}</span>
-                    <span>{status.message}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </form>
+                    Back to Overview
+                  </button>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                    <div>
+                      <label htmlFor="name" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Name *</label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        required
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors"
+                        placeholder="Your name"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="email" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Email *</label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors"
+                        placeholder="email@example.com"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                    <div>
+                      <label htmlFor="phone" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Phone</label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors"
+                        placeholder="+91 XXXXX XXXXX"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="company" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Company</label>
+                      <input
+                        type="text"
+                        id="company"
+                        name="company"
+                        value={formData.company}
+                        onChange={handleChange}
+                        className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors"
+                        placeholder="Enterprise Inc."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                    <div>
+                      <label htmlFor="project_type" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Project Type</label>
+                      <select
+                        id="project_type"
+                        name="project_type"
+                        value={formData.project_type}
+                        onChange={handleChange}
+                        className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 rounded-xl px-3 py-3 text-[#cbd5e1] text-xs md:text-sm focus:outline-none transition-colors cursor-pointer"
+                      >
+                        <option value="AI Application">AI Application</option>
+                        <option value="Computer Vision">Computer Vision</option>
+                        <option value="LLM & RAG Solution">LLM & RAG Solution</option>
+                        <option value="Automation System">Automation System</option>
+                        <option value="Full-Stack Product">Full-Stack Product</option>
+                        <option value="AI Agentic Workflow">AI Agentic Workflow</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="budget_range" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Budget Range</label>
+                      <select
+                        id="budget_range"
+                        name="budget_range"
+                        value={formData.budget_range}
+                        onChange={handleChange}
+                        className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 rounded-xl px-3 py-3 text-[#cbd5e1] text-xs md:text-sm focus:outline-none transition-colors cursor-pointer"
+                      >
+                        <option value="Under ₹15,000">Under ₹15,000</option>
+                        <option value="₹15,000 - ₹50,000">₹15,000 - ₹50,000</option>
+                        <option value="₹50,000 - ₹1,50,000">₹50,000 - ₹1,50,000</option>
+                        <option value="₹1,50,000+">₹1,50,000+</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="timeline" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Timeline</label>
+                      <select
+                        id="timeline"
+                        name="timeline"
+                        value={formData.timeline}
+                        onChange={handleChange}
+                        className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 rounded-xl px-3 py-3 text-[#cbd5e1] text-xs md:text-sm focus:outline-none transition-colors cursor-pointer"
+                      >
+                        <option value="Within 1 month">Within 1 month</option>
+                        <option value="1-3 months">1-3 months</option>
+                        <option value="3-6 months">3-6 months</option>
+                        <option value="Flexible">Flexible</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="text-left">
+                    <label htmlFor="message" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Message *</label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      required
+                      rows="4"
+                      value={formData.message}
+                      onChange={handleChange}
+                      className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors resize-none"
+                      placeholder="Describe your project specification details..."
+                    />
+                  </div>
+
+                  <div className="flex items-start gap-3 text-left">
+                    <input
+                      type="checkbox"
+                      id="consent"
+                      name="consent"
+                      required
+                      checked={formData.consent}
+                      onChange={handleChange}
+                      className="mt-1 accent-[#0071e3] bg-black border border-white/10 rounded cursor-pointer"
+                    />
+                    <label htmlFor="consent" className="text-xs text-slate-500 leading-relaxed cursor-pointer select-none">
+                      I agree to allow SAKRA VISION to contact me regarding this request.
+                    </label>
+                  </div>
+
+                  {/* Security Verification Section */}
+                  <div className="border border-white/5 bg-black/40 rounded-2xl p-6 relative overflow-hidden blue-rim">
+                    {/* Header */}
+                    <div className="flex items-start gap-3.5 mb-4">
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-[#38bdf8] flex-shrink-0">
+                        <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                      </div>
+                      <div className="text-left">
+                        <h4 className="text-sm font-semibold text-white font-sans tracking-wide">Security Verification</h4>
+                        <p className="text-xs text-[#94a3b8] mt-1 font-light leading-relaxed">
+                          Complete the secure verification to confirm you are human before submitting your inquiry.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Turnstile Container / Success State */}
+                    <div className="mt-4 relative min-h-[75px] flex flex-col justify-center items-start">
+                      {!isVerified ? (
+                        <div ref={turnstileContainerRef} className="cf-turnstile"></div>
+                      ) : (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="w-full space-y-4"
+                        >
+                          {/* Success Alert Banner */}
+                          <div className="flex items-center gap-3 p-4 rounded-xl bg-black/60 border border-blue-500/30 blue-rim text-left">
+                            <span className="text-lg flex-shrink-0">✅</span>
+                            <div>
+                              <h5 className="text-xs font-semibold text-white font-mono">Verification successful</h5>
+                              <p className="text-[11px] text-[#cbd5e1] mt-0.5">Secure human verification completed.</p>
+                            </div>
+                          </div>
+
+                          {/* Pipeline visualization */}
+                          <div className="p-4 rounded-xl bg-black/30 border border-white/5 text-left space-y-3 font-mono text-[10px]">
+                            <div className="text-slate-500 uppercase tracking-widest text-[9px] mb-1">Security Pipeline Status:</div>
+                            <div className="space-y-2.5">
+                              <div className="flex items-center gap-2 text-[#38bdf8]">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#38bdf8] animate-pulse"></span>
+                                <span>Frontend verification complete</span>
+                              </div>
+                              <div className="text-slate-600 pl-3">↓</div>
+                              <div className="flex items-center gap-2 text-[#38bdf8]">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#38bdf8] animate-pulse"></span>
+                                <span>Secure token generated</span>
+                              </div>
+                              <div className="text-slate-600 pl-3">↓</div>
+                              <div className="flex items-center gap-2 text-slate-400">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#0071e3]"></span>
+                                <span>Backend verification ready</span>
+                              </div>
+                              <div className="text-slate-600 pl-3">↓</div>
+                              <div className="flex items-center gap-2 text-emerald-400">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                <span>Inquiry can now be submitted</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Informative text */}
+                          <p className="text-[11px] text-slate-400 text-left font-light leading-relaxed">
+                            Your request is verified and ready to be securely submitted to SAKRA VISION.
+                          </p>
+                        </motion.div>
+                      )}
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={!isVerified || loading}
+                    className="apple-button w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {submitStatus === 'submitting' ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Submitting Securely...
+                      </span>
+                    ) : !isVerified ? (
+                      'Complete Verification First'
+                    ) : (
+                      'Submit Inquiry'
+                    )}
+                  </button>
+
+                  <AnimatePresence mode="wait">
+                    {submitStatus === 'error' && status.message && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 text-xs font-mono flex items-start gap-3 text-left"
+                      >
+                        <span className="text-base">🚨</span>
+                        <span>{status.message}</span>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </form>
+              )}
+            </AnimatePresence>
           </div>
 
         </div>
@@ -374,3 +478,4 @@ export default function InquireView() {
     </div>
   );
 }
+

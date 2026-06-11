@@ -17,7 +17,8 @@ from security import (
     verify_secret_token, 
     get_client_ip, 
     RequestSizeLimitMiddleware, 
-    SecurityHeadersMiddleware
+    SecurityHeadersMiddleware,
+    verify_turnstile_token
 )
 
 # Configure Application Logging
@@ -84,6 +85,26 @@ async def create_client_inquiry(
 ):
     ip_addr = get_client_ip(request)
     user_agent = request.headers.get("user-agent", "unknown")
+    
+    # Verify Cloudflare Turnstile token
+    if not payload.captcha_token:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "success": False,
+                "message": "Security verification is required. Please complete the verification and try again."
+            }
+        )
+    
+    is_valid = await verify_turnstile_token(payload.captcha_token, ip_addr)
+    if not is_valid:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={
+                "success": False,
+                "message": "Security verification failed. Please refresh and try again."
+            }
+        )
     
     try:
         # Write lead to database table 'clients'
