@@ -59,11 +59,17 @@ def escape_html(text: str) -> str:
         return str(text) if text is not None else ""
     return html.escape(text)
 
+import logging
+logger = logging.getLogger("app.security")
+
 async def verify_turnstile_token(token: str, ip: str) -> bool:
     if not token:
+        logger.warning("Turnstile verification skipped: token is empty.")
         return False
     # Use standard Turnstile testing secret key if none configured
     secret = settings.TURNSTILE_SECRET_KEY or "1x0000000000000000000000000000000AA"
+    masked_secret = secret[:10] + "..." if len(secret) > 10 else secret
+    logger.info(f"Initiating Turnstile siteverify with secret={masked_secret} and client_ip={ip}")
     try:
         import httpx
         async with httpx.AsyncClient() as client:
@@ -77,7 +83,13 @@ async def verify_turnstile_token(token: str, ip: str) -> bool:
                 timeout=5.0
             )
             result = response.json()
-            return result.get("success", False)
-    except Exception:
+            success = result.get("success", False)
+            if not success:
+                logger.error(f"Turnstile verification failed. API response: {result}")
+            else:
+                logger.info("Turnstile verification succeeded.")
+            return success
+    except Exception as e:
+        logger.error(f"Error during Turnstile siteverify request: {e}", exc_info=True)
         return False
 
