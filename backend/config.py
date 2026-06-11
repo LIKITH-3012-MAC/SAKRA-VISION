@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     
     RESEND_API_KEY: str
     RESEND_FROM_EMAIL: str = "SAKRA-VISION <noreply@mail.likith-portfolio.online>"
-    RESEND_TO_EMAIL: str = "23l31a4426@vignaniit.edu.in"
+    RESEND_TO_EMAIL: str = "likith.anumakonda@gmail.com"
     
     TRUST_PROXY: bool = False
     CLOUDFLARE_API_TOKEN: str = ""

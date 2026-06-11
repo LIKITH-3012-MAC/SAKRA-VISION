@@ -6,7 +6,7 @@ SAKRA VISION builds real-world intelligent systems using AI/ML, computer vision,
 
 Projects include Resolvit AI, SAKRA VISION Event Hub, Bench AI, Prometheus AI V2.0, AquaSentinel AI, AI Resume Builder, and OpenCV Automation Tools.
 
-Contact: 23l31a4426@vignaniit.edu.in
+Contact: likith.anumakonda@gmail.com
 Official website: https://sakra-vision.online/
 Founder portfolio: https://likith-portfolio.online/
 GitHub: https://github.com/LIKITH-3012-MAC
