@@ -159,22 +159,22 @@ function App() {
           <h1>SAKRA VISION</h1>
           <p>
             SAKRA VISION is an AI product studio and AI innovation company established in 2026 by Likith Naidu Anumakonda.
-            The company builds real-world intelligent systems using AI/ML, computer vision,
-            LLMs, RAG, AI agents, automation, and full-stack web technologies.
+            The company builds real-world intelligent systems using AI/ML, computer vision, LLMs, RAG, AI agents,
+            automation, and full-stack web technologies.
           </p>
           <p>
-            SAKRA VISION services include AI applications, computer vision systems,
-            LLM and RAG tools, AI agents, automation systems, full-stack AI products,
-            civic-tech platforms, event automation, and cloud deployment.
+            SAKRA VISION services include AI applications, computer vision systems, LLM and RAG tools,
+            AI agents, automation systems, full-stack AI products, civic-tech platforms, event automation,
+            and cloud deployment.
           </p>
           <p>
-            Projects by SAKRA VISION include Resolvit AI, SAKRA VISION Event Hub,
-            Bench AI, Prometheus AI V2.0, AquaSentinel AI, AI Resume Builder,
-            and OpenCV Automation Tools.
+            Projects by SAKRA VISION include Resolvit AI, SAKRA VISION Event Hub, Bench AI,
+            Prometheus AI V2.0, AquaSentinel AI, AI Resume Builder, and OpenCV Automation Tools.
           </p>
           <p>
-            Founder: Likith Naidu Anumakonda, Founder &amp; CEO of SAKRA VISION, AI/ML Engineer, Python Full-Stack Developer,
-            CSE-AI student, IIT Patna Certified learner, pianist, author, and builder of real-world intelligent systems.
+            Founder: Likith Naidu Anumakonda, Founder & CEO of SAKRA VISION, AI/ML Engineer,
+            Python Full-Stack Developer, CSE-AI student, IIT Patna Certified learner, pianist,
+            author, and builder of real-world intelligent systems.
           </p>
         </section>
 

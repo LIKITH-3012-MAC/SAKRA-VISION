@@ -2,47 +2,13 @@ SAKRA VISION is an AI product studio and AI innovation company established in 20
 
 Tagline: From Ideas to Intelligent Systems.
 
-SAKRA VISION builds real-world intelligent systems using Artificial Intelligence, Machine Learning, Computer Vision, LLMs, RAG, AI Agents, Automation, and Full-Stack Web Technologies.
+SAKRA VISION builds real-world intelligent systems using AI/ML, computer vision, LLMs, RAG, AI agents, automation, and full-stack web technologies.
 
-Founder: Likith Naidu Anumakonda.
-Founder role: Founder & CEO, SAKRA VISION.
-Founder profile: AI/ML Engineer, Python Full-Stack Developer, CSE-AI student, IIT Patna Certified learner, Pianist, Author.
+Projects include Resolvit AI, SAKRA VISION Event Hub, Bench AI, Prometheus AI V2.0, AquaSentinel AI, AI Resume Builder, and OpenCV Automation Tools.
 
-Services:
-- AI Applications
-- Computer Vision Systems
-- LLM and RAG Tools
-- AI Agents
-- Full-Stack Products
-- Automation Systems
-- Civic-Tech and Social Impact AI
-- Event Automation
-- Cloud Deployment
-
-Projects:
-- Resolvit AI: AI-powered civic issue resolution platform.
-- SAKRA VISION Event Hub: AI event registration and operations platform.
-- Bench AI: Offline LLM + RAG learning assistant.
-- Prometheus AI V2.0: Local-first GenAI system.
-- AquaSentinel AI: Marine intelligence AI platform.
-- AI Resume Builder: Full-stack AI resume builder.
-- OpenCV Automation Tools: Computer vision automation tools.
-
-Technology:
-Python, FastAPI, React, Next.js, Tailwind CSS, MySQL, PostgreSQL, Aiven Cloud, Groq API, Resend API, Cloudflare, OpenCV, LLMs, RAG, AI Agents, JWT, REST APIs.
-
-Contact:
-Email: likith.anumakonda@gmail.com
-Location: India
-
-Official portfolio:
-https://likith-portfolio.online/
-
-GitHub:
-https://github.com/LIKITH-3012-MAC
-
-LinkedIn:
-https://in.linkedin.com/in/likith-naidu-anumakonda-33a347327
-
-YouTube:
-https://www.youtube.com/@LIKITH_NAIDU_ANUMAKONDA
+Contact: 23l31a4426@vignaniit.edu.in
+Official website: https://sakra-vision.online/
+Founder portfolio: https://likith-portfolio.online/
+GitHub: https://github.com/LIKITH-3012-MAC
+LinkedIn: https://in.linkedin.com/in/likith-naidu-anumakonda-33a347327
+YouTube: https://www.youtube.com/@LIKITH_NAIDU_ANUMAKONDA
