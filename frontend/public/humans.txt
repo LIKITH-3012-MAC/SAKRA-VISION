@@ -1,0 +1,30 @@
+/* TEAM */
+
+Company: SAKRA VISION
+Founder: Likith Naidu Anumakonda
+Role: Founder & CEO
+Location: India
+Contact: likith.anumakonda@gmail.com
+
+/* ABOUT */
+
+SAKRA VISION is an AI product studio building real-world intelligent systems using AI/ML, computer vision, LLMs, RAG, AI agents, automation, and full-stack web technologies.
+
+Tagline: From Ideas to Intelligent Systems.
+
+/* PROJECTS */
+
+Resolvit AI
+SAKRA VISION Event Hub
+Bench AI
+Prometheus AI V2.0
+AquaSentinel AI
+AI Resume Builder
+OpenCV Automation Tools
+
+/* LINKS */
+
+Portfolio: https://likith-portfolio.online/
+GitHub: https://github.com/LIKITH-3012-MAC
+LinkedIn: https://in.linkedin.com/in/likith-naidu-anumakonda-33a347327
+YouTube: https://www.youtube.com/@LIKITH_NAIDU_ANUMAKONDA

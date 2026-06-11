@@ -1,0 +1,209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #000000;
+    color: #ffffff;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+/* 3D Perspective CSS Styles */
+.perspective-container {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.card-3d:hover {
+  transform: translateY(-10px) rotateX(6deg) rotateY(-6deg) scale(1.02);
+  box-shadow: 0 30px 90px rgba(56, 189, 248, 0.18);
+  border-color: rgba(56, 189, 248, 0.45);
+}
+
+.apple-glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.blue-rim {
+  box-shadow:
+    0 0 0 1px rgba(56, 189, 248, 0.18),
+    0 0 50px rgba(56, 189, 248, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.apple-button {
+  background: #0071e3;
+  color: white;
+  border-radius: 999px;
+  padding: 0.85rem 1.4rem;
+  font-weight: 600;
+  box-shadow: 0 12px 35px rgba(0, 113, 227, 0.35);
+  transition: all 0.25s ease;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.apple-button:hover {
+  transform: translateY(-2px) scale(1.02);
+  background: #0a84ff;
+  box-shadow: 0 18px 45px rgba(10, 132, 255, 0.45);
+}
+
+.apple-dark-button {
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 0.85rem 1.4rem;
+  backdrop-filter: blur(20px);
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.apple-dark-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(56, 189, 248, 0.45);
+  transform: translateY(-2px);
+}
+
+/* Custom Scrollbar settings */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222222;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0071e3;
+}
+
+/* Infinite loop scrolling marquee ticker */
+.animate-marquee {
+  display: inline-flex;
+  animation: marquee 35s linear infinite;
+  width: max-content;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Subtle logo watermark class */
+.sakra-watermark {
+  position: absolute;
+  width: min(65vw, 750px);
+  height: min(65vw, 750px);
+  background-image: url("/SAKRAVISION.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.04;
+  filter: drop-shadow(0 0 50px rgba(0, 113, 227, 0.18));
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Welcome Intro Animation Styles */
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background:
+    radial-gradient(circle at center, rgba(56, 189, 248, 0.16), transparent 38%),
+    linear-gradient(180deg, #000000, #020617);
+  overflow: hidden;
+}
+
+.intro-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(56,189,248,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,0.08) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle at center, black, transparent 72%);
+  opacity: 0.28;
+}
+
+.intro-watermark {
+  position: absolute;
+  width: min(72vw, 820px);
+  height: min(72vw, 820px);
+  background-image: url("/SAKRAVISION.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0.07;
+  filter: drop-shadow(0 0 70px rgba(56,189,248,0.25));
+}
+
+.intro-title {
+  position: relative;
+  font-size: clamp(2.4rem, 7vw, 6.5rem);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  color: white;
+  text-align: center;
+}
+
+.intro-title span {
+  color: #38bdf8;
+}
+
+.intro-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.intro-shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(
+    110deg,
+    transparent,
+    rgba(255,255,255,0.75),
+    rgba(56,189,248,0.55),
+    transparent
+  );
+  animation: introShine 1.35s ease-in-out 1s forwards;
+}
+
+@keyframes introShine {
+  to {
+    left: 130%;
+  }
+}
+
+

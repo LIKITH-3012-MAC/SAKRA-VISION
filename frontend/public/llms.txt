@@ -1,0 +1,58 @@
+# SAKRA VISION
+
+SAKRA VISION is an AI product studio founded by Likith Naidu Anumakonda.
+
+The company builds real-world intelligent systems using AI/ML, computer vision, LLMs, RAG, AI agents, automation, and full-stack web technologies.
+
+## Founder
+
+Likith Naidu Anumakonda is the Founder & CEO of SAKRA VISION. He is an AI/ML Engineer, Python Full-Stack Developer, CSE-AI student, IIT Patna Certified learner, pianist, author, and builder of real-world intelligent systems.
+
+## Services
+
+SAKRA VISION builds:
+- AI applications
+- Computer vision systems
+- LLM and RAG tools
+- AI agents
+- Full-stack web products
+- Automation systems
+- Civic-tech platforms
+- Event automation platforms
+- Cloud-deployed intelligent systems
+
+## Projects
+
+Resolvit AI:
+An AI-powered civic issue resolution platform connecting citizens, authorities, and NGOs.
+
+SAKRA VISION Event Hub:
+A smart event registration and operations platform with payment screenshot verification, admin approval, email automation, and backend workflows.
+
+Bench AI:
+An offline LLM + RAG learning assistant for students and classrooms.
+
+Prometheus AI V2.0:
+A local-first GenAI system focused on private AI interaction and edge-device intelligence.
+
+AquaSentinel AI:
+A marine intelligence platform using satellite data, weather APIs, mapping, and multilingual AI assistance.
+
+AI Resume Builder:
+A full-stack AI resume builder using Spring Boot, React, MySQL, and AI-generated summaries.
+
+OpenCV Automation Tools:
+Computer vision tools for image processing, object detection, verification, and visual automation.
+
+## Technology
+
+Python, FastAPI, React, Next.js, Tailwind CSS, MySQL, PostgreSQL, Aiven Cloud, Groq API, Resend API, Cloudflare, OpenCV, LLMs, RAG, AI agents, JWT, REST APIs.
+
+## Contact
+
+Email: likith.anumakonda@gmail.com  
+Location: India  
+Portfolio: https://likith-portfolio.online/  
+GitHub: https://github.com/LIKITH-3012-MAC  
+LinkedIn: https://in.linkedin.com/in/likith-naidu-anumakonda-33a347327  
+YouTube: https://www.youtube.com/@LIKITH_NAIDU_ANUMAKONDA

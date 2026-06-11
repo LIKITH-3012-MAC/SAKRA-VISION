@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+jspm_packages/
+web_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+
+# Python build and virtual environment directories
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Build output directories
+dist/
+out/
+.next/
+
+# IDE files
+.vscode/
+.idea/
+.DS_Store
