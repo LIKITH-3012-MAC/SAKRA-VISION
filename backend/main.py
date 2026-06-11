@@ -124,30 +124,46 @@ async def create_client_inquiry(
         db.commit()
         db.refresh(db_client)
         
-        # Send emails asynchronously via BackgroundTasks
-        background_tasks.add_task(
-            email_service.send_admin_notification,
-            full_name=payload.full_name,
-            email=payload.email,
-            phone=payload.phone,
-            company=payload.company,
-            project_type=payload.project_type,
-            budget_range=payload.budget_range,
-            timeline=payload.timeline,
-            message=payload.message,
-            ip_address=ip_addr,
-            user_agent=user_agent
-        )
-        background_tasks.add_task(
-            email_service.send_client_confirmation,
-            full_name=payload.full_name,
-            email=payload.email
-        )
-        
-        return {
-            "success": True, 
-            "message": "Your inquiry has been submitted successfully."
+        # Construct client inquiry data dictionary
+        client_data = {
+            "full_name": payload.full_name,
+            "email": payload.email,
+            "phone": payload.phone,
+            "company": payload.company,
+            "project_type": payload.project_type,
+            "budget_range": payload.budget_range,
+            "timeline": payload.timeline,
+            "message": payload.message,
+            "ip_address": ip_addr,
+            "user_agent": user_agent
         }
+
+        # Send emails synchronously to catch return statuses and report
+        admin_notification_sent = False
+        client_confirmation_sent = False
+
+        try:
+            admin_notification_sent = await email_service.send_admin_notification(client_data)
+        except Exception as e:
+            logger.error(f"Admin notification email failed: {e}", exc_info=True)
+
+        try:
+            client_confirmation_sent = await email_service.send_client_confirmation(client_data)
+        except Exception as e:
+            logger.error(f"Client confirmation email failed: {e}", exc_info=True)
+
+        # Build response with debugging info in development env
+        response_data = {
+            "success": True,
+            "message": "Your inquiry has been submitted successfully.",
+            "email": {
+                "client_confirmation": client_confirmation_sent
+            }
+        }
+        if settings.APP_ENV == "development":
+            response_data["email"]["admin_notification"] = admin_notification_sent
+
+        return response_data
         
     except Exception as e:
         logger.error(f"Failed to submit client inquiry: {e}", exc_info=True)

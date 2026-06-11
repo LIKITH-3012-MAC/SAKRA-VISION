@@ -120,7 +120,8 @@ export default function InquireView() {
       });
 
       if (response.status === 200 || response.status === 201) {
-        setSubmitStatus('success');
+        const clientConfSent = response.data?.email?.client_confirmation;
+        setSubmitStatus(clientConfSent ? 'success_email' : 'success_no_email');
       }
     } catch (error) {
       console.error("Submission error:", error);
@@ -201,7 +202,7 @@ export default function InquireView() {
           {/* Form panel */}
           <div className="lg:col-span-7 apple-glass p-8 rounded-3xl relative shadow-2xl min-h-[450px]">
             <AnimatePresence mode="wait">
-              {submitStatus === 'success' ? (
+              {submitStatus === 'success_email' || submitStatus === 'success_no_email' || submitStatus === 'success' ? (
                 <motion.div
                   key="success-card"
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -216,8 +217,17 @@ export default function InquireView() {
                     </svg>
                   </div>
                   <h3 className="text-2xl font-bold text-white font-sans tracking-tight mb-3">Inquiry submitted successfully.</h3>
-                  <p className="text-[#cbd5e1] font-light text-sm leading-relaxed mb-8 max-w-sm font-sans mx-auto">
-                    SAKRA VISION received your project request and will contact you soon.
+                  <p className="text-[#cbd5e1] font-light text-sm leading-relaxed mb-8 max-w-sm font-sans mx-auto whitespace-pre-line">
+                    {submitStatus === 'success_email' ? (
+                      <>
+                        A confirmation email has been sent to your email address.<br />
+                        SAKRA VISION will contact you soon.
+                      </>
+                    ) : (
+                      <>
+                        SAKRA VISION received your request and will contact you soon.
+                      </>
+                    )}
                   </p>
                   <button
                     onClick={handleReset}
