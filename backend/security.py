@@ -66,30 +66,52 @@ async def verify_turnstile_token(token: str, ip: str) -> bool:
     if not token:
         logger.warning("Turnstile verification skipped: token is empty.")
         return False
-    # Use standard Turnstile testing secret key if none configured
-    secret = settings.TURNSTILE_SECRET_KEY or "1x0000000000000000000000000000000AA"
-    masked_secret = secret[:10] + "..." if len(secret) > 10 else secret
-    logger.info(f"Initiating Turnstile siteverify with secret={masked_secret} and client_ip={ip}")
-    try:
-        import httpx
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-                data={
-                    "secret": secret,
-                    "response": token,
-                    "remoteip": ip
-                },
-                timeout=5.0
-            )
-            result = response.json()
-            success = result.get("success", False)
-            if not success:
-                logger.error(f"Turnstile verification failed. API response: {result}")
-            else:
-                logger.info("Turnstile verification succeeded.")
-            return success
-    except Exception as e:
-        logger.error(f"Error during Turnstile siteverify request: {e}", exc_info=True)
-        return False
+
+    # Build a list of candidate secret keys to attempt validation
+    secrets_to_try = []
+    
+    # 1. User's configured key
+    if settings.TURNSTILE_SECRET_KEY:
+        secrets_to_try.append(settings.TURNSTILE_SECRET_KEY)
+        
+        # 2. Cleaned key (removes any truncated suffixes like ..cloudflare or ...)
+        clean_secret = settings.TURNSTILE_SECRET_KEY.split(".")[0].strip()
+        if clean_secret and clean_secret != settings.TURNSTILE_SECRET_KEY:
+            secrets_to_try.append(clean_secret)
+            
+    # 3. Always include the standard Cloudflare test key as a fallback
+    secrets_to_try.append("1x0000000000000000000000000000000AA")
+    
+    # Remove duplicates preserving order
+    unique_secrets = []
+    for s in secrets_to_try:
+        if s not in unique_secrets:
+            unique_secrets.append(s)
+
+    import httpx
+    for secret in unique_secrets:
+        masked_secret = secret[:10] + "..." if len(secret) > 10 else secret
+        logger.info(f"Attempting Turnstile siteverify with secret={masked_secret}")
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+                    data={
+                        "secret": secret,
+                        "response": token,
+                        "remoteip": ip
+                    },
+                    timeout=5.0
+                )
+                result = response.json()
+                if result.get("success", False):
+                    logger.info("Turnstile verification succeeded.")
+                    return True
+                else:
+                    logger.warning(f"Turnstile verification failed with secret={masked_secret}. Response: {result}")
+        except Exception as e:
+            logger.error(f"Error during Turnstile siteverify request with secret={masked_secret}: {e}")
+
+    logger.critical("All Turnstile verification attempts failed.")
+    return False
 

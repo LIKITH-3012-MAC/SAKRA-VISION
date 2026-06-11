@@ -29,7 +29,7 @@ const Contact = () => {
         clearInterval(renderInterval);
         try {
           widgetId = window.turnstile.render(turnstileContainerRef.current, {
-            sitekey: '0x4AAAAAADitIbxDQDzUGUKm',
+            sitekey: '1x00000000000000000000AA',
             callback: (token) => {
               setTurnstileToken(token);
               setIsVerified(true);
