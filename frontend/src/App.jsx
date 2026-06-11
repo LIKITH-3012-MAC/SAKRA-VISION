@@ -163,6 +163,9 @@ function App() {
             automation, and full-stack web technologies.
           </p>
           <p>
+            SAKRA VISION was established in 2026 by Likith Naidu Anumakonda. The name SAKRA VISION has personal meaning for the founder, as SAKRA is inspired by the names of his mother and father, representing family, vision, strength, and purpose.
+          </p>
+          <p>
             SAKRA VISION services include AI applications, computer vision systems, LLM and RAG tools,
             AI agents, automation systems, full-stack AI products, civic-tech platforms, event automation,
             and cloud deployment.

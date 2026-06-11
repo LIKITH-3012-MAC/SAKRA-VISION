@@ -12,7 +12,7 @@ export default function SEO() {
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', 'https://sakra-vision.online/');
+    canonical.setAttribute('href', 'https://www.sakra-vision.online/');
 
     // 3. Meta tags
     const metaTags = {
@@ -37,14 +37,14 @@ export default function SEO() {
       { property: 'og:site_name', content: 'SAKRA VISION' },
       { property: 'og:title', content: 'SAKRA VISION | AI Product Studio Founded by Likith Naidu Anumakonda' },
       { property: 'og:description', content: 'SAKRA VISION is an AI product studio established in 2026 by Likith Naidu Anumakonda, building AI applications, LLM/RAG tools, computer vision systems, automation platforms, and full-stack intelligent products.' },
-      { property: 'og:url', content: 'https://sakra-vision.online/' },
-      { property: 'og:image', content: 'https://sakra-vision.online/SAKRAVISION.png' },
+      { property: 'og:url', content: 'https://www.sakra-vision.online/' },
+      { property: 'og:image', content: 'https://www.sakra-vision.online/SAKRAVISION.png' },
       { property: 'og:image:alt', content: 'SAKRA VISION AI Product Studio Logo' },
       { property: 'og:locale', content: 'en_IN' },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: 'SAKRA VISION | From Ideas to Intelligent Systems' },
       { name: 'twitter:description', content: 'SAKRA VISION is an AI product studio established in 2026 by Likith Naidu Anumakonda, building AI applications, LLM/RAG tools, computer vision systems, automation platforms, and full-stack intelligent products.' },
-      { name: 'twitter:image', content: 'https://sakra-vision.online/SAKRAVISION.png' },
+      { name: 'twitter:image', content: 'https://www.sakra-vision.online/SAKRAVISION.png' },
       { name: 'twitter:image:alt', content: 'SAKRA VISION Logo' }
     ];
 

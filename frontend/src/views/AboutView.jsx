@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Target, Eye, Compass, ShieldCheck } from 'lucide-react';
+import FAQSection from '../components/FAQSection';
 
 export default function AboutView() {
   const philosophy = [
@@ -100,6 +101,11 @@ export default function AboutView() {
               );
             })}
           </div>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="mt-20">
+          <FAQSection />
         </div>
 
       </div>
