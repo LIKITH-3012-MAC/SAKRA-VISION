@@ -223,10 +223,6 @@ export default function OverviewView({ setActiveView }) {
                 <strong className="text-white block mb-1">Who founded SAKRA VISION?</strong>
                 <p>Likith Naidu Anumakonda founded the company in 2026.</p>
               </div>
-              <div>
-                <strong className="text-white block mb-1">What do you build?</strong>
-                <p>We build intelligent automation platforms, civic-tech AI, and full-stack systems.</p>
-              </div>
             </div>
           </div>
 
