@@ -1,9 +1,74 @@
 import httpx
 import logging
+from datetime import datetime
+from html import escape
 from config import settings
-from security import escape_html
 
 logger = logging.getLogger("app.email_service")
+
+def _safe(value) -> str:
+    """Escapes user input for safe HTML insertion."""
+    return escape(str(value or ""))
+
+def _email_shell(title: str, preheader: str, body_html: str) -> str:
+    """Wraps HTML content in a premium dark cinematic 3D glassmorphism shell."""
+    current_year = datetime.now().year
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title}</title>
+<style>
+  body, table, td, a {{ -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }}
+  table, td {{ mso-table-lspace: 0pt; mso-table-rspace: 0pt; }}
+  img {{ -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }}
+</style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #020617; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #ffffff; -webkit-font-smoothing: antialiased;">
+  <!-- Preheader text hidden from layout -->
+  <span style="display:none;font-size:1px;color:#020617;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">{preheader}</span>
+  
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #020617; background-image: radial-gradient(circle at 50% 10%, #0c1838 0%, #020617 60%); padding: 60px 20px;">
+    <tr>
+      <td align="center">
+        
+        <!-- Top Brand Header -->
+        <table width="100%" max-width="680" border="0" cellspacing="0" cellpadding="0" style="max-width: 680px; margin-bottom: 24px;">
+          <tr>
+            <td align="center" style="font-size: 16px; font-weight: 800; letter-spacing: 2px; color: #ffffff;">
+              SAKRA VISION
+              <div style="font-size: 10px; color: #64748b; font-weight: 500; letter-spacing: 2px; margin-top: 6px;">AI PRODUCT STUDIO</div>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Main Glass Card (3D Illusion) -->
+        <table width="100%" max-width="680" border="0" cellspacing="0" cellpadding="0" style="max-width: 680px; background-color: #080c17; background-image: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%); border-radius: 28px; border: 1px solid rgba(56, 189, 248, 0.2); border-top: 1px solid rgba(56, 189, 248, 0.4); box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 40px rgba(56, 189, 248, 0.05), inset 0 1px 0 rgba(255,255,255,0.1); overflow: hidden;">
+          <tr>
+            <td style="padding: 48px 40px;">
+              {body_html}
+            </td>
+          </tr>
+        </table>
+        
+        <!-- Footer -->
+        <table width="100%" max-width="680" border="0" cellspacing="0" cellpadding="0" style="max-width: 680px; margin-top: 32px;">
+          <tr>
+            <td align="center" style="font-size: 11px; color: #475569; line-height: 1.6; letter-spacing: 0.5px;">
+              Engineering Intelligence Into Reality<br>
+              &copy; {current_year} SAKRA VISION AI Product Studio.<br>
+              This is a secure automated system notification.
+            </td>
+          </tr>
+        </table>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+"""
 
 async def send_email_via_resend(payload: dict) -> bool:
     if not settings.RESEND_API_KEY:
@@ -34,138 +99,89 @@ async def send_email_via_resend(payload: dict) -> bool:
         return False
 
 async def send_admin_notification(client_data: dict) -> bool:
-    subject = "New Client Inquiry - SAKRA VISION"
+    subject = "New Client Inquiry | SAKRA VISION"
     
-    # Extract variables safely from the dictionary
-    full_name = client_data.get("full_name", "")
-    email = client_data.get("email", "")
-    phone = client_data.get("phone", "N/A")
-    company = client_data.get("company", "N/A")
-    project_type = client_data.get("project_type", "N/A")
-    budget_range = client_data.get("budget_range", "N/A")
-    timeline = client_data.get("timeline", "N/A")
-    message = client_data.get("message", "")
-    ip_address = client_data.get("ip_address", "N/A")
-    user_agent = client_data.get("user_agent", "N/A")
+    esc_name = _safe(client_data.get("full_name"))
+    esc_email = _safe(client_data.get("email"))
+    esc_phone = _safe(client_data.get("phone")) or "N/A"
+    esc_company = _safe(client_data.get("company")) or "N/A"
+    esc_project = _safe(client_data.get("project_type")) or "N/A"
+    esc_budget = _safe(client_data.get("budget_range")) or "N/A"
+    esc_timeline = _safe(client_data.get("timeline")) or "N/A"
+    esc_message = _safe(client_data.get("message")).replace("\n", "<br/>")
+
+    body_html = f"""
+<!-- Badge -->
+<div style="text-align: left; margin-bottom: 32px;">
+  <div style="display: inline-block; padding: 8px 16px; background-color: rgba(0, 113, 227, 0.1); border-radius: 8px; border: 1px solid rgba(56, 189, 248, 0.3); box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);">
+    <span style="color: #38bdf8; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">● Admin Pipeline</span>
+  </div>
+</div>
+
+<h1 style="margin: 0 0 24px 0; font-size: 24px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">New Project Inquiry Received</h1>
+
+<p style="margin: 0 0 32px 0; font-size: 15px; color: #94a3b8; line-height: 1.6;">
+  A new client inquiry was submitted from the SAKRA VISION website.
+</p>
+
+<!-- Data Table -->
+<div style="background-color: rgba(15, 23, 42, 0.4); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 12px; overflow: hidden; margin-bottom: 32px;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="35%" style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: #64748b; font-weight: 600;">Full Name</td>
+      <td width="65%" style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; color: #f8fafc; font-weight: 500;">{esc_name}</td>
+    </tr>
+    <tr>
+      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: #64748b; font-weight: 600;">Email</td>
+      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; color: #38bdf8; font-weight: 500;"><a href="mailto:{esc_email}" style="color: #38bdf8; text-decoration: none;">{esc_email}</a></td>
+    </tr>
+    <tr>
+      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: #64748b; font-weight: 600;">Phone</td>
+      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; color: #f8fafc; font-weight: 500;">{esc_phone}</td>
+    </tr>
+    <tr>
+      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: #64748b; font-weight: 600;">Company</td>
+      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; color: #f8fafc; font-weight: 500;">{esc_company}</td>
+    </tr>
+    <tr>
+      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: #64748b; font-weight: 600;">Project Type</td>
+      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; color: #f8fafc; font-weight: 500;">{esc_project}</td>
+    </tr>
+    <tr>
+      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: #64748b; font-weight: 600;">Budget Range</td>
+      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; color: #f8fafc; font-weight: 500;">{esc_budget}</td>
+    </tr>
+    <tr>
+      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: #64748b; font-weight: 600;">Timeline</td>
+      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; color: #f8fafc; font-weight: 500;">{esc_timeline}</td>
+    </tr>
+    <tr>
+      <td style="padding: 16px; font-size: 13px; color: #64748b; font-weight: 600; vertical-align: top;">Message</td>
+      <td style="padding: 16px; font-size: 14px; color: #f8fafc; line-height: 1.6; font-family: 'Courier New', Courier, monospace;">{esc_message}</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Status Strip -->
+<div>
+  <span style="display: inline-block; padding: 6px 14px; background-color: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; font-size: 11px; font-family: 'Courier New', Courier, monospace; color: #94a3b8; margin: 0 6px 8px 0;">
+    Status: <span style="color: #e2e8f0; font-weight: bold;">New Inquiry</span>
+  </span>
+  <span style="display: inline-block; padding: 6px 14px; background-color: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; font-size: 11px; font-family: 'Courier New', Courier, monospace; color: #94a3b8; margin: 0 6px 8px 0;">
+    Source: <span style="color: #e2e8f0; font-weight: bold;">SAKRA VISION Website</span>
+  </span>
+  <span style="display: inline-block; padding: 6px 14px; background-color: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 100px; font-size: 11px; font-family: 'Courier New', Courier, monospace; color: #94a3b8; margin: 0 6px 8px 0;">
+    Pipeline: <span style="color: #e2e8f0; font-weight: bold;">Secure Client Request</span>
+  </span>
+</div>
+"""
     
-    # Render variables safely using HTML escaping
-    esc_name = escape_html(full_name)
-    esc_email = escape_html(email)
-    esc_phone = escape_html(phone) if phone else "N/A"
-    esc_company = escape_html(company) if company else "N/A"
-    esc_project = escape_html(project_type) if project_type else "N/A"
-    esc_budget = escape_html(budget_range) if budget_range else "N/A"
-    esc_timeline = escape_html(timeline) if timeline else "N/A"
-    esc_message = escape_html(message).replace("\n", "<br/>")
-    esc_ip = escape_html(ip_address)
-    esc_ua = escape_html(user_agent) if user_agent else "N/A"
-    
-    html_content = f"""
-    <div style="background-color: #020617; background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #020617 70%); padding: 40px 20px; font-family: 'Courier New', Courier, monospace, sans-serif; color: #f1f5f9; min-height: 100%;">
-        <!-- Main Floating 3D Hologram Container -->
-        <div style="max-width: 600px; margin: 0 auto; background-color: #0b1329; border: 1px solid #f43f5e; border-top: 4px solid #f43f5e; border-right: 4px solid #4c0519; border-bottom: 4px solid #4c0519; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.8), 0 10px 10px -5px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(244, 63, 94, 0.15); overflow: hidden;">
-            
-            <!-- Cybernetic Grid Decorative Background -->
-            <div style="background-image: linear-gradient(rgba(244, 63, 94, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(244, 63, 94, 0.04) 1px, transparent 1px); background-size: 20px 20px; padding: 32px;">
-                
-                <!-- HUD Header -->
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
-                    <tr>
-                        <td>
-                            <span style="font-size: 10px; color: #f43f5e; letter-spacing: 2px; font-weight: bold; display: block; margin-bottom: 4px;">SECURE PIPELINE // INCOMING CLIENT PROPOSAL</span>
-                            <h1 style="color: #ffffff; font-size: 22px; font-weight: 900; margin: 0; letter-spacing: -1px; text-shadow: 0 0 10px rgba(244,63,94,0.5); font-family: 'Courier New', Courier, monospace;">[NEW INQUIRY DETECTED]</h1>
-                        </td>
-                        <td style="text-align: right; vertical-align: top; width: 80px;">
-                            <span style="display: inline-block; background-color: rgba(244, 63, 94, 0.1); border: 1px solid #f43f5e; color: #f43f5e; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; text-shadow: 0 0 5px rgba(244, 63, 94, 0.3);">
-                                URGENT
-                            </span>
-                        </td>
-                    </tr>
-                </table>
+    html_content = _email_shell(
+        title="New Client Inquiry | SAKRA VISION",
+        preheader=f"New inquiry from {esc_name} for {esc_project}",
+        body_html=body_html
+    )
 
-                <!-- Holographic Separator Line -->
-                <div style="height: 1px; background: linear-gradient(90deg, #f43f5e 0%, rgba(244,63,94,0.2) 50%, transparent 100%); margin-bottom: 24px;"></div>
-
-                <!-- Client Metadata Grid (3D block cards) -->
-                <h3 style="color: #f43f5e; font-size: 12px; letter-spacing: 1.5px; margin: 0 0 12px 0; text-transform: uppercase;">[ SENSOR METADATA & PROFILE ]</h3>
-                
-                <table style="width: 100%; border-collapse: separate; border-spacing: 10px; margin-bottom: 24px; margin-left: -10px; margin-right: -10px;">
-                    <tr>
-                        <td style="width: 50%; background: #0f172a; border-top: 1px solid #38bdf8; border-bottom: 3px solid #020617; border-left: 1px solid rgba(56,189,248,0.15); border-right: 1px solid rgba(56,189,248,0.15); border-radius: 6px; padding: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                            <span style="font-size: 9px; color: #64748b; display: block; text-transform: uppercase; font-weight: bold; margin-bottom: 4px;">CLIENT NAME</span>
-                            <span style="font-size: 13px; color: #38bdf8; font-weight: bold;">{esc_name}</span>
-                        </td>
-                        <td style="width: 50%; background: #0f172a; border-top: 1px solid #a78bfa; border-bottom: 3px solid #020617; border-left: 1px solid rgba(167,139,250,0.15); border-right: 1px solid rgba(167,139,250,0.15); border-radius: 6px; padding: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                            <span style="font-size: 9px; color: #64748b; display: block; text-transform: uppercase; font-weight: bold; margin-bottom: 4px;">CLIENT EMAIL</span>
-                            <span style="font-size: 13px; color: #a78bfa; font-weight: bold;"><a href="mailto:{esc_email}" style="color: #a78bfa; text-decoration: none;">{esc_email}</a></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width: 50%; background: #0f172a; border-top: 1px solid #10b981; border-bottom: 3px solid #020617; border-left: 1px solid rgba(16,185,129,0.15); border-right: 1px solid rgba(16,185,129,0.15); border-radius: 6px; padding: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                            <span style="font-size: 9px; color: #64748b; display: block; text-transform: uppercase; font-weight: bold; margin-bottom: 4px;">PHONE</span>
-                            <span style="font-size: 13px; color: #10b981; font-weight: bold;">{esc_phone}</span>
-                        </td>
-                        <td style="width: 50%; background: #0f172a; border-top: 1px solid #f59e0b; border-bottom: 3px solid #020617; border-left: 1px solid rgba(245,158,11,0.15); border-right: 1px solid rgba(245,158,11,0.15); border-radius: 6px; padding: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                            <span style="font-size: 9px; color: #64748b; display: block; text-transform: uppercase; font-weight: bold; margin-bottom: 4px;">COMPANY</span>
-                            <span style="font-size: 13px; color: #f59e0b; font-weight: bold;">{esc_company}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width: 50%; background: #0f172a; border-top: 1px solid #38bdf8; border-bottom: 3px solid #020617; border-left: 1px solid rgba(56,189,248,0.15); border-right: 1px solid rgba(56,189,248,0.15); border-radius: 6px; padding: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                            <span style="font-size: 9px; color: #64748b; display: block; text-transform: uppercase; font-weight: bold; margin-bottom: 4px;">PROJECT TYPE</span>
-                            <span style="font-size: 13px; color: #38bdf8; font-weight: bold;">{esc_project}</span>
-                        </td>
-                        <td style="width: 50%; background: #0f172a; border-top: 1px solid #a78bfa; border-bottom: 3px solid #020617; border-left: 1px solid rgba(167,139,250,0.15); border-right: 1px solid rgba(167,139,250,0.15); border-radius: 6px; padding: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                            <span style="font-size: 9px; color: #64748b; display: block; text-transform: uppercase; font-weight: bold; margin-bottom: 4px;">BUDGET RANGE</span>
-                            <span style="font-size: 13px; color: #a78bfa; font-weight: bold;">{esc_budget}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="width: 50%; background: #0f172a; border-top: 1px solid #10b981; border-bottom: 3px solid #020617; border-left: 1px solid rgba(16,185,129,0.15); border-right: 1px solid rgba(16,185,129,0.15); border-radius: 6px; padding: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                            <span style="font-size: 9px; color: #64748b; display: block; text-transform: uppercase; font-weight: bold; margin-bottom: 4px;">TIMELINE</span>
-                            <span style="font-size: 13px; color: #10b981; font-weight: bold;">{esc_timeline}</span>
-                        </td>
-                        <td style="width: 50%; background: #0f172a; border-top: 1px solid #64748b; border-bottom: 3px solid #020617; border-left: 1px solid rgba(100,116,139,0.15); border-right: 1px solid rgba(100,116,139,0.15); border-radius: 6px; padding: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                            <span style="font-size: 9px; color: #64748b; display: block; text-transform: uppercase; font-weight: bold; margin-bottom: 4px;">IP ADDRESS</span>
-                            <span style="font-size: 13px; color: #cbd5e1; font-family: monospace;">{esc_ip}</span>
-                        </td>
-                    </tr>
-                </table>
-
-                <!-- Glowing Terminal Window for Message -->
-                <div style="background: #030712; border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 8px; overflow: hidden; box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9); margin-bottom: 24px;">
-                    <!-- Terminal Header -->
-                    <div style="background: #0f172a; border-bottom: 1px solid rgba(244, 63, 94, 0.2); padding: 8px 14px; font-size: 10px; color: #64748b; font-family: monospace;">
-                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #ef4444; margin-right: 6px;"></span>
-                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #eab308; margin-right: 6px;"></span>
-                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #22c55e; margin-right: 12px;"></span>
-                        client_inquiry_payload.txt
-                    </div>
-                    <!-- Terminal Content -->
-                    <div style="padding: 16px; font-family: monospace; font-size: 12px; line-height: 1.6; color: #f43f5e;">
-                        <span style="color: #64748b;">$ cat client_inquiry_payload.txt</span><br/>
-                        <div style="color: #e2e8f0; margin-top: 8px; white-space: pre-wrap;">{esc_message}</div>
-                    </div>
-                </div>
-
-                <!-- User Agent Info Box -->
-                <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(244, 63, 94, 0.15); border-radius: 6px; padding: 12px; font-size: 11px; font-family: monospace; color: #64748b; line-height: 1.5;">
-                    <span style="color: #f43f5e; font-weight: bold;">[BROWSER SENSOR INFO]</span><br/>
-                    {esc_ua}
-                </div>
-
-                <!-- Footer Badge -->
-                <div style="margin-top: 32px; border-top: 1px solid rgba(244, 63, 94, 0.2); padding-top: 20px; text-align: center;">
-                    <p style="font-size: 10px; color: #64748b; letter-spacing: 1px; margin: 0; font-family: monospace;">
-                        SAKRA VISION LABORATORY // DEEP-TECH INTEGRATED SYSTEMS
-                    </p>
-                </div>
-                
-            </div>
-        </div>
-    </div>
-    """
-    
     payload = {
         "from": settings.RESEND_FROM_EMAIL,
         "to": [settings.RESEND_TO_EMAIL],
@@ -176,110 +192,81 @@ async def send_admin_notification(client_data: dict) -> bool:
     return await send_email_via_resend(payload)
 
 async def send_client_confirmation(client_data: dict) -> bool:
-    subject = "Thank you for contacting SAKRA VISION"
+    subject = "Your Inquiry Has Been Received | SAKRA VISION"
     
-    full_name = client_data.get("full_name", "")
     email = client_data.get("email", "")
-    project_type = client_data.get("project_type", "N/A")
-    budget_range = client_data.get("budget_range", "N/A")
-    timeline = client_data.get("timeline", "N/A")
-    message = client_data.get("message", "")
+    esc_project = _safe(client_data.get("project_type")) or "N/A"
+    esc_budget = _safe(client_data.get("budget_range")) or "N/A"
+    esc_timeline = _safe(client_data.get("timeline")) or "N/A"
 
-    esc_name = escape_html(full_name)
-    esc_project = escape_html(project_type)
-    esc_budget = escape_html(budget_range)
-    esc_timeline = escape_html(timeline)
-    esc_message = escape_html(message).replace("\n", "<br/>")
-    
-    html_content = f"""
-    <div style="background-color: #020617; background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #020617 70%); padding: 40px 20px; font-family: 'Courier New', Courier, monospace, sans-serif; color: #f1f5f9; min-height: 100%;">
-        <!-- Main Floating 3D Hologram Container -->
-        <div style="max-width: 600px; margin: 0 auto; background-color: #0b1329; border: 1px solid #38bdf8; border-top: 4px solid #38bdf8; border-right: 4px solid #083344; border-bottom: 4px solid #083344; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.8), 0 10px 10px -5px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(56, 189, 248, 0.15); overflow: hidden;">
-            
-            <!-- Cybernetic Grid Decorative Background -->
-            <div style="background-image: linear-gradient(rgba(56, 189, 248, 0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(56, 189, 248, 0.04) 1px, transparent 1px); background-size: 20px 20px; padding: 32px;">
-                
-                <!-- HUD Header -->
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
-                    <tr>
-                        <td>
-                            <span style="font-size: 10px; color: #38bdf8; letter-spacing: 2px; font-weight: bold; display: block; margin-bottom: 4px;">SYSTEM INITIALIZED // INQUIRY LOGGED</span>
-                            <h1 style="color: #ffffff; font-size: 24px; font-weight: 900; margin: 0; letter-spacing: -1px; text-shadow: 0 0 10px rgba(56,189,248,0.5); font-family: 'Courier New', Courier, monospace;">SAKRA VISION</h1>
-                        </td>
-                        <td style="text-align: right; vertical-align: top; width: 80px;">
-                            <span style="display: inline-block; background-color: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; text-shadow: 0 0 5px rgba(16,185,129,0.3);">
-                                ● ONLINE
-                            </span>
-                        </td>
-                    </tr>
-                </table>
+    body_html = f"""
+<!-- Badge -->
+<div style="text-align: center; margin-bottom: 32px;">
+  <div style="display: inline-block; width: 64px; height: 64px; background-color: rgba(0, 113, 227, 0.1); border-radius: 50%; border: 2px solid rgba(56, 189, 248, 0.4); border-top-color: #38bdf8; box-shadow: 0 0 20px rgba(56, 189, 248, 0.2), inset 0 0 15px rgba(56, 189, 248, 0.1); line-height: 64px; text-align: center;">
+    <span style="color: #ffffff; font-size: 24px; font-family: sans-serif;">✓</span>
+  </div>
+</div>
 
-                <!-- Holographic Separator Line -->
-                <div style="height: 1px; background: linear-gradient(90deg, #38bdf8 0%, rgba(56,189,248,0.2) 50%, transparent 100%); margin-bottom: 24px;"></div>
+<!-- Heading -->
+<h1 style="margin: 0 0 16px 0; font-size: 24px; font-weight: 700; color: #ffffff; text-align: center; letter-spacing: -0.5px;">Inquiry Received Successfully</h1>
 
-                <!-- Welcome Message Card -->
-                <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 8px; padding: 20px; margin-bottom: 28px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);">
-                    <p style="margin: 0 0 12px 0; font-size: 15px; color: #e2e8f0; line-height: 1.6;">
-                        Hello <strong style="color: #38bdf8;">{esc_name}</strong>,
-                    </p>
-                    <p style="margin: 0; font-size: 14px; color: #cbd5e1; line-height: 1.6;">
-                        Thank you for connecting with SAKRA VISION. We have successfully cataloged your project inquiry and generated a client pipeline entry. Our core team will evaluate your technical specifications and contact you shortly.
-                    </p>
-                </div>
+<!-- Message -->
+<p style="margin: 0 0 32px 0; font-size: 15px; color: #94a3b8; line-height: 1.6; text-align: center;">
+  Your request has been securely received by SAKRA VISION.<br>
+  A confirmation has been generated and our team will review your inquiry soon.
+</p>
 
-                <!-- 3D HUD Parameter Cards (2x2 Grid using table) -->
-                <h3 style="color: #38bdf8; font-size: 12px; letter-spacing: 1.5px; margin: 0 0 12px 0; text-transform: uppercase;">[ PROJECT SPECIFICATION METRICS ]</h3>
-                
-                <table style="width: 100%; border-collapse: separate; border-spacing: 10px; margin-bottom: 24px; margin-left: -10px; margin-right: -10px;">
-                    <tr>
-                        <td style="width: 50%; background: #0f172a; border-top: 1px solid #38bdf8; border-bottom: 3px solid #020617; border-left: 1px solid rgba(56,189,248,0.15); border-right: 1px solid rgba(56,189,248,0.15); border-radius: 6px; padding: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                            <span style="font-size: 9px; color: #64748b; display: block; text-transform: uppercase; font-weight: bold; margin-bottom: 4px;">PROJECT TYPE</span>
-                            <span style="font-size: 13px; color: #38bdf8; font-weight: bold;">{esc_project}</span>
-                        </td>
-                        <td style="width: 50%; background: #0f172a; border-top: 1px solid #a78bfa; border-bottom: 3px solid #020617; border-left: 1px solid rgba(167,139,250,0.15); border-right: 1px solid rgba(167,139,250,0.15); border-radius: 6px; padding: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                            <span style="font-size: 9px; color: #64748b; display: block; text-transform: uppercase; font-weight: bold; margin-bottom: 4px;">BUDGET RANGE</span>
-                            <span style="font-size: 13px; color: #a78bfa; font-weight: bold;">{esc_budget}</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" style="background: #0f172a; border-top: 1px solid #10b981; border-bottom: 3px solid #020617; border-left: 1px solid rgba(16,185,129,0.15); border-right: 1px solid rgba(16,185,129,0.15); border-radius: 6px; padding: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-                            <span style="font-size: 9px; color: #64748b; display: block; text-transform: uppercase; font-weight: bold; margin-bottom: 4px;">EXPECTED TIMELINE</span>
-                            <span style="font-size: 13px; color: #10b981; font-weight: bold;">{esc_timeline}</span>
-                        </td>
-                    </tr>
-                </table>
+<!-- Status Strip -->
+<div style="text-align: center; margin-bottom: 32px;">
+  <span style="display: inline-block; padding: 6px 14px; background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 100px; font-size: 11px; font-family: 'Courier New', Courier, monospace; color: #e2e8f0; margin: 0 4px;">
+    <span style="color: #38bdf8;">●</span> Delivered
+  </span>
+  <span style="display: inline-block; padding: 6px 14px; background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 100px; font-size: 11px; font-family: 'Courier New', Courier, monospace; color: #e2e8f0; margin: 0 4px;">
+    <span style="color: #38bdf8;">●</span> Sent
+  </span>
+  <span style="display: inline-block; padding: 6px 14px; background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 100px; font-size: 11px; font-family: 'Courier New', Courier, monospace; color: #e2e8f0; margin: 0 4px;">
+    <span style="color: #38bdf8;">●</span> Secure
+  </span>
+</div>
 
-                <!-- Glowing Terminal Window for Message -->
-                <div style="background: #030712; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; overflow: hidden; box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.9);">
-                    <!-- Terminal Header -->
-                    <div style="background: #0f172a; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding: 8px 14px; font-size: 10px; color: #64748b; font-family: monospace;">
-                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #ef4444; margin-right: 6px;"></span>
-                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #eab308; margin-right: 6px;"></span>
-                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #22c55e; margin-right: 12px;"></span>
-                        client_message_payload.log
-                    </div>
-                    <!-- Terminal Content -->
-                    <div style="padding: 16px; font-family: monospace; font-size: 12px; line-height: 1.6; color: #38bdf8;">
-                        <span style="color: #64748b;">$ cat inquiry_message.txt</span><br/>
-                        <div style="color: #e2e8f0; margin-top: 8px; white-space: pre-wrap;">{esc_message}</div>
-                    </div>
-                </div>
+<!-- Summary Card -->
+<div style="background-color: rgba(15, 23, 42, 0.4); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 12px; padding: 24px; margin-bottom: 40px;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td style="padding-bottom: 16px; text-align: center;">
+        <span style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Project Type</span><br>
+        <span style="font-size: 14px; color: #e2e8f0; font-weight: 500; margin-top: 4px; display: inline-block;">{esc_project}</span>
+      </td>
+    </tr>
+    <tr>
+      <td style="padding-bottom: 16px; text-align: center;">
+        <span style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Timeline</span><br>
+        <span style="font-size: 14px; color: #e2e8f0; font-weight: 500; margin-top: 4px; display: inline-block;">{esc_timeline}</span>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: center;">
+        <span style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Budget Range</span><br>
+        <span style="font-size: 14px; color: #e2e8f0; font-weight: 500; margin-top: 4px; display: inline-block;">{esc_budget}</span>
+      </td>
+    </tr>
+  </table>
+</div>
 
-                <!-- Footer Badge -->
-                <div style="margin-top: 32px; border-top: 1px solid rgba(56, 189, 248, 0.2); padding-top: 20px; text-align: center;">
-                    <p style="font-size: 12px; font-style: italic; color: #94a3b8; margin: 0 0 10px 0;">
-                        "Engineering Intelligence Into Reality"
-                    </p>
-                    <p style="font-size: 10px; color: #64748b; letter-spacing: 1px; margin: 0; font-family: monospace;">
-                        SAKRA VISION LABORATORY // DEEP-TECH INTEGRATED SYSTEMS
-                    </p>
-                </div>
-                
-            </div>
-        </div>
-    </div>
-    """
-    
+<!-- CTA Button -->
+<div style="text-align: center;">
+  <a href="https://www.sakra-vision.online/" target="_blank" style="display: inline-block; background-color: #0071e3; background-image: linear-gradient(180deg, #0a84ff 0%, #0071e3 100%); color: #ffffff; text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; padding: 14px 32px; border-radius: 100px; border: 1px solid #0071e3; box-shadow: 0 8px 20px rgba(0, 113, 227, 0.3);">
+    Visit SAKRA VISION
+  </a>
+</div>
+"""
+
+    html_content = _email_shell(
+        title="Your Inquiry Has Been Received | SAKRA VISION",
+        preheader="We have securely received your project inquiry.",
+        body_html=body_html
+    )
+
     payload = {
         "from": settings.RESEND_FROM_EMAIL,
         "to": [email],
