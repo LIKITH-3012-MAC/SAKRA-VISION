@@ -1,9 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Target, Eye, Compass, ShieldCheck } from 'lucide-react';
+import { Target, Eye, Compass, ShieldCheck, ArrowRight } from 'lucide-react';
 import FAQSection from '../components/FAQSection';
+import SEO from '../components/SEO';
 
-export default function AboutView() {
+export default function AboutView({ setActiveView }) {
   const philosophy = [
     {
       title: 'Practical Intelligence',
@@ -19,6 +20,9 @@ export default function AboutView() {
 
   return (
     <div className="w-full relative bg-black pt-28 pb-20">
+      <SEO 
+        title="About Sakra Vision | AI Product Studio by Likith Naidu"
+      />
       <div className="max-w-4xl mx-auto px-6 text-left">
         
         {/* Header section */}
@@ -101,6 +105,15 @@ export default function AboutView() {
               );
             })}
           </div>
+        </div>
+        
+        <div className="mt-12">
+          <button 
+            onClick={() => setActiveView('inquire')}
+            className="apple-dark-button text-xs cursor-pointer flex items-center gap-2"
+          >
+            Contact Sakra Vision <ArrowRight className="w-3 h-3" />
+          </button>
         </div>
 
         {/* FAQ Section */}

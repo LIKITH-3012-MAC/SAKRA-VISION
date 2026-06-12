@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Cpu, Bot, Layers, Sparkles, CheckCircle2 } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function OverviewView({ setActiveView }) {
   const containerRef = useRef(null);
@@ -33,6 +34,10 @@ export default function OverviewView({ setActiveView }) {
 
   return (
     <div className="w-full relative bg-black pt-28 pb-16 overflow-hidden">
+      <SEO 
+        title="Sakra Vision AI Product Studio | AI Automation & Web Apps" 
+        description="Sakra Vision is an AI product studio founded by Likith Naidu Anumakonda, building AI automation tools, event registration systems, web applications, and cloud software solutions."
+      />
       {/* Background brand logo watermark */}
       <div className="sakra-watermark absolute top-12 md:top-20 right-[-15%] md:right-[-10%] opacity-[0.02] md:opacity-[0.04] pointer-events-none" />
 
@@ -54,10 +59,10 @@ export default function OverviewView({ setActiveView }) {
 
             <div className="relative">
               <div className="absolute -inset-1 bg-gradient-to-r from-[#0071e3] to-[#38bdf8] rounded-lg blur-2xl opacity-15" />
-              <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-none text-white font-sans relative">
-                SAKRA<br/>
-                <span className="bg-gradient-to-r from-white via-white to-[#94a3b8] bg-clip-text text-transparent">
-                  VISION
+              <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-none text-white font-sans relative">
+                Sakra Vision<br/>
+                <span className="text-4xl md:text-5xl bg-gradient-to-r from-white via-white to-[#94a3b8] bg-clip-text text-transparent">
+                  AI Product Studio
                 </span>
               </h1>
               <h2 className="text-xl md:text-3xl font-semibold tracking-tight text-white mt-4">
@@ -66,15 +71,19 @@ export default function OverviewView({ setActiveView }) {
             </div>
 
             <p className="text-base md:text-lg text-[#94a3b8] max-w-lg leading-relaxed font-light font-sans">
-              We build intelligent AI products, automation systems, LLM/RAG tools, and full-stack platforms with clarity, speed, and real-world impact.
+              Sakra Vision is an AI product studio founded by Likith Naidu Anumakonda. We build AI automation tools, event registration platforms, web applications, cloud software, and intelligent digital systems for real-world businesses and creators.
+            </p>
+            
+            <p className="text-sm text-[#0071e3] font-medium font-sans mt-2">
+              Explore our services, view our AI products, or contact us through the contact form.
             </p>
 
             <div className="flex flex-wrap gap-4 mt-4">
               <button 
-                onClick={() => setActiveView('projects')}
+                onClick={() => setActiveView('capabilities')}
                 className="apple-button cursor-pointer flex items-center gap-2"
               >
-                Explore Projects
+                Explore Sakra Vision Services
                 <ArrowRight className="w-4 h-4" />
               </button>
               
@@ -82,7 +91,7 @@ export default function OverviewView({ setActiveView }) {
                 onClick={() => setActiveView('inquire')}
                 className="apple-dark-button cursor-pointer"
               >
-                Start a Project
+                Visit Contact Form
               </button>
             </div>
 
@@ -184,6 +193,54 @@ export default function OverviewView({ setActiveView }) {
               Learn More 
               <ArrowRight className="w-3.5 h-3.5 transition-transform duration-250 group-hover:translate-x-1" />
             </button>
+          </div>
+        </div>
+
+        {/* SEO Context Section - Elegantly styled for visibility while maintaining aesthetics */}
+        <div className="mt-24 border-t border-white/5 pt-16 pb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-left">
+          <div>
+            <h2 className="text-sm font-bold text-white mb-4 tracking-wide uppercase font-mono">About SAKRA VISION</h2>
+            <p className="text-xs text-[#94a3b8] leading-relaxed font-sans">
+              SAKRA VISION is an AI product studio established in 2026 by Likith Naidu Anumakonda. We build real-world intelligent systems using Artificial Intelligence, Machine Learning, computer vision, LLMs, RAG, AI agents, automation, and full-stack web technologies. Our mission is to engineer intelligence into reality.
+            </p>
+          </div>
+
+          <div>
+            <h2 className="text-sm font-bold text-white mb-4 tracking-wide uppercase font-mono">Our Services</h2>
+            <ul className="text-xs text-[#94a3b8] leading-relaxed font-sans space-y-2">
+              <li className="flex gap-2"><span className="text-[#0071e3]">▪</span> AI Application Development</li>
+              <li className="flex gap-2"><span className="text-[#0071e3]">▪</span> Computer Vision Systems (OpenCV)</li>
+              <li className="flex gap-2"><span className="text-[#0071e3]">▪</span> LLM & RAG Tools</li>
+              <li className="flex gap-2"><span className="text-[#0071e3]">▪</span> AI Agents & Automation</li>
+              <li className="flex gap-2"><span className="text-[#0071e3]">▪</span> Full-Stack AI Products</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="text-sm font-bold text-white mb-4 tracking-wide uppercase font-mono">FAQ</h2>
+            <div className="text-xs text-[#94a3b8] leading-relaxed font-sans space-y-4">
+              <div>
+                <strong className="text-white block mb-1">Who founded SAKRA VISION?</strong>
+                <p>Likith Naidu Anumakonda founded the company in 2026.</p>
+              </div>
+              <div>
+                <strong className="text-white block mb-1">What do you build?</strong>
+                <p>We build intelligent automation platforms, civic-tech AI, and full-stack systems.</p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-sm font-bold text-white mb-4 tracking-wide uppercase font-mono">Contact</h2>
+            <p className="text-xs text-[#94a3b8] leading-relaxed font-sans mb-4">
+              Ready to build intelligent systems? Get in touch with our AI product studio.
+            </p>
+            <button onClick={() => setActiveView('inquire')} className="text-xs text-white hover:text-[#0071e3] font-bold flex items-center gap-2 transition-colors">
+              Start a Conversation <ArrowRight className="w-3 h-3" />
+            </button>
+            <p className="text-xs text-[#94a3b8] font-sans mt-4">
+              likith.anumakonda@gmail.com
+            </p>
           </div>
         </div>
 

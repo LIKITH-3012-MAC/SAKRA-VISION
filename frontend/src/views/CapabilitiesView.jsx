@@ -1,8 +1,10 @@
-import React from 'react';
-import { Cpu, Eye, Terminal, Layers, Zap, Globe, Shield, Cloud } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Cpu, Eye, Terminal, Layers, Zap, Globe, Shield, Cloud, ArrowRight } from 'lucide-react';
+import SEO from '../components/SEO';
 import TiltCard from '../components/TiltCard';
 
-export default function CapabilitiesView() {
+export default function CapabilitiesView({ setActiveView }) {
   const capabilities = [
     {
       title: 'AI Applications',
@@ -64,7 +66,11 @@ export default function CapabilitiesView() {
 
   return (
     <div className="w-full relative bg-black pt-28 pb-20">
-      <div className="max-w-6xl mx-auto px-6">
+      <SEO 
+        title="Sakra Vision Services | AI Automation, Web Development & Event Tech"
+        description="Explore Sakra Vision services including AI automation, web development, event registration platforms, cloud applications, and digital product development."
+      />
+      <div className="max-w-7xl mx-auto px-6">
         
         {/* Header */}
         <div className="text-center mb-16">
@@ -72,9 +78,26 @@ export default function CapabilitiesView() {
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mt-2 text-white font-sans">
             Tailored AI capabilities.
           </h2>
-          <p className="text-[#94a3b8] max-w-xl mx-auto text-sm md:text-base font-light mt-4 font-sans">
-            We design, develop, and deploy production-ready intelligent capabilities across computer vision, large language models, automation workflows, and scalable databases.
+          <p className="text-[#94a3b8] mt-6 max-w-xl mx-auto text-base font-light font-sans">
+            Choose a service category to learn how Sakra Vision can help you build or automate your project.
           </p>
+          <div className="mt-6 flex justify-center gap-4">
+            <button 
+              onClick={() => setActiveView('inquire')}
+              className="px-6 py-2 bg-white text-black text-xs font-medium rounded-full cursor-pointer flex items-center gap-2 hover:bg-gray-200 transition-colors"
+            >
+              Contact Sakra Vision <ArrowRight className="w-3 h-3" />
+            </button>
+            <button 
+              onClick={() => {
+                const autoElement = document.getElementById('automation');
+                if (autoElement) autoElement.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="px-6 py-2 bg-white/5 border border-white/10 text-white text-xs font-medium rounded-full cursor-pointer hover:bg-white/10 transition-colors"
+            >
+              View AI Automation Solutions
+            </button>
+          </div>
         </div>
 
         {/* Capabilities Deck Grid */}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { HelmetProvider } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import Chatbot from './components/Chatbot';
 import Footer from './components/Footer';
@@ -15,6 +16,8 @@ import ProjectsView from './views/ProjectsView';
 import TechSpecsView from './views/TechSpecsView';
 import LeadershipView from './views/LeadershipView';
 import InquireView from './views/InquireView';
+import RegistrationView from './views/RegistrationView';
+import FaqView from './views/FaqView';
 
 function App() {
   const [activeView, setActiveView] = useState('overview');
@@ -86,12 +89,10 @@ function App() {
   };
 
   return (
-    <div className="bg-black text-white min-h-screen font-sans selection:bg-[#0071e3]/30 selection:text-white relative overflow-x-hidden">
-      
-      {/* Dynamic SEO Head Injector */}
-      <SEO />
-
-      {/* Cinematic Welcome Intro Animation Overlay */}
+    <HelmetProvider>
+      <div className="bg-black text-white min-h-screen font-sans selection:bg-[#0071e3]/30 selection:text-white relative overflow-x-hidden">
+        
+        {/* Cinematic Welcome Intro Animation Overlay */}
       <AnimatePresence>
         {showIntro && <IntroAnimation />}
       </AnimatePresence>
@@ -144,19 +145,21 @@ function App() {
               style={{ transformStyle: 'preserve-3d' }}
             >
               {activeView === 'overview' && <OverviewView setActiveView={setActiveView} />}
-              {activeView === 'about' && <AboutView />}
-              {activeView === 'capabilities' && <CapabilitiesView />}
-              {activeView === 'projects' && <ProjectsView />}
-              {activeView === 'techSpecs' && <TechSpecsView />}
-              {activeView === 'leadership' && <LeadershipView />}
-              {activeView === 'inquire' && <InquireView />}
+              {activeView === 'projects' && <ProjectsView setActiveView={setActiveView} />}
+              {activeView === 'capabilities' && <CapabilitiesView setActiveView={setActiveView} />}
+              {activeView === 'about' && <AboutView setActiveView={setActiveView} />}
+              {activeView === 'techSpecs' && <TechSpecsView setActiveView={setActiveView} />}
+              {activeView === 'leadership' && <LeadershipView setActiveView={setActiveView} />}
+              {activeView === 'inquire' && <InquireView setActiveView={setActiveView} />}
+              {activeView === 'registration' && <RegistrationView setActiveView={setActiveView} />}
+              {activeView === 'faq' && <FaqView setActiveView={setActiveView} />}
             </motion.div>
           </AnimatePresence>
         </main>
 
         {/* Screen-reader-only / AI scraper-friendly semantic content section */}
-        <section className="sr-only" aria-label="SAKRA VISION company information">
-          <h1>SAKRA VISION</h1>
+        <section className="sr-only" aria-label="Sakra Vision AI Product Studio company information">
+          <h1>Sakra Vision AI Product Studio</h1>
           <p>
             SAKRA VISION is an AI product studio and AI innovation company established in 2026 by Likith Naidu Anumakonda.
             The company builds real-world intelligent systems using AI/ML, computer vision, LLMs, RAG, AI agents,
@@ -185,9 +188,10 @@ function App() {
         <Footer />
       </motion.div>
 
-      {/* Interactive AI Agent Chatbot Overlay */}
-      {!showIntro && <Chatbot />}
-    </div>
+        {/* Interactive AI Agent Chatbot Overlay */}
+        {!showIntro && <Chatbot />}
+      </div>
+    </HelmetProvider>
   );
 }
 

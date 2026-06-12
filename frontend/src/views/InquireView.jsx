@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../utils/api';
+import SuccessExperience from '../components/SuccessExperience';
+import SEO from '../components/SEO';
 
-export default function InquireView() {
+export default function InquireView({ setActiveView }) {
   const turnstileContainerRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -138,6 +140,10 @@ export default function InquireView() {
 
   return (
     <div className="w-full relative bg-black pt-28 pb-20">
+      <SEO 
+        title="Contact Sakra Vision | Project Enquiries & Collaboration" 
+        description="Contact Sakra Vision for AI automation, web development, event registration systems, and cloud software solutions."
+      />
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Background radial glows */}
@@ -151,7 +157,7 @@ export default function InquireView() {
             Start a Project with SAKRA VISION.
           </h2>
           <p className="text-[#94a3b8] mt-4 max-w-xl mx-auto text-sm md:text-base font-light font-sans">
-            Let's discuss how we can build custom intelligence models, automation pipelines, and deep-tech web products for your enterprise.
+            Use this contact form to send your project requirements, collaboration ideas, or service enquiries.
           </p>
         </div>
 
@@ -161,9 +167,16 @@ export default function InquireView() {
           <div className="lg:col-span-5 flex flex-col justify-between apple-glass p-8 rounded-3xl text-left">
             <div>
               <h3 className="text-xl font-bold text-white mb-6 font-sans">Studio Hub</h3>
-              <p className="text-[#94a3b8] leading-relaxed mb-8 font-light text-sm font-sans">
+              <p className="text-[#94a3b8] leading-relaxed mb-6 font-light text-sm font-sans">
                 We operate as a global AI lab and product studio, engineering intelligence into production-level codebases. Let's create something remarkable together.
               </p>
+              
+              <button 
+                onClick={() => setActiveView('capabilities')}
+                className="apple-dark-button text-xs mb-8 cursor-pointer w-full justify-center md:w-auto"
+              >
+                Explore Sakra Vision Services
+              </button>
 
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
@@ -203,39 +216,7 @@ export default function InquireView() {
           <div className="lg:col-span-7 apple-glass p-8 rounded-3xl relative shadow-2xl min-h-[450px]">
             <AnimatePresence mode="wait">
               {submitStatus === 'success_email' || submitStatus === 'success_no_email' || submitStatus === 'success' ? (
-                <motion.div
-                  key="success-card"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.4 }}
-                  className="py-12 px-4 text-center flex flex-col items-center justify-center min-h-[400px]"
-                >
-                  <div className="w-16 h-16 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-[#38bdf8] mb-6 blue-rim">
-                    <svg className="w-8 h-8 text-[#38bdf8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold text-white font-sans tracking-tight mb-3">Inquiry submitted successfully.</h3>
-                  <p className="text-[#cbd5e1] font-light text-sm leading-relaxed mb-8 max-w-sm font-sans mx-auto whitespace-pre-line">
-                    {submitStatus === 'success_email' ? (
-                      <>
-                        A confirmation email has been sent to your email address.<br />
-                        SAKRA VISION will contact you soon.
-                      </>
-                    ) : (
-                      <>
-                        SAKRA VISION received your request and will contact you soon.
-                      </>
-                    )}
-                  </p>
-                  <button
-                    onClick={handleReset}
-                    className="apple-button w-full max-w-xs justify-center text-sm cursor-pointer"
-                  >
-                    Back to Overview
-                  </button>
-                </motion.div>
+                <SuccessExperience submitStatus={submitStatus} handleReset={handleReset} setActiveView={setActiveView} key="success-exp" />
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
@@ -418,7 +399,7 @@ export default function InquireView() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        Submitting Securely...
+                        Securing Request...
                       </span>
                     ) : !isVerified ? (
                       'Complete Verification First'

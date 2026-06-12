@@ -32,7 +32,7 @@ const Footer = () => {
         {/* Navigation & Copyright */}
         <div className="flex flex-col items-center md:items-end text-center md:text-right gap-2.5">
           <p className="text-xs text-slate-500 font-sans">
-            &copy; {currentYear} SAKRA VISION. All Rights Reserved.
+            &copy; {currentYear} Sakra Vision AI Product Studio by Likith Naidu Anumakonda
           </p>
           <button
             onClick={handleScrollToTop}

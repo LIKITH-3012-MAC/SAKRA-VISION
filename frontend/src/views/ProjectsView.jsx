@@ -4,8 +4,9 @@ import { HelpCircle, Eye, X, ArrowRight, CheckCircle2, Cpu, Terminal, Layers } f
 import projectsData from '../data/projects';
 import ProjectModal from '../components/ProjectModal';
 import TiltCard from '../components/TiltCard';
+import SEO from '../components/SEO';
 
-export default function ProjectsView() {
+export default function ProjectsView({ setActiveView }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProject, setSelectedProject] = useState(null);
@@ -26,6 +27,10 @@ export default function ProjectsView() {
 
   return (
     <div className="w-full relative bg-black pt-28 pb-20">
+      <SEO 
+        title="Sakra Vision Projects | AI & Full-Stack Products"
+        description="Explore the intelligent systems, AI products, automation platforms, and full-stack solutions built under Sakra Vision."
+      />
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Section Header */}
