@@ -206,6 +206,92 @@
   }
 }
 
+/* 3D Sphere Flip Avatar */
+.sphere-avatar-container {
+  perspective: 1000px;
+  width: 12rem; /* w-48 */
+  height: 12rem;
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .sphere-avatar-container {
+    width: 14rem; /* w-56 */
+    height: 14rem;
+  }
+}
+
+.sphere-avatar-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  border-radius: 9999px;
+}
+
+.sphere-avatar-container:hover .sphere-avatar-inner {
+  transform: rotateY(180deg);
+}
+
+.sphere-avatar-front,
+.sphere-avatar-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  background-color: #0b0f19;
+}
+
+.sphere-avatar-front img,
+.sphere-avatar-back img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 0.5s ease;
+}
+
+.sphere-avatar-container:hover .sphere-avatar-front img {
+  transform: scale(1.1);
+}
+
+.sphere-avatar-container:hover .sphere-avatar-back img {
+  transform: scale(1.05);
+}
+
+.sphere-avatar-back {
+  transform: rotateY(180deg);
+}
+
+/* Glassmorphic Sphere Overlay to make it feel 3D and spherical */
+.sphere-glass-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: inset 0 -6px 14px rgba(0, 0, 0, 0.6),
+              0 15px 35px rgba(0, 113, 227, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
+}
+
+.sphere-avatar-container:hover .sphere-glass-overlay {
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: inset 0 -6px 14px rgba(0, 0, 0, 0.7),
+              0 20px 45px rgba(56, 189, 248, 0.35);
+}
+
+
 
 
 /* Premium Success Experience Styles */

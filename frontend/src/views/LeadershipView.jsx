@@ -33,15 +33,31 @@ export default function LeadershipView() {
 
         <div className="flex flex-col lg:flex-row items-center justify-center gap-12 max-w-5xl mx-auto z-10 relative">
           
-          {/* Avatar Area */}
-          <div className="relative group flex-shrink-0">
-            <div className="absolute -inset-0.5 bg-[#0071e3] rounded-full blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
-            <div className="relative w-48 h-48 md:w-56 md:h-56 bg-black rounded-full flex items-center justify-center border border-white/10 select-none">
-              <span className="text-6xl md:text-7xl font-bold bg-gradient-to-tr from-white to-[#cbd5e1] bg-clip-text text-transparent font-sans tracking-tight">
-                LN
-              </span>
+          {/* 3D Spherical Flip Avatar */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="sphere-avatar-container group"
+          >
+            {/* Subtle blue rim glow */}
+            <div className="absolute -inset-1.5 bg-[#0071e3] rounded-full blur opacity-30 group-hover:opacity-75 transition duration-500 pointer-events-none"></div>
+            
+            <div className="sphere-avatar-inner">
+              {/* Front Side */}
+              <div className="sphere-avatar-front">
+                <img src="/founder-front.png" alt="Likith Naidu Anumakonda Front" />
+                <div className="sphere-glass-overlay"></div>
+              </div>
+
+              {/* Back Side */}
+              <div className="sphere-avatar-back">
+                <img src="/founder-back.jpg" alt="Likith Naidu Anumakonda Back" />
+                <div className="sphere-glass-overlay"></div>
+              </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Profile Card */}
           {/* Profile Card */}
