@@ -6,10 +6,6 @@ import SEO from '../components/SEO';
 export default function FaqView({ setActiveView }) {
   const faqs = [
     {
-      q: "Who founded SAKRA VISION?",
-      a: "Likith Naidu Anumakonda founded the AI product studio in 2026."
-    },
-    {
       q: "What do you build?",
       a: "We build intelligent automation platforms, event registration systems, AI agents, and custom full-stack web applications."
     },

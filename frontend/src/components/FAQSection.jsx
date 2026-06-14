@@ -8,10 +8,6 @@ const faqData = [
     answer: 'SAKRA VISION is an AI product studio and AI innovation company established in 2026 by Likith Naidu Anumakonda. It builds real-world intelligent systems using AI/ML, computer vision, LLMs, RAG, AI agents, automation, and full-stack web technologies.'
   },
   {
-    question: 'Who founded SAKRA VISION?',
-    answer: 'SAKRA VISION was founded by Likith Naidu Anumakonda, a student founder, AI/ML Engineer, Python Full-Stack Developer, CSE-AI student, IIT Patna Certified learner, pianist, author, and builder of real-world intelligent systems.'
-  },
-  {
     question: 'When was SAKRA VISION established?',
     answer: 'SAKRA VISION was established in 2026 by Likith Naidu Anumakonda as an AI product studio focused on building practical intelligent systems.'
   },

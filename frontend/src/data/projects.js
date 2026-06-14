@@ -22,6 +22,7 @@ const projectsData = [
     techStack: ['Next.js', 'FastAPI', 'PostgreSQL', 'Google Maps', 'JWT', 'AI Classification'],
     liveLink: 'https://www.resolvit-ai.online/',
     gitLink: 'https://github.com/LIKITH-3012-MAC',
+    image: 'https://www.sakra-vision.online/resolvit-ai.png',
     tags: ['Civic-Tech', 'AI Platforms', 'Full Stack']
   },
   {
@@ -47,6 +48,7 @@ const projectsData = [
     techStack: ['React', 'FastAPI', 'MySQL', 'Aiven Cloud', 'Render', 'Vercel', 'OCR', 'JWT'],
     liveLink: 'https://forms-project-f3sb.vercel.app/',
     gitLink: 'https://github.com/LIKITH-3012-MAC',
+    image: 'https://www.sakra-vision.online/event-hub.png',
     tags: ['AI Platforms', 'Full Stack', 'Automation']
   },
   {
@@ -72,6 +74,7 @@ const projectsData = [
     techStack: ['Python', 'Ollama', 'LangChain', 'FAISS', 'RAG', 'Llama', 'Local LLM'],
     liveLink: '#',
     gitLink: 'https://github.com/LIKITH-3012-MAC',
+    image: 'https://www.sakra-vision.online/bench-ai.png',
     tags: ['RAG / LLM', 'AI Platforms']
   },
   {
@@ -96,6 +99,7 @@ const projectsData = [
     techStack: ['Python', 'FastAPI', 'Llama', 'Ollama', 'Whisper', 'Apple MLX', 'Local AI'],
     liveLink: 'https://www.prometheuslikiths-ai.online/',
     gitLink: 'https://github.com/LIKITH-3012-MAC',
+    image: 'https://www.sakra-vision.online/prometheus-ai.png',
     tags: ['AI Platforms', 'RAG / LLM']
   },
   {
@@ -119,6 +123,7 @@ const projectsData = [
     techStack: ['React', 'APIs', 'OpenWeather', 'OpenStreetMap', 'Groq', 'RAG', 'AI Assistant'],
     liveLink: 'https://aquq-sentinel-phsv.vercel.app/',
     gitLink: 'https://github.com/LIKITH-3012-MAC',
+    image: 'https://www.sakra-vision.online/aquasentinel-ai.png',
     tags: ['AI Platforms', 'RAG / LLM']
   },
 
@@ -143,6 +148,7 @@ const projectsData = [
     techStack: ['Python', 'Tkinter / PyQt', 'File I/O', 'Data Processing', 'Automation'],
     liveLink: '#',
     gitLink: 'https://github.com/LIKITH-3012-MAC',
+    image: 'https://www.sakra-vision.online/opencv-tools.png',
     tags: ['Automation', 'Python Utilities']
   }
 ];

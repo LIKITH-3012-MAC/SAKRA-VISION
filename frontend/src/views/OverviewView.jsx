@@ -197,7 +197,7 @@ export default function OverviewView({ setActiveView }) {
         </div>
 
         {/* SEO Context Section - Elegantly styled for visibility while maintaining aesthetics */}
-        <div className="mt-24 border-t border-white/5 pt-16 pb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 text-left">
+        <div className="mt-24 border-t border-white/5 pt-16 pb-8 grid grid-cols-1 md:grid-cols-3 gap-12 text-left">
           <div>
             <h2 className="text-sm font-bold text-white mb-4 tracking-wide uppercase font-mono">About SAKRA VISION</h2>
             <p className="text-xs text-[#94a3b8] leading-relaxed font-sans">
@@ -214,16 +214,6 @@ export default function OverviewView({ setActiveView }) {
               <li className="flex gap-2"><span className="text-[#0071e3]">▪</span> AI Agents & Automation</li>
               <li className="flex gap-2"><span className="text-[#0071e3]">▪</span> Full-Stack AI Products</li>
             </ul>
-          </div>
-
-          <div>
-            <h2 className="text-sm font-bold text-white mb-4 tracking-wide uppercase font-mono">FAQ</h2>
-            <div className="text-xs text-[#94a3b8] leading-relaxed font-sans space-y-4">
-              <div>
-                <strong className="text-white block mb-1">Who founded SAKRA VISION?</strong>
-                <p>Likith Naidu Anumakonda founded the company in 2026.</p>
-              </div>
-            </div>
           </div>
 
           <div>
