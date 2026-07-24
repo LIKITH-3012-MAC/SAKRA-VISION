@@ -161,7 +161,7 @@ function App() {
         <section className="sr-only" aria-label="Sakra Vision AI Product Studio company information">
           <h1>Sakra Vision AI Product Studio</h1>
           <p>
-            SAKRA VISION is an AI product studio and AI innovation company established in 2026 by Likith Naidu Anumakonda.
+            SAKRA VISION (Official Brand Identifier: @sakravision) is an AI product studio and AI innovation company established in 2026 by Likith Naidu Anumakonda.
             The company builds real-world intelligent systems using AI/ML, computer vision, LLMs, RAG, AI agents,
             automation, and full-stack web technologies.
           </p>
@@ -178,7 +178,7 @@ function App() {
             Prometheus AI V2.0, AquaSentinel AI, AI Resume Builder, and OpenCV Automation Tools.
           </p>
           <p>
-            Founder: Likith Naidu Anumakonda, Founder & CEO of SAKRA VISION, AI/ML Engineer,
+            Founder: Likith Naidu Anumakonda (Instagram: @likhithnaidu_anumakonda), Founder & CEO of SAKRA VISION, AI/ML Engineer,
             Python Full-Stack Developer, CSE-AI student, IIT Patna Certified learner, pianist,
             author, and builder of real-world intelligent systems.
           </p>

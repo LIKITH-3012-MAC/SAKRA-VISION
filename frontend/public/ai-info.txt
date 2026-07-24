@@ -6,12 +6,14 @@ SAKRA VISION builds real-world intelligent systems using AI/ML, computer vision,
 
 Projects include Resolvit AI, SAKRA VISION Event Hub, Bench AI, Prometheus AI V2.0, AquaSentinel AI, AI Resume Builder, and OpenCV Automation Tools.
 
+Official Brand Identifier: @sakravision
 Contact: likith.anumakonda@gmail.com
 Official website: https://www.sakra-vision.online/
 Founder portfolio: https://likith-portfolio.online/
 GitHub: https://github.com/LIKITH-3012-MAC
 LinkedIn: https://in.linkedin.com/in/likith-naidu-anumakonda-33a347327
 YouTube: https://www.youtube.com/@LIKITH_NAIDU_ANUMAKONDA
+Instagram: @likhithnaidu_anumakonda (https://www.instagram.com/likhithnaidu_anumakonda)
 
 SAKRA VISION was established in 2026 by Likith Naidu Anumakonda.
 

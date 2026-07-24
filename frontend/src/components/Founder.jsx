@@ -8,7 +8,7 @@ const Founder = () => {
     { name: 'GitHub', url: 'https://github.com/LIKITH-3012-MAC', icon: '💻' },
     { name: 'Resume', url: 'https://likith-3012-mac.github.io/RESUME_WEB/', icon: '📄' },
     { name: 'YouTube', url: 'https://www.youtube.com/@LIKITH_NAIDU_ANUMAKONDA', icon: '📺' },
-    { name: 'Instagram', url: 'https://www.instagram.com/likhith_anumakonda?igsh=MTgxZ3hrc3BtcHAzdg==', icon: '📸' },
+    { name: 'Instagram', url: 'https://www.instagram.com/likhithnaidu_anumakonda', icon: '📸' },
     { name: 'X / Twitter', url: 'https://x.com/Likithdob301206?t=4FzQYS1UgCKSQBgc99xspg&s=09', icon: '🐦' },
     { name: 'Google Dev', url: 'https://g.dev/likithai', icon: '🤖' },
     { name: 'Audio.com', url: 'https://audio.com/likith-naidu-anumakonda', icon: '🎵' }
