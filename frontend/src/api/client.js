@@ -19,7 +19,7 @@ export const submitClientInquiry = async (payload) => {
   return response.data;
 };
 
-export const sendChatMessage = async (message) => {
-  const response = await api.post("/api/chat", { message });
+export const sendChatMessage = async (message, history = []) => {
+  const response = await api.post("/api/chat", { message, history });
   return response.data;
 };

@@ -179,7 +179,7 @@ async def create_client_inquiry(
 @app.post("/api/chat", response_model=schemas.ChatResponse, dependencies=[Depends(verify_secret_token)])
 @limiter.limit(settings.RATE_LIMIT_CHAT)
 async def chatbot_chat(payload: schemas.ChatRequest, request: Request):
-    bot_reply = await chatbot_service.get_chatbot_reply(payload.message)
+    bot_reply = await chatbot_service.get_chatbot_reply(payload.message, payload.history)
     return {
         "success": True,
         "reply": bot_reply

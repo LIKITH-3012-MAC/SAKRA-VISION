@@ -49,8 +49,13 @@ class ClientResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class ChatMessageItem(BaseModel):
+    sender: str
+    text: str
+
 class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=1000)
+    history: Optional[list[ChatMessageItem]] = Field(default=None)
 
     @field_validator("message")
     @classmethod

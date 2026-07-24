@@ -4,6 +4,37 @@ import api from '../utils/api';
 import { sakraKnowledge } from '../data/knowledge';
 import { getLocalChatbotReply } from '../utils/chatbotHelper';
 
+const formatMessageText = (text) => {
+  if (!text) return null;
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const parts = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = linkRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.substring(lastIndex, match.index));
+    }
+    parts.push(
+      <a
+        key={match.index}
+        href={match[2]}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-[#38bdf8] underline hover:text-white font-medium"
+      >
+        {match[1]}
+      </a>
+    );
+    lastIndex = linkRegex.lastIndex;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex));
+  }
+
+  return parts;
+};
+
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -45,8 +76,17 @@ const Chatbot = () => {
     setInputValue('');
     setLoading(true);
 
+    // Construct recent history context for multi-turn memory
+    const historyPayload = messages.slice(-6).map(m => ({
+      sender: m.sender,
+      text: m.text
+    }));
+
     try {
-      const response = await api.post('/api/chat', { message: textToSend });
+      const response = await api.post('/api/chat', { 
+        message: textToSend,
+        history: historyPayload
+      });
       const botMessage = {
         id: Date.now() + 1,
         sender: 'bot',
@@ -56,7 +96,7 @@ const Chatbot = () => {
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.warn("Backend chat unavailable, using local intelligent chatbot fallback:", error);
-      const fallbackText = getLocalChatbotReply(textToSend);
+      const fallbackText = getLocalChatbotReply(historyPayload, textToSend);
       const botMessage = {
         id: Date.now() + 1,
         sender: 'bot',
@@ -134,7 +174,7 @@ const Chatbot = () => {
                         : 'bg-white/5 border border-white/5 text-slate-200 rounded-tl-none'
                     }`}
                   >
-                    <p className="whitespace-pre-wrap text-left">{msg.text}</p>
+                    <p className="whitespace-pre-wrap text-left">{formatMessageText(msg.text)}</p>
                     <span className="text-[8px] text-slate-500 block text-right mt-1 font-mono">{msg.time}</span>
                   </div>
                 </div>
