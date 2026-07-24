@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     RATE_LIMIT_CLIENTS: str = "60/minute"
     RATE_LIMIT_CHAT: str = "60/minute"
 
+    GROQ_API_KEY: str = ""
+
     # Load from .env file
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 

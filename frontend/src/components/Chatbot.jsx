@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../utils/api';
 import { sakraKnowledge } from '../data/knowledge';
+import { getLocalChatbotReply } from '../utils/chatbotHelper';
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -54,14 +55,15 @@ const Chatbot = () => {
       };
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-      console.error("Chatbot response error:", error);
-      const errorMessage = {
+      console.warn("Backend chat unavailable, using local intelligent chatbot fallback:", error);
+      const fallbackText = getLocalChatbotReply(textToSend);
+      const botMessage = {
         id: Date.now() + 1,
         sender: 'bot',
-        text: 'Connection error. SAKRA-BOT is momentarily offline. Please try again.',
+        text: fallbackText,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages(prev => [...prev, botMessage]);
     } finally {
       setLoading(false);
     }
