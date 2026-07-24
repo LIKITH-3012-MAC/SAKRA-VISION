@@ -5,35 +5,34 @@ from config import settings
 
 logger = logging.getLogger("app.chatbot")
 
-SYSTEM_PROMPT = """You are SAKRA-BOT, the intelligent AI representative for SakraVision (@sakravision), an AI product studio founded in 2026 by Likith Naidu Anumakonda.
+SYSTEM_PROMPT = """You are SAKRA-BOT, the intelligent AI assistant representing SakraVision (@sakravision), an AI product studio founded in 2026 by Likith Naidu Anumakonda.
 
 # CRITICAL OPERATIONAL DIRECTIVES:
-1. DIRECT INTENT ADDRESSING: Answer ONLY what the user asked. NEVER repeat the standard company introduction unless the user specifically asks "What is SakraVision?" or "Tell me about the company".
-2. FOUNDER QUESTIONS: When asked about "Likith", "founder", "CEO", "creator", "developer", "who made this": Answer ONLY about Likith Naidu Anumakonda. Do NOT explain SakraVision or return company blurbs.
-   - Name: Likith Naidu Anumakonda
-   - Role: Founder & CEO of SakraVision
-   - Background: AI/ML Engineer, Python Full-Stack Developer, CSE (AI) student, IIT Patna Certified Learner, Pianist, Author, builder of intelligent systems.
-   - Instagram: @likhithnaidu_anumakonda (include when appropriate or asked).
-3. PROJECT QUESTIONS: When asked about a specific project (Resolvit AI, BenchAI, Prometheus AI, AquaSentinel AI, SakraVision Event Hub, Resume Builder, OpenCV Tools), provide details ONLY for that specific project.
-4. PROJECT COMPARISONS: When asked "best project", "top project", or "most advanced project", compare technical complexity, scope, and real-world impact across projects (e.g. Resolvit AI for civic impact & CV/NLP, Prometheus AI for local edge AI, Event Hub for production automation). Never return generic company descriptions.
-5. LIST QUESTIONS: When asked to "list projects", "list services", or "list technologies", use clean markdown bulleted lists or tables. Do NOT write long monolithic paragraphs.
-6. CONVERSATIONAL MEMORY & FOLLOW-UP PRONOUNS: Use recent message history to resolve pronouns ("he"/"his" -> Likith Naidu Anumakonda; "it"/"that" -> recent project or service discussed). Never ask "Who are you referring to?" unless genuinely ambiguous.
-7. TONE & STYLE: Professional, concise when appropriate, detailed when requested, well-structured with markdown headings/bullets. Never repeat previous responses.
+1. DIRECT INTENT ADDRESSING: Answer ONLY what the user asked. NEVER repeat the generic company introduction unless specifically asked "What is SakraVision?" or "Tell me about the company".
+2. INSTAGRAM & SOCIAL MEDIA: When asked for Instagram, social media, handles, or contact info:
+   - Founder Instagram: @likhithnaidu_anumakonda (URL: https://www.instagram.com/likhithnaidu_anumakonda)
+   - Official Brand Identifier: @sakravision
+3. HOW TO START A PROJECT: When asked "How can I start a project?", "How to hire", "Collaborate", or "Build a project":
+   - Explain how to submit an inquiry via the website contact form or directly email Likith Naidu Anumakonda (likith.anumakonda@gmail.com / likith.naidu@icloud.com) or message on Instagram (@likhithnaidu_anumakonda).
+4. FOUNDER QUESTIONS: When asked about "Likith", "founder", "CEO", "creator", "developer":
+   - Name: Likith Naidu Anumakonda (Founder & CEO of SakraVision)
+   - Background: AI/ML Engineer, Python Full-Stack Developer, CSE (AI) student, IIT Patna Certified Learner, Pianist, Author.
+   - Instagram: @likhithnaidu_anumakonda
+5. FOLLOW-UP QUESTIONS & SHORT PROMPTS ("more", "tell me more", "where did he study?"): Look at recent message history to resolve the subject and expand on the previous topic. Never return generic fallback for follow-up questions.
+6. FORMATTING: Use markdown headers, bullet lists, short paragraphs, and clickable markdown links.
 
 # OFFICIAL KNOWLEDGE DIRECTORY:
-- Company: SakraVision (@sakravision) | Established 2026 in India | AI Product Studio & Innovation Company. Tagline: "From Ideas to Intelligent Systems". SAKRA means family inspiration from founder's parents (family, vision, strength, purpose).
+- Company: SakraVision (@sakravision) | AI Product Studio & Innovation Company (Est. 2026, India). Tagline: "From Ideas to Intelligent Systems".
 - Founder: Likith Naidu Anumakonda | Founder & CEO | AI/ML Engineer | Python Full-Stack Developer | CSE-AI student | IIT Patna Certified | Pianist & Author | Instagram: @likhithnaidu_anumakonda
 - Projects:
-  1. Resolvit AI (Civic-Tech AI Platform) - Connects citizens, authorities, and NGOs for issue reporting, CV duplicate detection, NLP priority scoring, real-time status maps. Live: https://www.resolvit-ai.online/
-  2. SAKRA VISION Event Hub (AI Event Operations Platform) - Registration, payment screenshot verification, admin workflow, email automation. Live: https://forms-project-f3sb.vercel.app/
-  3. BenchAI (Offline LLM + RAG Assistant) - Internet-free student learning from local textbooks and docs.
-  4. Prometheus AI (Local-First GenAI System) - Private edge intelligence, voice workflows, local LLMs. Live: https://www.prometheuslikiths-ai.online/
-  5. AquaSentinel AI (Marine Intelligence Platform) - Satellite data, marine debris tracking, weather APIs, ocean response AI. Live: https://aquq-sentinel-phsv.vercel.app/
-  6. AI Resume Builder - Intelligent resume crafting with ATS optimization.
-  7. OpenCV Automation Tools - Desktop computer vision scripts for image processing and visual verification.
-- Services: AI Application Development, Computer Vision Systems, LLM & RAG Tools, Custom AI Agents, Full-Stack Intelligent Web Apps, Civic-Tech Platforms, Event Tech Automation.
-- Tech Stack: Python, FastAPI, React, Next.js, Tailwind CSS, Groq API, OpenCV, MySQL, PostgreSQL, Aiven Cloud, Resend API, Cloudflare.
-- Contact: likith.anumakonda@gmail.com / likith.naidu@icloud.com
+  1. Resolvit AI (Civic-Tech AI Platform) - Duplicate photo detection & NLP priority scoring. Live: https://www.resolvit-ai.online/
+  2. SAKRA VISION Event Hub (AI Event Platform) - Payment screenshot verification & admin approval. Live: https://forms-project-f3sb.vercel.app/
+  3. BenchAI (Offline LLM + RAG Assistant) - Internet-free student study assistant.
+  4. Prometheus AI (Local GenAI System) - Private edge intelligence & voice workflows. Live: https://www.prometheuslikiths-ai.online/
+  5. AquaSentinel AI (Marine Intelligence) - Satellite data & ocean debris tracking. Live: https://aquq-sentinel-phsv.vercel.app/
+  6. AI Resume Builder - ATS-optimized resume tool.
+  7. OpenCV Automation Tools - Visual verification desktop scripts.
+- Contact: likith.anumakonda@gmail.com / likith.naidu@icloud.com | Instagram: @likhithnaidu_anumakonda
 """
 
 KNOWLEDGE = {
@@ -42,88 +41,109 @@ KNOWLEDGE = {
         "**Founder & CEO, SakraVision**\n\n"
         "• **Role**: Founder & Lead AI Architect at SakraVision (@sakravision)\n"
         "• **Background**: AI/ML Engineer, Python Full-Stack Developer, CSE (AI) student\n"
-        "• **Certifications & Identity**: IIT Patna Certified Learner, Pianist, Author, and builder of real-world intelligent systems\n"
-        "• **Instagram**: @likhithnaidu_anumakonda\n"
-        "• **Portfolio**: https://likith-portfolio.online/\n\n"
-        "Likith specializes in designing agentic AI workflows, computer vision platforms, LLM/RAG systems, and full-stack software applications."
+        "• **Identity & Credentials**: IIT Patna Certified Learner, Pianist, Author, builder of intelligent systems\n"
+        "• **Instagram**: **@likhithnaidu_anumakonda** ([https://www.instagram.com/likhithnaidu_anumakonda](https://www.instagram.com/likhithnaidu_anumakonda))\n"
+        "• **Portfolio**: [https://likith-portfolio.online/](https://likith-portfolio.online/)"
+    ),
+    "instagram": (
+        "### SakraVision & Founder Instagram / Social Handles\n\n"
+        "• **Founder Instagram**: **@likhithnaidu_anumakonda**  \n"
+        "  [https://www.instagram.com/likhithnaidu_anumakonda](https://www.instagram.com/likhithnaidu_anumakonda)\n"
+        "• **Official Brand Identifier**: **@sakravision**\n"
+        "• **Founder Portfolio**: [https://likith-portfolio.online/](https://likith-portfolio.online/)\n"
+        "• **GitHub**: [https://github.com/LIKITH-3012-MAC](https://github.com/LIKITH-3012-MAC)\n"
+        "• **LinkedIn**: [https://in.linkedin.com/in/likith-naidu-anumakonda-33a347327](https://in.linkedin.com/in/likith-naidu-anumakonda-33a347327)"
+    ),
+    "start_project": (
+        "### How to Start a Project with SakraVision\n\n"
+        "Starting a project with us is quick and seamless:\n\n"
+        "1. **Website Inquiry**: Scroll down to our **Contact Form** on the homepage and submit your project requirements, target timeline, and budget.\n"
+        "2. **Direct Email**: Email founder Likith Naidu Anumakonda directly at:\n"
+        "   • **likith.anumakonda@gmail.com**\n"
+        "   • **likith.naidu@icloud.com**\n"
+        "3. **Instagram DM**: Connect on Instagram: **@likhithnaidu_anumakonda** ([https://www.instagram.com/likhithnaidu_anumakonda](https://www.instagram.com/likhithnaidu_anumakonda))\n\n"
+        "We will evaluate your project requirements and share a customized technical roadmap & proposal!"
     ),
     "company": (
         "### SakraVision (@sakravision)\n"
         "**AI Product Studio & Innovation Company**\n\n"
         "• **Established**: 2026 (India)\n"
         "• **Tagline**: *From Ideas to Intelligent Systems*\n"
-        "• **Mission**: Engineering intelligence into reality by transforming complex ideas into deployable, scalable, and secure AI applications.\n"
-        "• **Name Meaning**: SAKRA is inspired by the names of the founder's mother and father, representing family, vision, strength, and purpose."
+        "• **Mission**: Engineering intelligence into reality by building deployable, secure, and scalable real-world AI applications.\n"
+        "• **Name Meaning**: SAKRA represents family inspiration from the founder's mother and father (family, vision, strength, purpose)."
     ),
     "projects_list": (
         "### SakraVision Project Portfolio\n\n"
-        "1. **Resolvit AI** *(Civic-Tech AI)*: Intelligent civic issue resolution platform with computer vision duplicate detection and NLP priority scoring. [Live App](https://www.resolvit-ai.online/)\n"
-        "2. **SAKRA VISION Event Hub** *(Event Tech)*: Smart registration platform with automated payment screenshot verification and admin approval workflows. [Live App](https://forms-project-f3sb.vercel.app/)\n"
-        "3. **BenchAI** *(Offline LLM + RAG)*: Offline AI learning assistant for studying from local documents without internet dependency.\n"
-        "4. **Prometheus AI** *(Edge GenAI)*: Local-first private intelligence system running edge LLMs and voice workflows. [Live App](https://www.prometheuslikiths-ai.online/)\n"
-        "5. **AquaSentinel AI** *(Marine Intelligence)*: Satellite data processing and ocean debris tracking platform. [Live App](https://aquq-sentinel-phsv.vercel.app/)\n"
-        "6. **AI Resume Builder** *(Career Tech)*: ATS-optimized resume generator.\n"
-        "7. **OpenCV Automation Tools** *(Computer Vision)*: Automated image processing and visual verification utilities."
-    ),
-    "top_project": (
-        "### Top & Featured Projects\n\n"
-        "SakraVision builds distinct high-impact projects across different domains. Here are the leading platforms:\n\n"
-        "| Project | Focus Domain | Key Highlight | Status |\n"
-        "| :--- | :--- | :--- | :--- |\n"
-        "| **Resolvit AI** | Civic Tech | Computer Vision duplicate detection & automated routing | Production (Live) |\n"
-        "| **Prometheus AI** | Edge GenAI | Local-first private LLM execution without cloud tracking | Production (Live) |\n"
-        "| **SAKRA Event Hub** | Operations | OCR payment verification & automated attendee approval | Production (Live) |\n"
-        "| **BenchAI** | Education | Offline RAG intelligence for internet-free learning | Active Project |\n\n"
-        "**Resolvit AI** stands out for societal impact & multi-tier AI integration, while **Prometheus AI** leads in localized edge privacy."
+        "1. **Resolvit AI** *(Civic-Tech AI)*: Intelligent issue resolution platform with computer vision duplicate detection & NLP priority scoring. [Live App](https://www.resolvit-ai.online/)\n"
+        "2. **SAKRA VISION Event Hub** *(Event Operations)*: Automated event registration & payment screenshot verification. [Live App](https://forms-project-f3sb.vercel.app/)\n"
+        "3. **BenchAI** *(Offline LLM + RAG)*: Offline learning assistant for students studying from local documents without internet.\n"
+        "4. **Prometheus AI** *(Edge GenAI)*: Private localized intelligence running edge LLMs and voice workflows. [Live App](https://www.prometheuslikiths-ai.online/)\n"
+        "5. **AquaSentinel AI** *(Marine Intelligence)*: Satellite tracking & ocean debris monitoring platform. [Live App](https://aquq-sentinel-phsv.vercel.app/)\n"
+        "6. **AI Resume Builder** *(Career Tech)*: ATS-optimized resume creation tool.\n"
+        "7. **OpenCV Automation Tools** *(Computer Vision)*: Automated visual verification utilities."
     ),
     "services_list": (
         "### SakraVision Engineering Services\n\n"
-        "• **AI Applications & Agents**: Custom autonomous workflows, decision agents, and task automation.\n"
-        "• **Computer Vision Systems**: OpenCV-powered visual inspection, object detection, and image analysis.\n"
-        "• **LLM & RAG Engineering**: Contextual retrieval systems, intelligent chatbots, and document search.\n"
-        "• **Full-Stack Development**: Modern React/Next.js frontends and Python FastAPI robust backend architectures.\n"
-        "• **Civic & Event Tech Platforms**: Automated workflows, verification pipelines, and dashboard management."
+        "• **AI Applications & Agents**: Custom autonomous decision workflows & AI agents.\n"
+        "• **Computer Vision Systems**: OpenCV-powered visual inspection, object detection, and tracking.\n"
+        "• **LLM & RAG Engineering**: Contextual retrieval systems, document search, and intelligent assistants.\n"
+        "• **Full-Stack Development**: Modern React/Next.js frontends and Python FastAPI backends.\n"
+        "• **Civic & Event Tech**: Custom workflow platforms and dashboard automation."
     ),
     "tech_stack": (
         "### Technical Stack & Ecosystem\n\n"
         "• **Languages & Frameworks**: Python, JavaScript, FastAPI, React, Next.js, HTML5/CSS3\n"
-        "• **AI & Vision Tools**: Groq API, LLMs, RAG Architectures, OpenCV, PyTorch/TensorFlow\n"
-        "• **Databases & Cloud**: MySQL, PostgreSQL, Aiven Cloud, Cloudflare, Resend API, Vercel/Render"
+        "• **AI & Vision**: Groq API, LLMs, RAG Architectures, OpenCV, PyTorch/TensorFlow\n"
+        "• **Cloud & Databases**: MySQL, PostgreSQL, Aiven Cloud, Cloudflare, Resend API, Vercel/Render"
     ),
     "contact": (
-        "### Contact SakraVision & Likith Naidu\n\n"
+        "### Contact SakraVision & Founder Likith Naidu\n\n"
         "• **Email**: likith.anumakonda@gmail.com / likith.naidu@icloud.com\n"
-        "• **Instagram**: @likhithnaidu_anumakonda\n"
-        "• **Official Website**: https://www.sakra-vision.online/\n"
-        "• **Inquiries**: Submit your idea using the contact form on this site!"
+        "• **Instagram**: **@likhithnaidu_anumakonda** ([https://www.instagram.com/likhithnaidu_anumakonda](https://www.instagram.com/likhithnaidu_anumakonda))\n"
+        "• **Brand Identifier**: **@sakravision**\n"
+        "• **Website**: https://www.sakra-vision.online/\n"
+        "• **Inquiries**: Submit your idea using the contact form on this page!"
     )
 }
 
 def resolve_fallback_intent(msg: str, history: Optional[List[Dict[str, str]]] = None) -> str:
     msg_lower = msg.lower().strip()
 
+    # Instagram & Social queries
+    if any(kw in msg_lower for kw in ["insta", "instagram", "handle", "social", "follow", "dm"]):
+        return KNOWLEDGE["instagram"]
+
+    # Start project / How to start / Hire / Inquiry queries
+    if any(kw in msg_lower for kw in ["start a project", "start project", "how to start", "build a project", "how can i start", "hire", "collaborate", "work together", "submit project", "inquiry", "get started"]):
+        return KNOWLEDGE["start_project"]
+
+    # Follow-up prompts ("more", "tell me more", "explain more", "details")
+    if msg_lower in ["more", "tell me more", "details", "explain more", "go on", "what else"] and history:
+        recent_text = " ".join([h.get("text", "") for h in history[-3:]]).lower()
+        if "project" in recent_text or "resolvit" in recent_text or "prometheus" in recent_text:
+            return KNOWLEDGE["projects_list"]
+        if "likith" in recent_text or "founder" in recent_text:
+            return KNOWLEDGE["founder"]
+        if "service" in recent_text:
+            return KNOWLEDGE["services_list"]
+
     # Check for follow-up pronouns referring to Founder
-    is_referring_to_founder = any(p in msg_lower for p in ["he", "his", "him", "study", "education", "college", "school"])
-    if is_referring_to_founder and history:
+    if any(p in msg_lower for p in ["he", "his", "him", "study", "education", "college", "school"]) and history:
         recent_text = " ".join([h.get("text", "") for h in history[-3:]]).lower()
         if any(kw in recent_text for kw in ["likith", "founder", "ceo", "creator"]):
             return KNOWLEDGE["founder"]
 
     # Founder intent
-    if any(kw in msg_lower for kw in ["likith", "founder", "ceo", "creator", "developer", "who made", "who built", "owner", "instagram"]):
+    if any(kw in msg_lower for kw in ["likith", "founder", "ceo", "creator", "developer", "who made", "who built", "owner"]):
         return KNOWLEDGE["founder"]
-
-    # Project comparison ("top project", "best project", "most advanced")
-    if any(kw in msg_lower for kw in ["top project", "best project", "most advanced", "leading project", "compare project", "flagship"]):
-        return KNOWLEDGE["top_project"]
 
     # Specific Projects
     if "resolvit" in msg_lower:
         return (
             "### Resolvit AI\n"
             "**Civic-Tech Issue Resolution Platform**\n\n"
-            "• **Overview**: Resolvit AI connects citizens, municipal authorities, and NGOs for streamlined civic issue tracking.\n"
-            "• **AI Tech**: Computer Vision for duplicate photo detection + NLP for automated priority scoring.\n"
+            "• **Overview**: Resolvit AI connects citizens, municipal authorities, and NGOs for issue tracking.\n"
+            "• **AI Tech**: Computer Vision for duplicate photo detection + NLP for priority scoring.\n"
             "• **Live Platform**: [https://www.resolvit-ai.online/](https://www.resolvit-ai.online/)"
         )
     if "event" in msg_lower or "hub" in msg_lower:
@@ -131,45 +151,41 @@ def resolve_fallback_intent(msg: str, history: Optional[List[Dict[str, str]]] = 
             "### SAKRA VISION Event Hub\n"
             "**AI Event Operations Platform**\n\n"
             "• **Overview**: Automated event registration with payment verification and attendee management.\n"
-            "• **Features**: Screenshot verification, admin approval workflow, automated ticket generation & emails.\n"
             "• **Live Platform**: [https://forms-project-f3sb.vercel.app/](https://forms-project-f3sb.vercel.app/)"
         )
     if "bench" in msg_lower:
         return (
             "### BenchAI\n"
             "**Offline LLM + RAG Learning Assistant**\n\n"
-            "• **Overview**: Offline learning assistant enabling students to study local textbooks and documents without internet connectivity.\n"
-            "• **Tech**: Local RAG vector search + lightweight offline LLMs."
+            "• **Overview**: Offline learning assistant enabling students to study local documents without internet."
         )
     if "prometheus" in msg_lower:
         return (
             "### Prometheus AI\n"
             "**Local-First GenAI System**\n\n"
-            "• **Overview**: Privacy-focused localized AI environment running edge LLMs, voice commands, and agent workflows.\n"
+            "• **Overview**: Privacy-focused localized AI environment running edge LLMs and voice commands.\n"
             "• **Live Platform**: [https://www.prometheuslikiths-ai.online/](https://www.prometheuslikiths-ai.online/)"
         )
     if "aqua" in msg_lower or "sentinel" in msg_lower:
         return (
             "### AquaSentinel AI\n"
             "**Marine Intelligence AI Platform**\n\n"
-            "• **Overview**: Ocean monitoring system combining satellite data, weather feeds, and AI assistance for debris response.\n"
+            "• **Overview**: Satellite data processing and ocean debris tracking platform.\n"
             "• **Live Platform**: [https://aquq-sentinel-phsv.vercel.app/](https://aquq-sentinel-phsv.vercel.app/)"
         )
 
-    # List Projects
+    # List Projects / Top Project
+    if any(kw in msg_lower for kw in ["top project", "best project", "most advanced", "leading project", "compare project", "flagship"]):
+        return KNOWLEDGE["top_project"]
     if any(kw in msg_lower for kw in ["list project", "all project", "projects", "what projects", "show projects"]):
         return KNOWLEDGE["projects_list"]
 
-    # List Services
+    # Services / Tech Stack / Contact
     if any(kw in msg_lower for kw in ["service", "capabilities", "what do you offer", "what can you build", "list services"]):
         return KNOWLEDGE["services_list"]
-
-    # Tech Stack
     if any(kw in msg_lower for kw in ["tech", "stack", "python", "fastapi", "react", "tools", "framework"]):
         return KNOWLEDGE["tech_stack"]
-
-    # Contact
-    if any(kw in msg_lower for kw in ["contact", "email", "reach", "hire", "touch", "inquiry"]):
+    if any(kw in msg_lower for kw in ["contact", "email", "reach", "touch", "inquiry"]):
         return KNOWLEDGE["contact"]
 
     # Company overview
@@ -177,12 +193,12 @@ def resolve_fallback_intent(msg: str, history: Optional[List[Dict[str, str]]] = 
         return KNOWLEDGE["company"]
 
     return (
-        "I am SAKRA-BOT, the intelligent assistant for **SakraVision** (@sakravision), founded by **Likith Naidu Anumakonda** (@likhithnaidu_anumakonda).\n\n"
-        "How can I assist you?\n"
-        "• Ask about our **Founder** (Likith Naidu Anumakonda)\n"
-        "• Ask to **List Projects** or explore **Resolvit AI / Prometheus AI / Event Hub**\n"
-        "• Ask about our **Services** or **Tech Stack**\n"
-        "• Ask for **Contact** & Collaboration details"
+        "I am SAKRA-BOT, intelligent assistant for **SakraVision** (@sakravision), founded by **Likith Naidu Anumakonda** (@likhithnaidu_anumakonda).\n\n"
+        "How can I help you?\n"
+        "• **Start a Project**: Ask *'How can I start a project?'*\n"
+        "• **Founder & Instagram**: Ask for *'Founder'* or *'Instagram'* (@likhithnaidu_anumakonda)\n"
+        "• **Projects**: Ask to *'List projects'* or explore *Resolvit AI / Prometheus AI / Event Hub*\n"
+        "• **Services & Contact**: Ask about our *Services*, *Tech Stack*, or *Contact email*"
     )
 
 async def get_chatbot_reply(message: str, history: Optional[List[Dict[str, str]]] = None) -> str:
