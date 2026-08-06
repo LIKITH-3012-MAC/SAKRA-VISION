@@ -14,7 +14,7 @@ const Footer = () => {
         {/* Branding */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left">
           <div className="flex items-center gap-2">
-            <span className="w-4 h-4 bg-gradient-to-tr from-[#0071e3] to-[#38bdf8] rounded-sm"></span>
+            <img src="/SAKRAVISION.png" alt="SAKRA VISION Logo" className="w-5 h-5 object-contain" loading="lazy" />
             <span className="font-sans font-bold tracking-tight text-white text-sm">SAKRA VISION</span>
           </div>
           <p className="text-[10px] text-slate-500 font-mono mt-1">

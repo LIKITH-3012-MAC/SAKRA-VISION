@@ -9,9 +9,12 @@ export default function About() {
         
         {/* Section Header */}
         <div className="text-center md:text-left mb-16">
-          <span className="text-xs font-mono tracking-widest text-[#0071e3] uppercase">
-            Product Studio
-          </span>
+          <div className="inline-flex items-center gap-2 mb-1">
+            <img src="/SAKRAVISION.png" alt="SAKRA VISION Logo" className="w-5 h-5 object-contain" loading="lazy" />
+            <span className="text-xs font-mono tracking-widest text-[#0071e3] uppercase">
+              Product Studio
+            </span>
+          </div>
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mt-2 text-white font-sans">
             Built for intelligent execution.
           </h2>

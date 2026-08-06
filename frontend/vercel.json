@@ -5,11 +5,20 @@
   "installCommand": "npm install",
   "rewrites": [
     {
-      "source": "/((?!robots.txt|sitemap.xml|humans.txt|ai-info.txt|llms.txt|SAKRAVISION.png|assets/).*)",
+      "source": "/((?!robots.txt|sitemap.xml|humans.txt|ai-info.txt|llms.txt|manifest.json|SAKRAVISION.png|assets/).*)",
       "destination": "/index.html"
     }
   ],
   "headers": [
+    {
+      "source": "/SAKRAVISION.png",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [
