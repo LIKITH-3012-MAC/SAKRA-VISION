@@ -17,3 +17,19 @@ class ClientInquiry(Base):
     ip_address = Column(String(100), nullable=True)
     user_agent = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class ChatbotFeedback(Base):
+    __tablename__ = "chatbot_feedback"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    feedback_id = Column(String(100), unique=True, index=True, nullable=False)
+    conversation_id = Column(String(100), index=True, nullable=True)
+    message_id = Column(String(100), index=True, nullable=False)
+    session_id = Column(String(100), index=True, nullable=True)
+    user_id = Column(String(100), index=True, nullable=True)
+    feedback_type = Column(String(20), index=True, nullable=False)  # 'LIKE' or 'DISLIKE'
+    user_query = Column(Text, nullable=True)
+    response_snapshot = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+

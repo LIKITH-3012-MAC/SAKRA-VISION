@@ -4,7 +4,7 @@ import api from '../utils/api';
 import { getLocalChatbotReply } from '../utils/chatbotHelper';
 import AiResponseRenderer from './AiResponseRenderer';
 import ChatbotMicroActions from './ChatbotMicroActions';
-import { Bot, Sparkles, Send, Trash2, X, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Bot, Sparkles, Send, Trash2, X, RefreshCw, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +13,7 @@ const Chatbot = () => {
       id: 1,
       sender: 'bot',
       text: "Welcome to SAKRA VISION. I am SAKRA-BOT, your intelligent interface to our AI product studio. How can I assist you today?",
+      userQuery: "Initial Welcome",
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -49,8 +50,9 @@ const Chatbot = () => {
     const query = (textToSend || inputValue).trim();
     if (!query || loading) return;
 
+    const userMsgId = Date.now();
     const userMessage = {
-      id: Date.now(),
+      id: userMsgId,
       sender: 'user',
       text: query,
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -83,6 +85,7 @@ const Chatbot = () => {
         id: Date.now() + 1,
         sender: 'bot',
         text: replyText,
+        userQuery: query,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages(prev => [...prev, botMessage]);
@@ -95,6 +98,7 @@ const Chatbot = () => {
           id: Date.now() + 1,
           sender: 'bot',
           text: fallbackText,
+          userQuery: query,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
         setMessages(prev => [...prev, botMessage]);
@@ -106,6 +110,22 @@ const Chatbot = () => {
       setLoading(false);
       setThinkingStep('');
     }
+  };
+
+  // Deterministic Application-Layer Feedback Acknowledgement (Zero LLM token consumption)
+  const handleFeedbackSubmit = (type, messageId) => {
+    const ackText = type === 'LIKE'
+      ? "Thanks for the feedback! I'm glad this response was helpful. ✨"
+      : "Sorry this response wasn't helpful. We'll use your feedback to improve. 🙏";
+
+    const ackMessage = {
+      id: Date.now(),
+      sender: 'system',
+      text: ackText,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    setMessages(prev => [...prev, ackMessage]);
   };
 
   const handleRegenerate = () => {
@@ -121,6 +141,7 @@ const Chatbot = () => {
         id: Date.now(),
         sender: 'bot',
         text: 'Session reset. SAKRA-BOT is ready for your next query. How can I assist?',
+        userQuery: 'Reset Session',
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
     ]);
@@ -215,28 +236,41 @@ const Chatbot = () => {
                   transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} group`}
                 >
-                  <div
-                    className={`max-w-[90%] sm:max-w-[85%] p-4 rounded-2xl relative transition-all duration-200 ${
-                      msg.sender === 'user'
-                        ? 'bg-[#0071e3] text-white rounded-tr-sm shadow-lg border border-blue-400/30'
-                        : 'bg-white/[0.035] border border-white/[0.08] text-slate-100 rounded-tl-sm shadow-xl backdrop-blur-xl hover:border-white/15'
-                    }`}
-                  >
-                    {msg.sender === 'user' ? (
-                      <div>
-                        <p className="text-xs sm:text-sm font-sans leading-relaxed text-left whitespace-pre-wrap">{msg.text}</p>
-                        <span className="text-[9px] text-blue-200 block text-right mt-1.5 font-mono">{msg.time}</span>
-                      </div>
-                    ) : (
-                      <div>
-                        <AiResponseRenderer text={msg.text} />
-                        <div className="flex items-center justify-between mt-2 pt-1 border-t border-white/5">
-                          <span className="text-[9px] text-slate-500 font-mono">{msg.time}</span>
-                          <ChatbotMicroActions text={msg.text} onRegenerate={handleRegenerate} />
+                  {msg.sender === 'system' ? (
+                    /* Lightweight Deterministic Feedback Acknowledgement System Message */
+                    <div className="w-full my-1 flex justify-start">
+                      <div className="max-w-[90%] p-3.5 rounded-2xl bg-white/[0.035] border border-[#38bdf8]/30 text-xs text-slate-200 font-sans leading-relaxed backdrop-blur-xl text-left flex items-start gap-2.5 shadow-lg relative overflow-hidden">
+                        <div className="absolute top-0 left-0 bottom-0 w-1 bg-[#38bdf8]" />
+                        <Sparkles className="w-4 h-4 text-[#38bdf8] flex-shrink-0 mt-0.5" />
+                        <div>
+                          <div className="text-[10px] font-mono tracking-widest text-[#38bdf8] uppercase font-bold mb-0.5">
+                            ✦ SAKRA-BOT
+                          </div>
+                          <p className="text-xs text-slate-200 font-medium">{msg.text}</p>
+                          <span className="text-[8px] text-slate-500 font-mono block text-right mt-1">{msg.time}</span>
                         </div>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  ) : msg.sender === 'user' ? (
+                    <div className="max-w-[90%] sm:max-w-[85%] p-4 rounded-2xl relative transition-all duration-200 bg-[#0071e3] text-white rounded-tr-sm shadow-lg border border-blue-400/30">
+                      <p className="text-xs sm:text-sm font-sans leading-relaxed text-left whitespace-pre-wrap">{msg.text}</p>
+                      <span className="text-[9px] text-blue-200 block text-right mt-1.5 font-mono">{msg.time}</span>
+                    </div>
+                  ) : (
+                    <div className="max-w-[90%] sm:max-w-[85%] p-4 rounded-2xl relative transition-all duration-200 bg-white/[0.035] border border-white/[0.08] text-slate-100 rounded-tl-sm shadow-xl backdrop-blur-xl hover:border-white/15">
+                      <AiResponseRenderer text={msg.text} />
+                      <div className="flex items-center justify-between mt-2 pt-1 border-t border-white/5">
+                        <span className="text-[9px] text-slate-500 font-mono">{msg.time}</span>
+                      </div>
+                      <ChatbotMicroActions 
+                        messageId={msg.id} 
+                        text={msg.text} 
+                        userQuery={msg.userQuery}
+                        onFeedbackSubmit={handleFeedbackSubmit}
+                        onRegenerate={handleRegenerate} 
+                      />
+                    </div>
+                  )}
                 </motion.div>
               ))}
 

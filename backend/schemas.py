@@ -65,3 +65,25 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     success: bool
     reply: str
+
+class ChatFeedbackRequest(BaseModel):
+    message_id: str = Field(..., min_length=1, max_length=100)
+    conversation_id: Optional[str] = Field(None, max_length=100)
+    feedback: str = Field(..., max_length=20)  # "LIKE" or "DISLIKE"
+    user_query: Optional[str] = Field(None, max_length=2000)
+    response_snapshot: Optional[str] = Field(None, max_length=10000)
+    session_id: Optional[str] = Field(None, max_length=100)
+
+    @field_validator("feedback")
+    @classmethod
+    def validate_feedback(cls, v: str) -> str:
+        v_upper = v.upper().strip()
+        if v_upper not in ("LIKE", "DISLIKE"):
+            raise ValueError("Feedback must be either 'LIKE' or 'DISLIKE'.")
+        return v_upper
+
+class ChatFeedbackResponse(BaseModel):
+    success: bool
+    feedback: str
+    message: str
+

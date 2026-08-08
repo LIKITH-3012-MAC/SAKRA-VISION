@@ -185,6 +185,64 @@ async def chatbot_chat(payload: schemas.ChatRequest, request: Request):
         "reply": bot_reply
     }
 
+# Protected Endpoint: Chatbot Feedback Persistence
+@app.post("/api/chat/feedback", response_model=schemas.ChatFeedbackResponse, dependencies=[Depends(verify_secret_token)])
+@limiter.limit(settings.RATE_LIMIT_CHAT)
+async def chatbot_feedback(
+    payload: schemas.ChatFeedbackRequest,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    ip_addr = get_client_ip(request)
+    session_id = payload.session_id or f"ip_{ip_addr}"
+    import uuid
+    from datetime import datetime
+
+    try:
+        # Search for existing feedback record for message_id + session_id / conversation_id to prevent duplicates
+        existing_fb = db.query(models.ChatbotFeedback).filter(
+            models.ChatbotFeedback.message_id == payload.message_id
+        ).first()
+
+        if existing_fb:
+            existing_fb.feedback_type = payload.feedback
+            existing_fb.updated_at = datetime.utcnow()
+            if payload.user_query:
+                existing_fb.user_query = payload.user_query
+            if payload.response_snapshot:
+                existing_fb.response_snapshot = payload.response_snapshot
+            db.commit()
+            logger.info(f"Updated feedback to '{payload.feedback}' for message_id '{payload.message_id}'")
+        else:
+            fb_record = models.ChatbotFeedback(
+                feedback_id=f"fb_{uuid.uuid4().hex[:12]}",
+                conversation_id=payload.conversation_id,
+                message_id=payload.message_id,
+                session_id=session_id,
+                feedback_type=payload.feedback,
+                user_query=payload.user_query,
+                response_snapshot=payload.response_snapshot
+            )
+            db.add(fb_record)
+            db.commit()
+            logger.info(f"Persisted new feedback '{payload.feedback}' for message_id '{payload.message_id}'")
+
+        return {
+            "success": True,
+            "feedback": payload.feedback,
+            "message": "Feedback recorded successfully."
+        }
+    except Exception as e:
+        logger.error(f"Failed to record chatbot feedback: {e}", exc_info=True)
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={
+                "success": False,
+                "message": "Couldn't save your feedback. Please try again."
+            }
+        )
+
+
 # Global Exception Handler to capture unhandled errors and mask stack traces
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
