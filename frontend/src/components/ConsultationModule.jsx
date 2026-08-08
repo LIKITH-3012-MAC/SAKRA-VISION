@@ -60,10 +60,14 @@ export default function ConsultationModule({ onStartProject }) {
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row gap-3 w-full">
-          <a
-            href={MEETING_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => {
+              if (onStartProject) {
+                onStartProject('book');
+              } else {
+                window.location.hash = '#book';
+              }
+            }}
             className="group relative inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-xs font-semibold text-white bg-[#0071e3] hover:bg-[#0a84ff] active:scale-[0.98] transition-all duration-200 shadow-[0_8px_20px_rgba(0,113,227,0.3)] hover:shadow-[0_12px_28px_rgba(0,113,227,0.45)] min-h-[44px] cursor-pointer overflow-hidden border border-[#38bdf8]/40"
           >
             {/* Light sweep animation on hover */}
@@ -72,11 +76,11 @@ export default function ConsultationModule({ onStartProject }) {
             <svg className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
-          </a>
+          </button>
 
           {onStartProject && (
             <button
-              onClick={onStartProject}
+              onClick={() => onStartProject('inquire')}
               className="inline-flex items-center justify-center px-6 py-3.5 rounded-full text-xs font-semibold text-[#cbd5e1] hover:text-white bg-white/5 hover:bg-white/10 active:scale-[0.98] transition-all duration-200 border border-white/10 hover:border-white/20 min-h-[44px] cursor-pointer"
             >
               Start a Project

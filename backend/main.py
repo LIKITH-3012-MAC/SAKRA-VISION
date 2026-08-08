@@ -242,6 +242,139 @@ async def chatbot_feedback(
             }
         )
 
+# Protected Endpoint: Consultation Booking
+@app.post("/api/bookings", response_model=schemas.BookingCreateResponse, dependencies=[Depends(verify_secret_token)])
+@limiter.limit(settings.RATE_LIMIT_INQUIRY)
+async def create_booking(
+    payload: schemas.BookingCreateRequest,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    # 1. Turnstile Captcha verification if token present
+    if payload.captcha_token and settings.TURNSTILE_SECRET_KEY and settings.TURNSTILE_SECRET_KEY != "0x4AAAAAAA...":
+        ip_addr = get_client_ip(request)
+        is_valid_captcha = await verify_turnstile(payload.captcha_token, ip_addr)
+        if not is_valid_captcha:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="CAPTCHA verification failed. Please try again."
+            )
+
+    # 2. Duplicate Protection / Idempotency Check
+    existing_booking = db.query(models.ConsultationBooking).filter(
+        models.ConsultationBooking.customer_email == payload.customer_email.lower().strip(),
+        models.ConsultationBooking.appointment_date == payload.appointment_date.strip(),
+        models.ConsultationBooking.appointment_time == payload.appointment_time.strip(),
+        models.ConsultationBooking.status == "CONFIRMED"
+    ).first()
+
+    import uuid
+    import random
+    from datetime import datetime
+
+    if existing_booking:
+        logger.info(f"Duplicate booking request for '{payload.customer_email}' on {payload.appointment_date} {payload.appointment_time}. Returning existing reference.")
+        booking_data = {
+            "reference_id": existing_booking.reference_id,
+            "customer_name": existing_booking.customer_name,
+            "customer_email": existing_booking.customer_email,
+            "appointment_date": existing_booking.appointment_date,
+            "appointment_time": existing_booking.appointment_time,
+            "timezone": existing_booking.timezone,
+            "project_topic": existing_booking.project_topic,
+            "meeting_url": existing_booking.meeting_url
+        }
+        # Re-trigger email dispatches if needed
+        studio_sent = await email_service.send_booking_notification_to_studio(booking_data)
+        client_sent = await email_service.send_booking_confirmation_to_client(booking_data)
+
+        return {
+            "success": True,
+            "reference_id": existing_booking.reference_id,
+            "booking_id": existing_booking.booking_id,
+            "meeting_url": existing_booking.meeting_url,
+            "message": "Consultation already reserved.",
+            "email": {
+                "studio_notification": studio_sent,
+                "client_confirmation": client_sent
+            }
+        }
+
+    # 3. Generate Human-Readable Reference Code (e.g. SAKRA-2026-0042)
+    count = db.query(models.ConsultationBooking).count() + 1
+    ref_num = f"{count:04d}"
+    reference_code = f"SAKRA-2026-{ref_num}"
+    unique_booking_id = f"bk_{uuid.uuid4().hex[:12]}"
+
+    # 4. Create Database Record
+    new_booking = models.ConsultationBooking(
+        booking_id=unique_booking_id,
+        reference_id=reference_code,
+        customer_name=payload.customer_name,
+        customer_email=payload.customer_email.lower().strip(),
+        project_topic=payload.project_topic,
+        appointment_date=payload.appointment_date.strip(),
+        appointment_time=payload.appointment_time.strip(),
+        timezone=payload.timezone or "IST",
+        meeting_url=settings.MEETING_URL,
+        status="CONFIRMED"
+    )
+
+    try:
+        db.add(new_booking)
+        db.commit()
+        db.refresh(new_booking)
+        logger.info(f"Successfully created consultation booking '{reference_code}' for '{payload.customer_email}'")
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Failed to persist booking in DB: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Unable to save consultation booking. Please try again."
+        )
+
+    # 5. Send Double Email Dispatches
+    booking_dict = {
+        "reference_id": reference_code,
+        "customer_name": payload.customer_name,
+        "customer_email": payload.customer_email.lower().strip(),
+        "appointment_date": payload.appointment_date,
+        "appointment_time": payload.appointment_time,
+        "timezone": payload.timezone or "IST",
+        "project_topic": payload.project_topic,
+        "meeting_url": settings.MEETING_URL
+    }
+
+    studio_email_sent = False
+    client_email_sent = False
+
+    try:
+        studio_email_sent = await email_service.send_booking_notification_to_studio(booking_dict)
+    except Exception as e:
+        logger.error(f"Studio booking email failed: {e}", exc_info=True)
+
+    try:
+        client_email_sent = await email_service.send_booking_confirmation_to_client(booking_dict)
+    except Exception as e:
+        logger.error(f"Client booking email failed: {e}", exc_info=True)
+
+    email_status_msg = "Consultation locked in and confirmation email dispatched."
+    if not client_email_sent:
+        email_status_msg = "Your consultation has been reserved, but confirmation email delivery is temporarily delayed."
+
+    return {
+        "success": True,
+        "reference_id": reference_code,
+        "booking_id": unique_booking_id,
+        "meeting_url": settings.MEETING_URL,
+        "message": email_status_msg,
+        "email": {
+            "studio_notification": studio_email_sent,
+            "client_confirmation": client_email_sent
+        }
+    }
+
+
 
 # Global Exception Handler to capture unhandled errors and mask stack traces
 @app.exception_handler(Exception)

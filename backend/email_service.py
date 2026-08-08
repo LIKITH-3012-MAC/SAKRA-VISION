@@ -272,3 +272,151 @@ async def send_client_confirmation(client_data: dict) -> bool:
     }
     
     return await send_email_via_resend(payload)
+
+
+async def send_booking_notification_to_studio(booking_data: dict) -> bool:
+    """
+    Sends consultation booking notification to studio recipient (likith.anumakonda@gmail.com).
+    """
+    c_name = html.escape(booking_data.get("customer_name") or "Valued Client")
+    c_email = html.escape(booking_data.get("customer_email") or "Not provided")
+    c_date = html.escape(booking_data.get("appointment_date") or "Not specified")
+    c_time = html.escape(booking_data.get("appointment_time") or "Not specified")
+    c_tz = html.escape(booking_data.get("timezone") or "IST")
+    c_ref = html.escape(booking_data.get("reference_id") or "SAKRA-BOOKING")
+    c_topic = html.escape(booking_data.get("project_topic") or "General AI Consultation")
+    c_meet = booking_data.get("meeting_url") or settings.MEETING_URL
+
+    subject = f"New SAKRA VISION Consultation — {c_date} {c_time} IST [{c_ref}]"
+
+    body_html = f"""
+<div style="background-color: rgba(0, 113, 227, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 24px; margin-bottom: 28px;">
+  <span style="font-size: 10px; font-family: 'Courier New', Courier, monospace; color: #38bdf8; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700;">✦ NEW PRIVATE CONSULTATION BOOKING</span>
+  <h2 style="font-size: 20px; color: #ffffff; margin-top: 8px; margin-bottom: 4px; font-weight: 700;">Consultation Reference: {c_ref}</h2>
+  <p style="font-size: 13px; color: #94a3b8; margin: 0;">A client has scheduled a direct meeting on Google Meet.</p>
+</div>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="10" style="margin-bottom: 28px; font-size: 13px; color: #cbd5e1; border-collapse: collapse;">
+  <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+    <td width="35%" style="color: #64748b; font-family: 'Courier New', Courier, monospace; text-transform: uppercase; font-size: 11px;">Client Name</td>
+    <td width="65%" style="color: #ffffff; font-weight: 600;">{c_name}</td>
+  </tr>
+  <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+    <td style="color: #64748b; font-family: 'Courier New', Courier, monospace; text-transform: uppercase; font-size: 11px;">Client Email</td>
+    <td style="color: #38bdf8; font-weight: 600;">{c_email}</td>
+  </tr>
+  <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+    <td style="color: #64748b; font-family: 'Courier New', Courier, monospace; text-transform: uppercase; font-size: 11px;">Date & Time</td>
+    <td style="color: #ffffff; font-weight: 600;">{c_date} at {c_time} {c_tz}</td>
+  </tr>
+  <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+    <td style="color: #64748b; font-family: 'Courier New', Courier, monospace; text-transform: uppercase; font-size: 11px;">Project / Topic</td>
+    <td style="color: #e2e8f0;">{c_topic}</td>
+  </tr>
+  <tr>
+    <td style="color: #64748b; font-family: 'Courier New', Courier, monospace; text-transform: uppercase; font-size: 11px;">Google Meet URL</td>
+    <td style="color: #38bdf8;"><a href="{c_meet}" target="_blank" style="color: #38bdf8; text-decoration: underline;">{c_meet}</a></td>
+  </tr>
+</table>
+
+<div style="text-align: center; margin-bottom: 24px;">
+  <a href="{c_meet}" target="_blank" style="display: inline-block; background-color: #0071e3; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 999px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 16px rgba(0, 113, 227, 0.4);">
+    Join Google Meet Session ↗
+  </a>
+</div>
+"""
+
+    html_content = _email_shell(
+        title=f"New Consultation — {c_date} {c_time} IST",
+        preheader=f"Consultation scheduled by {c_email}",
+        body_html=body_html
+    )
+
+    payload = {
+        "from": settings.RESEND_FROM_EMAIL,
+        "to": [settings.RESEND_TO_EMAIL],
+        "subject": subject,
+        "html": html_content
+    }
+
+    return await send_email_via_resend(payload)
+
+
+async def send_booking_confirmation_to_client(booking_data: dict) -> bool:
+    """
+    Sends consultation booking confirmation to client email address.
+    """
+    c_name = html.escape(booking_data.get("customer_name") or "Valued Client")
+    c_email = booking_data.get("customer_email")
+    c_date = html.escape(booking_data.get("appointment_date") or "Scheduled Date")
+    c_time = html.escape(booking_data.get("appointment_time") or "Scheduled Time")
+    c_tz = html.escape(booking_data.get("timezone") or "IST")
+    c_ref = html.escape(booking_data.get("reference_id") or "SAKRA-BOOKING")
+    c_meet = booking_data.get("meeting_url") or settings.MEETING_URL
+
+    if not c_email:
+        return False
+
+    subject = f"Consultation Confirmed | SAKRA VISION [{c_ref}]"
+
+    body_html = f"""
+<div style="background-color: rgba(0, 113, 227, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; padding: 24px; margin-bottom: 28px; text-align: center;">
+  <span style="font-size: 10px; font-family: 'Courier New', Courier, monospace; color: #38bdf8; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700;">✦ CONSULTATION LOCKED IN</span>
+  <h2 style="font-size: 22px; color: #ffffff; margin-top: 8px; margin-bottom: 6px; font-weight: 800;">Your Session is Confirmed</h2>
+  <p style="font-size: 13px; color: #94a3b8; margin: 0;">We look forward to building something intelligent together.</p>
+</div>
+
+<!-- Booking Summary Card -->
+<div style="background-color: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 28px;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="8" style="font-size: 13px; color: #cbd5e1;">
+    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+      <td style="color: #64748b; font-family: 'Courier New', Courier, monospace; font-size: 11px;">BOOKING REFERENCE</td>
+      <td style="color: #38bdf8; font-family: 'Courier New', Courier, monospace; font-weight: 700; text-align: right;">{c_ref}</td>
+    </tr>
+    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+      <td style="color: #64748b; font-family: 'Courier New', Courier, monospace; font-size: 11px;">DATE</td>
+      <td style="color: #ffffff; font-weight: 600; text-align: right;">{c_date}</td>
+    </tr>
+    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+      <td style="color: #64748b; font-family: 'Courier New', Courier, monospace; font-size: 11px;">TIME</td>
+      <td style="color: #ffffff; font-weight: 600; text-align: right;">{c_time} {c_tz}</td>
+    </tr>
+    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+      <td style="color: #64748b; font-family: 'Courier New', Courier, monospace; font-size: 11px;">WINDOW</td>
+      <td style="color: #cbd5e1; text-align: right;">{settings.CONSULTATION_HOURS}</td>
+    </tr>
+    <tr>
+      <td style="color: #64748b; font-family: 'Courier New', Courier, monospace; font-size: 11px;">FORMAT</td>
+      <td style="color: #ffffff; font-weight: 600; text-align: right;">Google Meet Direct Video</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Meeting Link CTA -->
+<div style="text-align: center; margin-bottom: 32px;">
+  <a href="{c_meet}" target="_blank" style="display: inline-block; background-color: #0071e3; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 999px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 20px rgba(0, 113, 227, 0.45); border: 1px solid rgba(56, 189, 248, 0.3);">
+    Join Google Meet ↗
+  </a>
+  <div style="font-size: 11px; color: #64748b; margin-top: 12px; word-break: break-all;">Direct Link: <a href="{c_meet}" style="color: #38bdf8; text-decoration: underline;">{c_meet}</a></div>
+</div>
+
+<p style="font-size: 12px; color: #94a3b8; text-align: center; line-height: 1.6;">
+  If you need to reschedule or add details ahead of our call, simply reply to this email or contact us at <a href="mailto:likith.anumakonda@gmail.com" style="color: #38bdf8;">likith.anumakonda@gmail.com</a>.
+</p>
+"""
+
+    html_content = _email_shell(
+        title="Consultation Confirmed | SAKRA VISION",
+        preheader=f"Your session is confirmed for {c_date} at {c_time} IST",
+        body_html=body_html
+    )
+
+    payload = {
+        "from": settings.RESEND_FROM_EMAIL,
+        "to": [c_email],
+        "subject": subject,
+        "html": html_content
+    }
+
+    return await send_email_via_resend(payload)
+

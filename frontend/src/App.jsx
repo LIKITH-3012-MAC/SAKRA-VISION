@@ -18,6 +18,8 @@ import LeadershipView from './views/LeadershipView';
 import InquireView from './views/InquireView';
 import RegistrationView from './views/RegistrationView';
 import FaqView from './views/FaqView';
+import BookView from './views/BookView';
+
 
 function App() {
   const [activeView, setActiveView] = useState('overview');
@@ -151,8 +153,10 @@ function App() {
               {activeView === 'techSpecs' && <TechSpecsView setActiveView={setActiveView} />}
               {activeView === 'leadership' && <LeadershipView setActiveView={setActiveView} />}
               {activeView === 'inquire' && <InquireView setActiveView={setActiveView} />}
+              {activeView === 'book' && <BookView setActiveView={setActiveView} />}
               {activeView === 'registration' && <RegistrationView setActiveView={setActiveView} />}
               {activeView === 'faq' && <FaqView setActiveView={setActiveView} />}
+
             </motion.div>
           </AnimatePresence>
         </main>

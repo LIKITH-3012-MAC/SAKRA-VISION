@@ -87,3 +87,28 @@ class ChatFeedbackResponse(BaseModel):
     feedback: str
     message: str
 
+class BookingCreateRequest(BaseModel):
+    customer_email: EmailStr = Field(..., max_length=255)
+    appointment_date: str = Field(..., min_length=8, max_length=50)
+    appointment_time: str = Field(..., min_length=4, max_length=50)
+    customer_name: Optional[str] = Field(None, max_length=150)
+    project_topic: Optional[str] = Field(None, max_length=2000)
+    timezone: Optional[str] = Field("IST", max_length=50)
+    captcha_token: Optional[str] = Field(None)
+
+    @field_validator("customer_name", "project_topic", "appointment_date", "appointment_time")
+    @classmethod
+    def sanitize_booking_fields(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
+        return sanitize_and_validate(v)
+
+class BookingCreateResponse(BaseModel):
+    success: bool
+    reference_id: str
+    booking_id: str
+    meeting_url: str
+    message: str
+    email: dict
+
+

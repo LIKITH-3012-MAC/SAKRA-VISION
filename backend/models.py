@@ -33,3 +33,22 @@ class ChatbotFeedback(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class ConsultationBooking(Base):
+    __tablename__ = "consultation_bookings"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    booking_id = Column(String(100), unique=True, index=True, nullable=False)
+    reference_id = Column(String(100), unique=True, index=True, nullable=False)
+    customer_name = Column(String(150), nullable=True)
+    customer_email = Column(String(255), nullable=False, index=True)
+    project_topic = Column(Text, nullable=True)
+    appointment_date = Column(String(50), nullable=False)
+    appointment_time = Column(String(50), nullable=False)
+    timezone = Column(String(50), default="IST")
+    appointment_datetime_utc = Column(DateTime, nullable=True)
+    meeting_url = Column(String(255), default="https://meet.google.com/grg-hytm-ahw")
+    status = Column(String(50), default="CONFIRMED")
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
