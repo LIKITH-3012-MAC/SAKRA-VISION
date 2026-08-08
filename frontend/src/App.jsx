@@ -110,6 +110,15 @@ function App() {
       {/* 3D Particle Mesh Background */}
       <Background3D />
 
+      {/* Persistent Navigation Command Bar - Anchored to Viewport Root */}
+      <Navbar 
+        activeView={activeView} 
+        setActiveView={setActiveView}
+        mobileMenuOpen={mobileMenuOpen} 
+        setMobileMenuOpen={setMobileMenuOpen} 
+        isScrolled={isScrolled} 
+      />
+
       {/* Main website content with cinematic reveal animation */}
       <motion.div
         initial={{ opacity: 0, scale: 0.98 }}
@@ -119,15 +128,6 @@ function App() {
       >
         {/* Background Tech-Grid Grid Overlay (Subtle White Grid Matrix) */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_65%,transparent_100%)] pointer-events-none" />
-
-        {/* Navigation */}
-        <Navbar 
-          activeView={activeView} 
-          setActiveView={setActiveView}
-          mobileMenuOpen={mobileMenuOpen} 
-          setMobileMenuOpen={setMobileMenuOpen} 
-          isScrolled={isScrolled} 
-        />
 
         {/* Dynamic Cinematic Page Views with 3D Perspective Context */}
         <main 
