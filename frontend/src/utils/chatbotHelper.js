@@ -23,13 +23,14 @@ const DETAILED_KNOWLEDGE = {
 
 Starting a project with us is quick and seamless:
 
-1. **Website Inquiry**: Scroll down to our **Contact Form** on the homepage and submit your project requirements, target timeline, and budget.
-2. **Direct Email**: Email founder Likith Naidu Anumakonda directly at:
+1. **Direct Consultation / Google Meet**: Schedule a meeting directly in our official room:
+   • **Google Meet**: [https://meet.google.com/grg-hytm-ahw](https://meet.google.com/grg-hytm-ahw)
+   • **Consultation Window**: Every day · 6:00 PM – 9:00 PM IST
+2. **Website Inquiry**: Submit your project details via our **Inquire Form**. Project scope and commercial terms are discussed individually.
+3. **Direct Email**: Email founder Likith Naidu Anumakonda directly at:
    • **likith.anumakonda@gmail.com**
    • **likith.naidu@icloud.com**
-3. **Instagram DM**: Connect on Instagram: **@likhithnaidu_anumakonda** ([https://www.instagram.com/likhithnaidu_anumakonda](https://www.instagram.com/likhithnaidu_anumakonda))
-
-We will evaluate your project requirements and share a customized technical roadmap & proposal!`,
+4. **Instagram DM**: Connect on Instagram: **@likhithnaidu_anumakonda** ([https://www.instagram.com/likhithnaidu_anumakonda](https://www.instagram.com/likhithnaidu_anumakonda))`,
 
   company: `### SakraVision (@sakravision)
 **AI Product Studio & Innovation Company**
@@ -77,6 +78,7 @@ We will evaluate your project requirements and share a customized technical road
 
   contact: `### Contact SakraVision & Likith Naidu
 
+• **Google Meet Consultation**: [https://meet.google.com/grg-hytm-ahw](https://meet.google.com/grg-hytm-ahw) (Every day · 6:00 PM – 9:00 PM IST)
 • **Email**: likith.anumakonda@gmail.com / likith.naidu@icloud.com
 • **Instagram**: **@likhithnaidu_anumakonda** ([https://www.instagram.com/likhithnaidu_anumakonda](https://www.instagram.com/likhithnaidu_anumakonda))
 • **Website**: [https://www.sakra-vision.online/](https://www.sakra-vision.online/)

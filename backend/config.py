@@ -29,6 +29,13 @@ class Settings(BaseSettings):
 
     GROQ_API_KEY: str = ""
 
+    # Centralized Meeting & Consultation Configuration
+    MEETING_URL: str = "https://meet.google.com/grg-hytm-ahw"
+    CONSULTATION_HOURS: str = "Every day · 6:00 PM – 9:00 PM IST"
+    CONSULTATION_START: str = "6:00 PM"
+    CONSULTATION_END: str = "9:00 PM"
+    CONSULTATION_TIMEZONE: str = "IST"
+
     # Load from .env file
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 

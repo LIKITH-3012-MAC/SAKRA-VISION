@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../utils/api';
+import ConsultationModule from './ConsultationModule';
 
 const Contact = () => {
   const turnstileContainerRef = useRef(null);
+  const formRef = useRef(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     company: '',
     project_type: 'AI Application',
-    budget_range: '₹15,000 - ₹50,000',
     timeline: 'Within 1 month',
     message: '',
     consent: false
@@ -69,7 +70,6 @@ const Contact = () => {
       phone: '',
       company: '',
       project_type: 'AI Application',
-      budget_range: '₹15,000 - ₹50,000',
       timeline: 'Within 1 month',
       message: '',
       consent: false
@@ -78,6 +78,12 @@ const Contact = () => {
     setIsVerified(false);
     setSubmitStatus('idle');
     setStatus({ type: null, message: '' });
+  };
+
+  const scrollToForm = () => {
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -112,7 +118,6 @@ const Contact = () => {
         phone: formData.phone || undefined,
         company: formData.company || undefined,
         project_type: formData.project_type,
-        budget_range: formData.budget_range,
         timeline: formData.timeline,
         message: formData.message,
         consent: formData.consent,
@@ -152,66 +157,71 @@ const Contact = () => {
         >
           <span className="text-xs font-mono tracking-widest text-[#0071e3] uppercase">Get In Touch</span>
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mt-2 text-white font-sans">
-            Inquire about a Project
+            Start a Project with SAKRA VISION.
           </h2>
-          <p className="text-[#94a3b8] mt-4 max-w-xl mx-auto text-sm md:text-base font-light font-sans">
-            Let's discuss how we can build custom intelligence models, automation pipelines, and deep-tech web products for your enterprise.
+          <p className="text-[#94a3b8] mt-4 max-w-2xl mx-auto text-sm md:text-base font-light font-sans leading-relaxed">
+            Tell us what you're building. We'll explore the architecture, intelligence, and product experience required to turn the idea into reality.
           </p>
         </motion.div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-5xl mx-auto relative z-10">
         
-        {/* Contact info panel */}
-        <motion.div
-          initial={{ opacity: 0, x: -25 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="lg:col-span-5 flex flex-col justify-between apple-glass p-8 rounded-3xl"
-        >
-          <div>
-            <h3 className="text-xl font-bold text-white mb-6 font-sans">Studio Hub</h3>
-            <p className="text-[#94a3b8] leading-relaxed mb-8 font-light text-sm font-sans">
-              We operate as a global AI lab and product studio, engineering intelligence into production-level codebases. Let's create something remarkable together.
-            </p>
+        {/* Left Column: Consultation Module + Studio Hub info */}
+        <div className="lg:col-span-5 flex flex-col gap-8">
+          <ConsultationModule onStartProject={scrollToForm} />
 
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#38bdf8] flex-shrink-0">
-                  ✉️
-                </div>
-                <div>
-                  <h4 className="text-[10px] text-slate-500 uppercase font-mono tracking-widest">Email Us</h4>
-                  <p className="text-white font-mono mt-1 text-xs md:text-sm flex flex-col gap-0.5">
-                    <a href="mailto:likith.anumakonda@gmail.com" className="hover:text-[#38bdf8] transition-colors">likith.anumakonda@gmail.com</a>
-                    <a href="mailto:likith.naidu@icloud.com" className="hover:text-[#38bdf8] transition-colors">likith.naidu@icloud.com</a>
-                  </p>
-                </div>
-              </div>
+          <motion.div
+            initial={{ opacity: 0, x: -25 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="apple-glass p-8 rounded-3xl flex flex-col justify-between"
+          >
+            <div>
+              <h3 className="text-xl font-bold text-white mb-6 font-sans">Studio Hub</h3>
+              <p className="text-[#94a3b8] leading-relaxed mb-8 font-light text-sm font-sans">
+                We operate as a global AI lab and product studio, engineering intelligence into production-level codebases. Let's create something remarkable together.
+              </p>
 
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#38bdf8] flex-shrink-0">
-                  📍
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#38bdf8] flex-shrink-0">
+                    ✉️
+                  </div>
+                  <div>
+                    <h4 className="text-[10px] text-slate-500 uppercase font-mono tracking-widest">Email Us</h4>
+                    <p className="text-white font-mono mt-1 text-xs md:text-sm flex flex-col gap-0.5">
+                      <a href="mailto:likith.anumakonda@gmail.com" className="hover:text-[#38bdf8] transition-colors">likith.anumakonda@gmail.com</a>
+                      <a href="mailto:likith.naidu@icloud.com" className="hover:text-[#38bdf8] transition-colors">likith.naidu@icloud.com</a>
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-[10px] text-slate-500 uppercase font-mono tracking-widest">Location</h4>
-                  <p className="text-white mt-1 text-xs md:text-sm">AI Innovation Center, India / Remote</p>
+
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#38bdf8] flex-shrink-0">
+                    📍
+                  </div>
+                  <div>
+                    <h4 className="text-[10px] text-slate-500 uppercase font-mono tracking-widest">Location</h4>
+                    <p className="text-white mt-1 text-xs md:text-sm">AI Innovation Center, India / Remote</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="border-t border-white/5 pt-8 mt-8">
-            <span className="text-[10px] font-mono text-[#0071e3] block mb-2">Tagline</span>
-            <p className="text-base font-bold text-white italic font-sans">
-              "Engineering Intelligence Into Reality"
-            </p>
-          </div>
-        </motion.div>
+            <div className="border-t border-white/5 pt-8 mt-8">
+              <span className="text-[10px] font-mono text-[#0071e3] block mb-2">Tagline</span>
+              <p className="text-base font-bold text-white italic font-sans">
+                "Engineering Intelligence Into Reality"
+              </p>
+            </div>
+          </motion.div>
+        </div>
 
-        {/* Contact Form Control Panel */}
+        {/* Right Column: Contact Form Control Panel */}
         <motion.div
+          ref={formRef}
           initial={{ opacity: 0, x: 25 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
@@ -311,8 +321,8 @@ const Contact = () => {
                   </div>
                 </div>
 
-                {/* Apple Selection Dropdowns */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                {/* Dropdowns Grid (2 Columns: Project Type & Timeline) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
                   <div>
                     <label htmlFor="project_type" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Project Type</label>
                     <select
@@ -328,21 +338,6 @@ const Contact = () => {
                       <option value="Automation System">Automation System</option>
                       <option value="Full-Stack Product">Full-Stack Product</option>
                       <option value="AI Agentic Workflow">AI Agentic Workflow</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label htmlFor="budget_range" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Budget Range</label>
-                    <select
-                      id="budget_range"
-                      name="budget_range"
-                      value={formData.budget_range}
-                      onChange={handleChange}
-                      className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 rounded-xl px-3 py-3 text-[#cbd5e1] text-xs md:text-sm focus:outline-none transition-colors cursor-pointer"
-                    >
-                      <option value="Under ₹15,000">Under ₹15,000</option>
-                      <option value="₹15,000 - ₹50,000">₹15,000 - ₹50,000</option>
-                      <option value="₹50,000 - ₹1,50,000">₹50,000 - ₹1,50,000</option>
-                      <option value="₹1,50,000+">₹1,50,000+</option>
                     </select>
                   </div>
                   <div>

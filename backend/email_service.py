@@ -106,7 +106,6 @@ async def send_admin_notification(client_data: dict) -> bool:
     esc_phone = _safe(client_data.get("phone")) or "N/A"
     esc_company = _safe(client_data.get("company")) or "N/A"
     esc_project = _safe(client_data.get("project_type")) or "N/A"
-    esc_budget = _safe(client_data.get("budget_range")) or "N/A"
     esc_timeline = _safe(client_data.get("timeline")) or "N/A"
     esc_message = _safe(client_data.get("message")).replace("\n", "<br/>")
 
@@ -146,10 +145,6 @@ async def send_admin_notification(client_data: dict) -> bool:
     <tr>
       <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: #64748b; font-weight: 600;">Project Type</td>
       <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; color: #f8fafc; font-weight: 500;">{esc_project}</td>
-    </tr>
-    <tr>
-      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: #64748b; font-weight: 600;">Budget Range</td>
-      <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; color: #f8fafc; font-weight: 500;">{esc_budget}</td>
     </tr>
     <tr>
       <td style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: #64748b; font-weight: 600;">Timeline</td>
@@ -196,7 +191,6 @@ async def send_client_confirmation(client_data: dict) -> bool:
     
     email = client_data.get("email", "")
     esc_project = _safe(client_data.get("project_type")) or "N/A"
-    esc_budget = _safe(client_data.get("budget_range")) or "N/A"
     esc_timeline = _safe(client_data.get("timeline")) or "N/A"
 
     body_html = f"""
@@ -211,10 +205,21 @@ async def send_client_confirmation(client_data: dict) -> bool:
 <h1 style="margin: 0 0 16px 0; font-size: 24px; font-weight: 700; color: #ffffff; text-align: center; letter-spacing: -0.5px;">Inquiry Received Successfully</h1>
 
 <!-- Message -->
-<p style="margin: 0 0 32px 0; font-size: 15px; color: #94a3b8; line-height: 1.6; text-align: center;">
-  Your request has been securely received by SAKRA VISION.<br>
-  A confirmation has been generated and our team will review your inquiry soon.
+<p style="margin: 0 0 24px 0; font-size: 15px; color: #94a3b8; line-height: 1.6; text-align: center;">
+  Your inquiry has been received by SAKRA VISION.<br>
+  If you'd prefer to discuss the project directly, consultations are available every day from 6:00 PM to 9:00 PM IST.
 </p>
+
+<!-- Consultation & Meeting Card -->
+<div style="background-color: rgba(8, 12, 23, 0.8); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 16px; padding: 24px; margin-bottom: 32px; text-align: center;">
+  <div style="font-size: 11px; font-weight: 700; color: #38bdf8; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px;">SAKRA VISION Consultation</div>
+  <div style="font-size: 14px; color: #ffffff; font-weight: 600; margin-bottom: 4px;">Direct Consultation Window</div>
+  <div style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">{settings.CONSULTATION_HOURS}</div>
+  <a href="{settings.MEETING_URL}" target="_blank" rel="noopener noreferrer" style="display: inline-block; background-color: #0071e3; background-image: linear-gradient(180deg, #0a84ff 0%, #0071e3 100%); color: #ffffff; text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; padding: 12px 28px; border-radius: 100px; border: 1px solid #0071e3; box-shadow: 0 8px 20px rgba(0, 113, 227, 0.3);">
+    Schedule a Meeting ↗
+  </a>
+  <div style="font-size: 11px; color: #64748b; margin-top: 14px; word-break: break-all;">Google Meet: <a href="{settings.MEETING_URL}" style="color: #38bdf8; text-decoration: underline;">{settings.MEETING_URL}</a></div>
+</div>
 
 <!-- Status Strip -->
 <div style="text-align: center; margin-bottom: 32px;">
@@ -230,33 +235,25 @@ async def send_client_confirmation(client_data: dict) -> bool:
 </div>
 
 <!-- Summary Card -->
-<div style="background-color: rgba(15, 23, 42, 0.4); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 12px; padding: 24px; margin-bottom: 40px;">
+<div style="background-color: rgba(15, 23, 42, 0.4); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 12px; padding: 20px; margin-bottom: 32px;">
   <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
-      <td style="padding-bottom: 16px; text-align: center;">
+      <td width="50%" style="padding: 8px; text-align: center; border-right: 1px solid rgba(255,255,255,0.05);">
         <span style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Project Type</span><br>
         <span style="font-size: 14px; color: #e2e8f0; font-weight: 500; margin-top: 4px; display: inline-block;">{esc_project}</span>
       </td>
-    </tr>
-    <tr>
-      <td style="padding-bottom: 16px; text-align: center;">
+      <td width="50%" style="padding: 8px; text-align: center;">
         <span style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Timeline</span><br>
         <span style="font-size: 14px; color: #e2e8f0; font-weight: 500; margin-top: 4px; display: inline-block;">{esc_timeline}</span>
-      </td>
-    </tr>
-    <tr>
-      <td style="text-align: center;">
-        <span style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Budget Range</span><br>
-        <span style="font-size: 14px; color: #e2e8f0; font-weight: 500; margin-top: 4px; display: inline-block;">{esc_budget}</span>
       </td>
     </tr>
   </table>
 </div>
 
-<!-- CTA Button -->
+<!-- Footer Link -->
 <div style="text-align: center;">
-  <a href="https://www.sakra-vision.online/" target="_blank" style="display: inline-block; background-color: #0071e3; background-image: linear-gradient(180deg, #0a84ff 0%, #0071e3 100%); color: #ffffff; text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; padding: 14px 32px; border-radius: 100px; border: 1px solid #0071e3; box-shadow: 0 8px 20px rgba(0, 113, 227, 0.3);">
-    Visit SAKRA VISION
+  <a href="https://www.sakra-vision.online/" target="_blank" style="display: inline-block; color: #94a3b8; text-decoration: none; font-size: 12px; font-weight: 500; letter-spacing: 0.5px;">
+    Visit SAKRA VISION AI Product Studio →
   </a>
 </div>
 """
