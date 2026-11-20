@@ -1,25 +1,108 @@
-SAKRA VISION is an AI product studio and AI innovation company established in 2026 by Likith Naidu Anumakonda.
+# SAKRA VISION — Official Brand & Company Identity
 
-Tagline: From Ideas to Intelligent Systems.
+## Company Overview
 
-SAKRA VISION builds real-world intelligent systems using AI/ML, computer vision, LLMs, RAG, AI agents, automation, and full-stack web technologies.
+**SAKRA VISION** is an AI Product Studio and AI Innovation Company established in 2026 by **Likith Naidu Anumakonda**.
 
-Projects include Resolvit AI, SAKRA VISION Event Hub, Bench AI, Prometheus AI V2.0, AquaSentinel AI, AI Resume Builder, and OpenCV Automation Tools.
+**Tagline:** From Ideas to Intelligent Systems.
 
-Official Brand Identifier: @sakravision
-Official Logo: https://www.sakra-vision.online/SAKRAVISION.png
-Contact: likith.anumakonda@gmail.com
-Official website: https://www.sakra-vision.online/
-Founder portfolio: https://likith-portfolio.online/
-GitHub: https://github.com/LIKITH-3012-MAC
-LinkedIn: https://in.linkedin.com/in/likith-naidu-anumakonda-33a347327
-YouTube: https://www.youtube.com/@LIKITH_NAIDU_ANUMAKONDA
-Instagram: @likhithnaidu_anumakonda (https://www.instagram.com/likhithnaidu_anumakonda)
+SAKRA VISION is a student-founded AI product studio and AI innovation company based in India. It focuses on building real-world intelligent systems and innovative technology products using Artificial Intelligence, Machine Learning, Computer Vision, Large Language Models (LLMs), Retrieval-Augmented Generation (RAG), AI Agents, Automation, and Full-Stack Web Technologies.
 
-SAKRA VISION was established in 2026 by Likith Naidu Anumakonda.
+The company aims to transform ideas into practical, intelligent, scalable, and impactful technology solutions.
 
-SAKRA VISION is a student-founded AI product studio and AI innovation company based in India.
+## Official Brand Identity
 
-The name SAKRA VISION has personal meaning for the founder. SAKRA is inspired by the names of his mother and father, representing family, vision, strength, and purpose.
+- **Company Name:** SAKRA VISION
+- **Official Brand Identifier:** @sakravision
+- **Industry:** Artificial Intelligence, Software Development, AI Product Innovation
+- **Company Type:** AI Product Studio and AI Innovation Company
+- **Established:** 2026
+- **Founder & CEO:** Likith Naidu Anumakonda
+- **Location:** India
+- **Tagline:** From Ideas to Intelligent Systems.
+- **Official Logo:** https://www.sakra-vision.online/SAKRAVISION.png
+- **Official Website:** https://www.sakra-vision.online/
+- **Contact Email:** likith.anumakonda@gmail.com
 
-Likith Naidu Anumakonda is the Founder & CEO of SAKRA VISION. He is a student founder, AI/ML Engineer, Python Full-Stack Developer, CSE-AI student, IIT Patna Certified learner, pianist, author, and builder of real-world intelligent systems.
+## Founder & CEO
+
+**Likith Naidu Anumakonda** is the Founder & CEO of SAKRA VISION.
+
+He is a student founder, AI/ML Engineer, Python Full-Stack Developer, CSE-AI student, IIT Patna Certified learner, pianist, author, and builder of real-world intelligent systems.
+
+His work focuses on developing practical AI-powered applications, intelligent automation systems, computer vision solutions, LLM-based applications, and full-stack software products.
+
+### Founder's Official Profiles
+
+- **Personal Portfolio:** https://likith-naidu-anumakonda.online/
+- **GitHub:** https://github.com/LIKITH-3012-MAC
+- **LinkedIn:** https://in.linkedin.com/in/likith-naidu-anumakonda-33a347327
+- **YouTube:** https://www.youtube.com/@LIKITH_NAIDU_ANUMAKONDA
+- **Instagram:** @likhithnaidu_anumakonda — https://www.instagram.com/likhithnaidu_anumakonda
+
+## Technology & Innovation Focus
+
+SAKRA VISION develops intelligent systems using:
+
+1. Artificial Intelligence (AI)
+2. Machine Learning (ML)
+3. Computer Vision
+4. Large Language Models (LLMs)
+5. Retrieval-Augmented Generation (RAG)
+6. AI Agents and Agentic AI
+7. Intelligent Automation
+8. Python Full-Stack Development
+9. Backend Engineering and API Development
+10. Modern Web Technologies
+
+## Official Projects & Products
+
+SAKRA VISION's project portfolio includes:
+
+1. **Resolvit AI** — AI-powered civic issue resolution and intelligent workflows.
+2. **SAKRA VISION Event Hub** — Event registration and management platform.
+3. **Bench AI** — AI-powered product initiative.
+4. **Prometheus AI V2.0** — Advanced AI system.
+5. **AquaSentinel AI** — AI-powered water monitoring and intelligence initiative.
+6. **AI Resume Builder** — Intelligent resume creation and processing platform.
+7. **OpenCV Automation Tools** — Computer vision-based automation utilities.
+
+These projects represent SAKRA VISION's focus on practical AI applications, intelligent software, automation, and real-world problem solving.
+
+## Brand Story & Name Meaning
+
+The name **SAKRA VISION** has personal meaning for its founder.
+
+SAKRA is inspired by the names of his mother and father, representing family, vision, strength, and purpose.
+
+The brand represents the founder's ambition to transform meaningful ideas into intelligent systems that solve real-world problems.
+
+## Company Mission
+
+To transform ideas into intelligent, practical, and impactful systems through Artificial Intelligence, engineering, and innovation.
+
+## Official Brand Statement
+
+SAKRA VISION is an India-based, student-founded AI Product Studio and AI Innovation Company established in 2026 by Likith Naidu Anumakonda, Founder & CEO.
+
+With the tagline **"From Ideas to Intelligent Systems,"** SAKRA VISION builds real-world intelligent products and software solutions using AI/ML, Computer Vision, LLMs, RAG, AI Agents, Automation, and Full-Stack Technologies.
+
+Its growing portfolio includes Resolvit AI, SAKRA VISION Event Hub, Bench AI, Prometheus AI V2.0, AquaSentinel AI, AI Resume Builder, and OpenCV Automation Tools.
+
+SAKRA VISION is driven by a vision of building meaningful technology products that turn innovative ideas into intelligent systems.
+
+---
+
+**Official Company Website:** https://www.sakra-vision.online/
+
+**Founder Portfolio:** https://likith-naidu-anumakonda.online/
+
+**Official Brand Identifier:** @sakravision
+
+**Founder:** Likith Naidu Anumakonda
+
+**Designation:** Founder & CEO, SAKRA VISION
+
+**Established:** 2026
+
+**Tagline:** From Ideas to Intelligent Systems.
