@@ -1,0 +1,13 @@
+{
+  "name": "sakra-stocks",
+  "version": "1.0.0",
+  "description": "SAKRA VISION — Premium Indian Stock Market Intelligence Platform",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n \"backend,frontend\" -c \"cyan,emerald\" \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build:client": "cd client && npm run build",
+    "test:server": "cd server && npm test"
+  }
+}

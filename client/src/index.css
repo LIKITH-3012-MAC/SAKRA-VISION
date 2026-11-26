@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-sakra-deep: #0F2A24;
+    --color-sakra-forest: #193D32;
+    --color-sakra-ivory: #F8F3E8;
+    --color-sakra-cream: #F2E9D8;
+    --color-sakra-gold: #C9A568;
+    --color-sakra-gold-light: #E5D7BB;
+    --color-sakra-dark: #172820;
+    --color-sakra-muted: #726B5D;
+  }
+
+  body {
+    background-color: #F8F3E8;
+    color: #172820;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Refined classic luxury typography */
+  h1, h2, h3, .font-editorial {
+    font-family: 'Cormorant Garamond', 'DM Serif Display', Georgia, serif;
+    letter-spacing: -0.015em;
+  }
+
+  /* Custom subtle scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #F2E9D8;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #C9A568;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #A88247;
+  }
+}
+
+@layer utilities {
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+}
