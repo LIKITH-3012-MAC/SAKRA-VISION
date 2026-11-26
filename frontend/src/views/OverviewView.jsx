@@ -1,8 +1,16 @@
 import React, { useRef, useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
+import {
+  ArrowRight,
+  Monitor,
+  GitBranch,
+  FlaskConical,
+  Layers,
+  Compass,
+  Sparkles
+} from 'lucide-react';
 import SEO from '../components/SEO';
 
-export default function OverviewView({ setActiveView }) {
+export default function OverviewView({ setActiveView, navigateToSection }) {
   const containerRef = useRef(null);
   const rafRef = useRef(null);
 
@@ -225,6 +233,117 @@ export default function OverviewView({ setActiveView }) {
             </button>
           </div>
         </div>
+
+        {/* Interactive Studio Experiences Hub */}
+        <section
+          aria-labelledby="studio-experiences-heading"
+          className="mt-20 sm:mt-24 border-t border-white/10 pt-14 text-left"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+            <div>
+              <span className="text-xs font-mono tracking-widest text-[#38bdf8] uppercase font-medium">
+                Interactive Experiences
+              </span>
+              <h2
+                id="studio-experiences-heading"
+                className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mt-2 font-sans"
+              >
+                Explore how SAKRA VISION builds.
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-300 max-w-md font-light">
+              Jump directly into product breakdowns, interactive system diagrams, our R&amp;D lab, or guided project scoping.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            {[
+              {
+                title: 'Live Product Showcase',
+                tag: 'Products',
+                desc: 'Inspect flagship systems, problem statements, and verified technology stacks.',
+                icon: Monitor,
+                onClick: () =>
+                  navigateToSection ? navigateToSection('projects', 'product-showcase') : setActiveView('projects')
+              },
+              {
+                title: 'System Architecture Explorer',
+                tag: 'Diagrams',
+                desc: 'Trace interactive data flows inside Prometheus AI V2.0, RESOLVIT AI, and BenchAI.',
+                icon: GitBranch,
+                onClick: () =>
+                  navigateToSection ? navigateToSection('projects', 'architecture-explorer') : setActiveView('projects')
+              },
+              {
+                title: 'SAKRA Research Lab',
+                tag: 'R&D Notes',
+                desc: 'Browse applied explorations in offline RAG, edge MLX voice, OpenCV OCR, and agents.',
+                icon: FlaskConical,
+                onClick: () =>
+                  navigateToSection ? navigateToSection('research') : setActiveView('research')
+              },
+              {
+                title: 'How We Build',
+                tag: 'Process',
+                desc: 'Follow our 6-stage engineering flow from discovery and scoping to deployment.',
+                icon: Layers,
+                onClick: () =>
+                  navigateToSection ? navigateToSection('capabilities', 'how-we-build') : setActiveView('capabilities')
+              },
+              {
+                title: 'AI Solution Explorer',
+                tag: 'Guidance',
+                desc: 'Answer three quick questions to see recommended engineering patterns and stacks.',
+                icon: Compass,
+                onClick: () =>
+                  navigateToSection ? navigateToSection('capabilities', 'solution-explorer') : setActiveView('capabilities')
+              },
+              {
+                title: 'Smart Project Brief',
+                tag: 'Inquire',
+                desc: 'Walk through a structured project brief and send your scope directly to the studio.',
+                icon: Sparkles,
+                onClick: () =>
+                  navigateToSection ? navigateToSection('inquire', 'project-brief') : setActiveView('inquire')
+              }
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.title}
+                  type="button"
+                  onClick={item.onClick}
+                  className="group p-5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-[#38bdf8]/45 transition-all text-left flex flex-col justify-between gap-4 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
+                >
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#0071e3]/15 border border-[#38bdf8]/30 text-[#38bdf8]">
+                        <Icon className="w-4 h-4" aria-hidden="true" />
+                      </span>
+                      <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">
+                        {item.tag}
+                      </span>
+                    </div>
+                    <h3 className="text-base font-bold text-white group-hover:text-[#38bdf8] transition-colors font-sans">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-300 font-light leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
+
+                  <span className="text-xs font-semibold text-[#38bdf8] inline-flex items-center gap-1.5">
+                    <span>Open Experience</span>
+                    <ArrowRight
+                      className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
         {/* SEO Context Section */}
         <div className="mt-20 sm:mt-24 border-t border-white/10 pt-14 pb-8 grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12 text-left">

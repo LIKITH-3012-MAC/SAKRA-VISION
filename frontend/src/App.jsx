@@ -18,6 +18,27 @@ import InquireView from './views/InquireView';
 import RegistrationView from './views/RegistrationView';
 import FaqView from './views/FaqView';
 import BookView from './views/BookView';
+import ResearchLabView from './views/ResearchLabView';
+
+const VALID_VIEWS = new Set([
+  'overview',
+  'about',
+  'capabilities',
+  'projects',
+  'research',
+  'techSpecs',
+  'leadership',
+  'inquire',
+  'book',
+  'registration',
+  'faq'
+]);
+
+const getViewFromHash = () => {
+  if (typeof window === 'undefined') return 'overview';
+  const raw = window.location.hash.replace(/^#\/?/, '').split('?')[0];
+  return VALID_VIEWS.has(raw) ? raw : 'overview';
+};
 
 function CursorGlow() {
   const glowRef = useRef(null);
@@ -61,9 +82,11 @@ function CursorGlow() {
 }
 
 function App() {
-  const [activeView, setActiveView] = useState('overview');
+  const [activeView, setActiveView] = useState(() => getViewFromHash());
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [briefPrefill, setBriefPrefill] = useState(null);
+  const pendingSectionRef = useRef(null);
   const [showIntro, setShowIntro] = useState(() => {
     if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       return false;
@@ -101,11 +124,88 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Reset scroll to top on every view transition
+  const scrollToElementId = useCallback((sectionId) => {
+    if (!sectionId || typeof document === 'undefined') return false;
+    const target = document.getElementById(sectionId);
+    if (!target) return false;
+    const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({ behavior: prefersReduced ? 'instant' : 'smooth', block: 'start' });
+    return true;
+  }, []);
+
+  const handleNavigate = useCallback(
+    (nextView, sectionId = null) => {
+      if (!VALID_VIEWS.has(nextView)) return;
+
+      if (nextView === activeView) {
+        if (sectionId) {
+          scrollToElementId(sectionId);
+        } else {
+          const prefersReduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+          window.scrollTo({ top: 0, behavior: prefersReduced ? 'instant' : 'smooth' });
+        }
+        return;
+      }
+
+      pendingSectionRef.current = sectionId || null;
+      if (typeof window !== 'undefined' && window.location.hash !== `#${nextView}`) {
+        try {
+          window.history.pushState({ view: nextView }, '', `#${nextView}`);
+        } catch (e) {
+          window.location.hash = nextView;
+        }
+      }
+      setActiveView(nextView);
+    },
+    [activeView, scrollToElementId]
+  );
+
+  const handleDiscussProject = useCallback(
+    (prefillData) => {
+      setBriefPrefill({ ...prefillData, _timestamp: Date.now() });
+      handleNavigate('inquire', 'project-brief');
+    },
+    [handleNavigate]
+  );
+
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-    setIsScrolled(false);
-  }, [activeView]);
+    const syncFromLocation = () => {
+      pendingSectionRef.current = null;
+      setActiveView(getViewFromHash());
+    };
+    window.addEventListener('popstate', syncFromLocation);
+    window.addEventListener('hashchange', syncFromLocation);
+    return () => {
+      window.removeEventListener('popstate', syncFromLocation);
+      window.removeEventListener('hashchange', syncFromLocation);
+    };
+  }, []);
+
+  // Reset scroll to top (or scroll to deep section anchor) on view transition
+  useEffect(() => {
+    const sectionId = pendingSectionRef.current;
+    if (!sectionId) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      setIsScrolled(false);
+      return undefined;
+    }
+
+    pendingSectionRef.current = null;
+    let retryTimer = null;
+    const mainTimer = setTimeout(() => {
+      const found = scrollToElementId(sectionId);
+      if (!found) {
+        retryTimer = setTimeout(() => {
+          scrollToElementId(sectionId);
+        }, 160);
+      }
+    }, 260);
+
+    return () => {
+      clearTimeout(mainTimer);
+      if (retryTimer) clearTimeout(retryTimer);
+    };
+  }, [activeView, scrollToElementId]);
 
   const pageVariants = {
     initial: { opacity: 0, y: 8 },
@@ -136,7 +236,7 @@ function App() {
           {/* Persistent Navigation Command Bar */}
           <Navbar
             activeView={activeView}
-            setActiveView={setActiveView}
+            setActiveView={handleNavigate}
             mobileMenuOpen={mobileMenuOpen}
             setMobileMenuOpen={setMobileMenuOpen}
             isScrolled={isScrolled}
@@ -166,16 +266,32 @@ function App() {
                   variants={pageVariants}
                   transition={pageTransition}
                 >
-                  {activeView === 'overview' && <OverviewView setActiveView={setActiveView} />}
-                  {activeView === 'projects' && <ProjectsView setActiveView={setActiveView} />}
-                  {activeView === 'capabilities' && <CapabilitiesView setActiveView={setActiveView} />}
-                  {activeView === 'about' && <AboutView setActiveView={setActiveView} />}
-                  {activeView === 'techSpecs' && <TechSpecsView setActiveView={setActiveView} />}
-                  {activeView === 'leadership' && <LeadershipView setActiveView={setActiveView} />}
-                  {activeView === 'inquire' && <InquireView setActiveView={setActiveView} />}
-                  {activeView === 'book' && <BookView setActiveView={setActiveView} />}
-                  {activeView === 'registration' && <RegistrationView setActiveView={setActiveView} />}
-                  {activeView === 'faq' && <FaqView setActiveView={setActiveView} />}
+                  {activeView === 'overview' && (
+                    <OverviewView setActiveView={handleNavigate} navigateToSection={handleNavigate} />
+                  )}
+                  {activeView === 'projects' && <ProjectsView setActiveView={handleNavigate} />}
+                  {activeView === 'capabilities' && (
+                    <CapabilitiesView
+                      setActiveView={handleNavigate}
+                      onDiscussProject={handleDiscussProject}
+                    />
+                  )}
+                  {activeView === 'research' && (
+                    <ResearchLabView setActiveView={handleNavigate} navigateToSection={handleNavigate} />
+                  )}
+                  {activeView === 'about' && <AboutView setActiveView={handleNavigate} />}
+                  {activeView === 'techSpecs' && <TechSpecsView setActiveView={handleNavigate} />}
+                  {activeView === 'leadership' && <LeadershipView setActiveView={handleNavigate} />}
+                  {activeView === 'inquire' && (
+                    <InquireView
+                      setActiveView={handleNavigate}
+                      briefPrefill={briefPrefill}
+                      onClearBriefPrefill={() => setBriefPrefill(null)}
+                    />
+                  )}
+                  {activeView === 'book' && <BookView setActiveView={handleNavigate} />}
+                  {activeView === 'registration' && <RegistrationView setActiveView={handleNavigate} />}
+                  {activeView === 'faq' && <FaqView setActiveView={handleNavigate} />}
                 </motion.div>
               </AnimatePresence>
             </main>

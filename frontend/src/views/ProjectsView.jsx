@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HelpCircle, Search, X, ExternalLink } from 'lucide-react';
 import projectsData from '../data/projects';
 import ProjectModal from '../components/ProjectModal';
+import ProductShowcase from '../components/ProductShowcase';
+import ArchitectureExplorer from '../components/ArchitectureExplorer';
 import TiltCard from '../components/TiltCard';
 import SEO from '../components/SEO';
 
@@ -12,6 +14,7 @@ export default function ProjectsView() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProject, setSelectedProject] = useState(null);
+  const [archProjectId, setArchProjectId] = useState('prometheus-ai');
   const lastTriggerRef = useRef(null);
 
   const filteredProjects = projectsData.filter((project) => {
@@ -38,7 +41,7 @@ export default function ProjectsView() {
         {/* Section Header */}
         <div className="text-center mb-12 sm:mb-16">
           <span className="text-xs font-mono tracking-widest text-[#38bdf8] uppercase font-medium">
-            Product Gallery
+            Product Showcase &amp; Gallery
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mt-2 text-white font-sans">
             Designed for real-world systems.
@@ -46,6 +49,36 @@ export default function ProjectsView() {
           <p className="text-slate-300 max-w-2xl mx-auto text-sm md:text-base font-light mt-4 font-sans">
             Explore the intelligent systems, AI products, automation platforms, and full-stack solutions built under SAKRA VISION.
           </p>
+        </div>
+
+        {/* Feature 2: Live Product Showcase */}
+        <ProductShowcase
+          onOpenDetails={(project, triggerEl) => {
+            lastTriggerRef.current = triggerEl;
+            setSelectedProject(project);
+          }}
+          onExploreArchitecture={(projectId) => {
+            setArchProjectId(projectId);
+            document
+              .getElementById('architecture-explorer')
+              ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }}
+        />
+
+        {/* Feature 1: Interactive System Architecture Explorer */}
+        <ArchitectureExplorer
+          controlledProjectId={archProjectId}
+          onProjectChange={setArchProjectId}
+        />
+
+        {/* Full Gallery Heading */}
+        <div className="text-center mb-10">
+          <span className="text-xs font-mono tracking-widest text-[#38bdf8] uppercase font-medium">
+            Complete Portfolio
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight mt-2 text-white font-sans">
+            All SAKRA VISION Products.
+          </h2>
         </div>
 
         {/* Controls: Wrapped Category Chips & Search */}

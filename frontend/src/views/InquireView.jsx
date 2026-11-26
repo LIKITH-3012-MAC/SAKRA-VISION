@@ -4,11 +4,13 @@ import { Mail, MapPin, ShieldCheck, CheckCircle2, AlertTriangle } from 'lucide-r
 import api from '../utils/api';
 import SuccessExperience from '../components/SuccessExperience';
 import ConsultationModule from '../components/ConsultationModule';
+import SmartProjectBrief from '../components/SmartProjectBrief';
 import SEO from '../components/SEO';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function InquireView({ setActiveView }) {
+export default function InquireView({ setActiveView, briefPrefill, onClearBriefPrefill }) {
+  const [inquiryMode, setInquiryMode] = useState('brief'); // 'brief' (Smart Project Brief) | 'quick' (Direct Form)
   const turnstileContainerRef = useRef(null);
   const formRef = useRef(null);
   const [formData, setFormData] = useState({
@@ -30,6 +32,13 @@ export default function InquireView({ setActiveView }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (briefPrefill) {
+      setInquiryMode('brief');
+    }
+  }, [briefPrefill]);
+
+  useEffect(() => {
+    if (inquiryMode !== 'quick') return;
     let widgetId = null;
     const renderInterval = setInterval(() => {
       if (window.turnstile && turnstileContainerRef.current && !isVerified) {
@@ -66,7 +75,7 @@ export default function InquireView({ setActiveView }) {
         } catch (e) {}
       }
     };
-  }, [isVerified, submitStatus]);
+  }, [isVerified, submitStatus, inquiryMode]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -260,11 +269,53 @@ export default function InquireView({ setActiveView }) {
             </div>
           </div>
 
-          {/* Right Column: Form panel */}
+          {/* Right Column: Smart Project Brief / Quick Form panel */}
           <div
             ref={formRef}
-            className="lg:col-span-7 apple-glass p-5 sm:p-8 rounded-3xl relative shadow-2xl min-h-[450px] border border-white/15 scroll-mt-24"
+            id="project-brief"
+            className="lg:col-span-7 apple-glass p-5 sm:p-8 rounded-3xl relative shadow-2xl min-h-[480px] border border-white/15 scroll-mt-24"
           >
+            {/* Mode Switcher */}
+            <div
+              role="tablist"
+              aria-label="Inquiry format"
+              className="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-black/70 border border-white/15 mb-6"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={inquiryMode === 'brief'}
+                onClick={() => setInquiryMode('brief')}
+                className={`py-2.5 px-3 min-h-[42px] rounded-xl text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8] ${
+                  inquiryMode === 'brief'
+                    ? 'bg-[#0071e3] text-white shadow-sm'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                Smart Project Brief
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={inquiryMode === 'quick'}
+                onClick={() => setInquiryMode('quick')}
+                className={`py-2.5 px-3 min-h-[42px] rounded-xl text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8] ${
+                  inquiryMode === 'quick'
+                    ? 'bg-[#0071e3] text-white shadow-sm'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                Quick Direct Form
+              </button>
+            </div>
+
+            {inquiryMode === 'brief' ? (
+              <SmartProjectBrief
+                prefill={briefPrefill}
+                setActiveView={setActiveView}
+                onClearPrefill={onClearBriefPrefill}
+              />
+            ) : (
             <AnimatePresence mode="wait">
               {submitStatus === 'success_email' || submitStatus === 'success_no_email' || submitStatus === 'success' ? (
                 <SuccessExperience
@@ -514,6 +565,7 @@ export default function InquireView({ setActiveView }) {
                 </form>
               )}
             </AnimatePresence>
+            )}
           </div>
         </div>
       </div>

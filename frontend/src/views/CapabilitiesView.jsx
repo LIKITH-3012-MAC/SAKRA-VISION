@@ -2,8 +2,10 @@ import React from 'react';
 import { Cpu, Eye, Terminal, Layers, Zap, Globe, Shield, Cloud, ArrowRight } from 'lucide-react';
 import SEO from '../components/SEO';
 import TiltCard from '../components/TiltCard';
+import HowWeBuild from '../components/HowWeBuild';
+import SolutionExplorer from '../components/SolutionExplorer';
 
-export default function CapabilitiesView({ setActiveView }) {
+export default function CapabilitiesView({ setActiveView, onDiscussProject }) {
   const capabilities = [
     {
       title: 'AI Applications',
@@ -149,6 +151,20 @@ export default function CapabilitiesView({ setActiveView }) {
             );
           })}
         </div>
+
+        {/* Feature 4: How We Build — Interactive Development Process */}
+        <HowWeBuild />
+
+        {/* Feature 5: AI Solution Explorer */}
+        <SolutionExplorer
+          onDiscussProject={(briefPrefill) => {
+            if (onDiscussProject) {
+              onDiscussProject(briefPrefill);
+            } else {
+              setActiveView('inquire');
+            }
+          }}
+        />
       </div>
     </div>
   );
