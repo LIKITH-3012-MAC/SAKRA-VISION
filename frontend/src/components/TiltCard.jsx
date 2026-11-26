@@ -1,40 +1,49 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 export default function TiltCard({ children, className = '' }) {
   const cardRef = useRef(null);
-  const [transformStyle, setTransformStyle] = useState('perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)');
-  const [isMobile, setIsMobile] = useState(false);
+  const rafRef = useRef(null);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const canTilt = () => {
+    if (typeof window === 'undefined') return false;
+    if (window.innerWidth < 1024) return false;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return false;
+    if (window.matchMedia?.('(hover: none)').matches) return false;
+    return Boolean(cardRef.current);
+  };
+
   const handleMouseMove = (e) => {
-    if (isMobile || !cardRef.current) return;
-    const card = cardRef.current;
-    const rect = card.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
+    if (!canTilt()) return;
+    const clientX = e.clientX;
+    const clientY = e.clientY;
 
-    // Coordinate maps relative to the element center
-    const mouseX = e.clientX - rect.left - width / 2;
-    const mouseY = e.clientY - rect.top - height / 2;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      const card = cardRef.current;
+      if (!card) return;
+      const rect = card.getBoundingClientRect();
+      const mouseX = clientX - rect.left - rect.width / 2;
+      const mouseY = clientY - rect.top - rect.height / 2;
+      const rotateX = -(mouseY / rect.height) * 5.5;
+      const rotateY = (mouseX / rect.width) * 5.5;
 
-    // Apply max 8 degrees tilt angle for elegant specifications
-    const rotateX = -(mouseY / height) * 8;
-    const rotateY = (mouseX / width) * 8;
-
-    setTransformStyle(`perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.018)`);
+      card.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease';
+      card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) scale(1.01)`;
+    });
   };
 
   const handleMouseLeave = () => {
-    if (isMobile) return;
-    setTransformStyle('perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)');
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (cardRef.current) {
+      cardRef.current.style.transition = 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease';
+      cardRef.current.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+    }
   };
 
   return (
@@ -43,9 +52,8 @@ export default function TiltCard({ children, className = '' }) {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{
-        transform: transformStyle,
-        transition: 'transform 0.15s ease-out, box-shadow 0.3s ease, border-color 0.3s ease',
-        transformStyle: 'preserve-3d'
+        transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)',
+        transition: 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease, border-color 0.3s ease',
       }}
       className={className}
     >

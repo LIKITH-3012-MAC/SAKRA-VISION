@@ -76,13 +76,14 @@ export default function ChatbotMicroActions({ messageId, text, userQuery, onFeed
 
   return (
     <div className="flex flex-col gap-1 w-full text-left">
-      <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-white/5 text-slate-400 opacity-90 group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-white/5 text-slate-300 opacity-90 group-hover:opacity-100 transition-opacity">
         
         {/* Copy Button */}
         <button
+          type="button"
           onClick={handleCopy}
           aria-label="Copy response text"
-          className="p-1.5 rounded-lg hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer min-w-[32px] min-h-[32px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center active:scale-[0.95]"
+          className="p-2 rounded-lg hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center active:scale-[0.95] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
           title="Copy response text"
         >
           {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
@@ -90,10 +91,12 @@ export default function ChatbotMicroActions({ messageId, text, userQuery, onFeed
 
         {/* Like Button */}
         <button
+          type="button"
           onClick={() => handleFeedback('LIKE')}
           disabled={loadingFeedback}
+          aria-pressed={feedback === 'LIKE'}
           aria-label="Helpful response"
-          className={`p-1.5 rounded-lg transition-all duration-200 cursor-pointer min-w-[32px] min-h-[32px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center gap-1 active:scale-[0.93] ${
+          className={`p-2 rounded-lg transition-all duration-200 cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center gap-1 active:scale-[0.93] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8] ${
             feedback === 'LIKE'
               ? 'text-[#38bdf8] bg-[#0071e3]/20 border border-[#38bdf8]/40 shadow-[0_0_12px_rgba(56,189,248,0.25)] font-semibold'
               : 'hover:bg-white/10 hover:text-white border border-transparent'
@@ -105,17 +108,19 @@ export default function ChatbotMicroActions({ messageId, text, userQuery, onFeed
           ) : (
             <>
               <ThumbsUp className={`w-3.5 h-3.5 transition-transform ${feedback === 'LIKE' ? 'scale-110' : ''}`} />
-              {feedback === 'LIKE' && <span className="text-[10px] font-mono text-[#38bdf8]">✓</span>}
+              {feedback === 'LIKE' && <span className="text-xs font-mono text-[#38bdf8]">✓</span>}
             </>
           )}
         </button>
 
         {/* Dislike Button */}
         <button
+          type="button"
           onClick={() => handleFeedback('DISLIKE')}
           disabled={loadingFeedback}
+          aria-pressed={feedback === 'DISLIKE'}
           aria-label="Not helpful response"
-          className={`p-1.5 rounded-lg transition-all duration-200 cursor-pointer min-w-[32px] min-h-[32px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center gap-1 active:scale-[0.93] ${
+          className={`p-2 rounded-lg transition-all duration-200 cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center gap-1 active:scale-[0.93] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8] ${
             feedback === 'DISLIKE'
               ? 'text-rose-400 bg-rose-500/20 border border-rose-500/40 shadow-[0_0_12px_rgba(244,63,94,0.25)] font-semibold'
               : 'hover:bg-white/10 hover:text-white border border-transparent'
@@ -127,7 +132,7 @@ export default function ChatbotMicroActions({ messageId, text, userQuery, onFeed
           ) : (
             <>
               <ThumbsDown className={`w-3.5 h-3.5 transition-transform ${feedback === 'DISLIKE' ? 'scale-110' : ''}`} />
-              {feedback === 'DISLIKE' && <span className="text-[10px] font-mono text-rose-400">✓</span>}
+              {feedback === 'DISLIKE' && <span className="text-xs font-mono text-rose-400">✓</span>}
             </>
           )}
         </button>
@@ -135,9 +140,10 @@ export default function ChatbotMicroActions({ messageId, text, userQuery, onFeed
         {/* Regenerate Option */}
         {onRegenerate && (
           <button
+            type="button"
             onClick={onRegenerate}
             aria-label="Regenerate response"
-            className="p-1.5 rounded-lg hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer min-w-[32px] min-h-[32px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center active:scale-[0.95]"
+            className="p-2 rounded-lg hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center active:scale-[0.95] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
             title="Regenerate response"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -146,9 +152,10 @@ export default function ChatbotMicroActions({ messageId, text, userQuery, onFeed
 
         {/* Share Button */}
         <button
+          type="button"
           onClick={handleShare}
           aria-label="Share response"
-          className="p-1.5 rounded-lg hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer min-w-[32px] min-h-[32px] sm:min-w-[44px] sm:min-h-[44px] flex items-center justify-center ml-auto active:scale-[0.95]"
+          className="p-2 rounded-lg hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center ml-auto active:scale-[0.95] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
           title="Share response"
         >
           {shared ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
@@ -157,7 +164,7 @@ export default function ChatbotMicroActions({ messageId, text, userQuery, onFeed
 
       {/* Error state alert */}
       {errorMsg && (
-        <span className="text-[10px] font-mono text-rose-400 mt-1 block animate-fade-in">
+        <span role="alert" className="text-xs font-mono text-rose-400 mt-1 block">
           {errorMsg}
         </span>
       )}

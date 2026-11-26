@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 
@@ -29,76 +29,110 @@ const faqData = [
   }
 ];
 
-function FAQItem({ item, isOpen, onToggle, index }) {
+function FAQItem({ item, isOpen, onToggle, onKeyNav, index, buttonRef }) {
+  const buttonId = `faq-trigger-${index}`;
+  const panelId = `faq-panel-${index}`;
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.4, delay: index * 0.06 }}
-      className="border-b border-white/[0.06] last:border-b-0"
-    >
+    <div className="border-b border-white/10 last:border-b-0">
       <button
+        ref={buttonRef}
+        id={buttonId}
+        type="button"
         onClick={onToggle}
-        className="w-full flex items-center justify-between py-5 px-1 text-left group transition-colors duration-200"
+        onKeyDown={(e) => onKeyNav(e, index)}
         aria-expanded={isOpen}
+        aria-controls={panelId}
+        className="w-full flex items-center justify-between py-4 sm:py-5 px-2 min-h-[52px] text-left group transition-colors duration-200 cursor-pointer rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
       >
-        <span className={`text-sm md:text-base font-medium transition-colors duration-200 pr-4 ${isOpen ? 'text-[#38bdf8]' : 'text-white/90 group-hover:text-white'}`}>
+        <span
+          className={`text-sm md:text-base font-medium transition-colors duration-200 pr-4 ${
+            isOpen ? 'text-[#38bdf8]' : 'text-white/95 group-hover:text-white'
+          }`}
+        >
           {item.question}
         </span>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ duration: 0.25, ease: 'easeInOut' }}
+          transition={{ duration: 0.22, ease: 'easeInOut' }}
           className="flex-shrink-0"
         >
-          <ChevronDown className={`w-4 h-4 transition-colors duration-200 ${isOpen ? 'text-[#38bdf8]' : 'text-white/40 group-hover:text-white/60'}`} />
+          <ChevronDown
+            className={`w-4 h-4 transition-colors duration-200 ${
+              isOpen ? 'text-[#38bdf8]' : 'text-slate-300 group-hover:text-white'
+            }`}
+            aria-hidden="true"
+          />
         </motion.div>
       </button>
       <AnimatePresence initial={false}>
         {isOpen && (
           <motion.div
+            id={panelId}
+            role="region"
+            aria-labelledby={buttonId}
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <p className="text-[#94a3b8] text-xs md:text-sm font-light leading-relaxed pb-5 px-1">
+            <p className="text-slate-200 text-sm font-normal leading-relaxed pb-5 px-2">
               {item.answer}
             </p>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }
 
-export default function FAQSection() {
-  const [openIndex, setOpenIndex] = useState(null);
+export default function FAQSection({ embedded = false }) {
+  const [openIndex, setOpenIndex] = useState(0);
+  const triggerRefs = useRef([]);
 
   const handleToggle = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
+    setOpenIndex((prev) => (prev === index ? null : index));
+  };
+
+  // WAI-ARIA Accordion keyboard navigation (ArrowDown / ArrowUp / Home / End)
+  const handleKeyNav = (e, index) => {
+    const total = faqData.length;
+    let nextIndex = null;
+
+    if (e.key === 'ArrowDown') nextIndex = (index + 1) % total;
+    else if (e.key === 'ArrowUp') nextIndex = (index - 1 + total) % total;
+    else if (e.key === 'Home') nextIndex = 0;
+    else if (e.key === 'End') nextIndex = total - 1;
+
+    if (nextIndex !== null) {
+      e.preventDefault();
+      triggerRefs.current[nextIndex]?.focus();
+    }
   };
 
   return (
-    <section id="faq" className="w-full relative py-20" aria-label="Frequently Asked Questions">
-      <div className="max-w-3xl mx-auto px-6">
-
+    <section
+      id="faq"
+      className={embedded ? 'w-full relative py-4 scroll-mt-24' : 'w-full relative py-20 scroll-mt-24'}
+      aria-label="Frequently Asked Questions"
+    >
+      <div className={embedded ? 'w-full' : 'max-w-3xl mx-auto px-5 sm:px-6'}>
         {/* Section Header */}
-        <div className="text-center mb-14">
-          <span className="text-xs font-mono tracking-widest text-[#0071e3] uppercase">
+        <div className={embedded ? 'text-left mb-8' : 'text-center mb-12'}>
+          <span className="text-xs font-mono tracking-widest text-[#38bdf8] uppercase font-medium">
             FAQ
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mt-2 text-white font-sans">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mt-2 text-white font-sans">
             Frequently Asked Questions
           </h2>
-          <p className="text-[#94a3b8] font-light text-sm md:text-base mt-4 max-w-xl mx-auto">
+          <p className={`text-slate-300 font-light text-sm md:text-base mt-3 ${embedded ? 'max-w-xl' : 'max-w-xl mx-auto'}`}>
             Common questions about SAKRA VISION, our mission, and what we build.
           </p>
         </div>
 
         {/* FAQ Accordion */}
-        <div className="apple-glass rounded-2xl border border-white/[0.06] p-6 md:p-8">
+        <div className="apple-glass rounded-2xl border border-white/10 p-5 sm:p-6 md:p-8">
           {faqData.map((item, index) => (
             <FAQItem
               key={index}
@@ -106,10 +140,13 @@ export default function FAQSection() {
               index={index}
               isOpen={openIndex === index}
               onToggle={() => handleToggle(index)}
+              onKeyNav={handleKeyNav}
+              buttonRef={(el) => {
+                triggerRefs.current[index] = el;
+              }}
             />
           ))}
         </div>
-
       </div>
     </section>
   );

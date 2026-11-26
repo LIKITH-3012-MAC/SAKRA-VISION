@@ -1,54 +1,78 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HelpCircle, ExternalLink, Github, CheckCircle2, Eye, X } from 'lucide-react';
+import { HelpCircle, Search, X, ExternalLink } from 'lucide-react';
 import projectsData from '../data/projects';
+import ProjectModal from './ProjectModal';
+import TiltCard from './TiltCard';
 
-export default function Projects({ selectedCategory, setSelectedCategory, searchQuery, setSearchQuery, setSelectedProject }) {
-  
-  // Filter logic
+const CATEGORIES = ['All', 'AI Platforms', 'RAG / LLM', 'Automation', 'Full Stack', 'Civic-Tech'];
+
+export default function Projects({
+  selectedCategory = 'All',
+  setSelectedCategory,
+  searchQuery = '',
+  setSearchQuery,
+  setSelectedProject: externalSetSelectedProject,
+}) {
+  const [localSelectedProject, setLocalSelectedProject] = useState(null);
+  const lastTriggerRef = useRef(null);
+
+  const handleOpenProject = (project, triggerEl) => {
+    lastTriggerRef.current = triggerEl;
+    if (externalSetSelectedProject) {
+      externalSetSelectedProject(project);
+    } else {
+      setLocalSelectedProject(project);
+    }
+  };
+
   const filteredProjects = projectsData.filter((project) => {
     const matchesCategory = selectedCategory === 'All' || project.tags.includes(selectedCategory);
     const query = searchQuery.toLowerCase().trim();
-    
-    const matchesSearch = 
+
+    const matchesSearch =
+      !query ||
       project.title.toLowerCase().includes(query) ||
       project.category.toLowerCase().includes(query) ||
       project.shortDesc.toLowerCase().includes(query) ||
-      project.techStack.some(tech => tech.toLowerCase().includes(query));
-      
+      project.techStack.some((tech) => tech.toLowerCase().includes(query));
+
     return matchesCategory && matchesSearch;
   });
 
   return (
     <section id="projects" className="py-24 bg-black relative">
-      <div className="max-w-6xl mx-auto px-6">
-        
+      <div className="max-w-6xl mx-auto px-5 sm:px-6">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <span className="text-xs font-mono tracking-widest text-[#0071e3] uppercase">
+        <div className="text-center mb-14 sm:mb-16">
+          <span className="text-xs font-mono tracking-widest text-[#38bdf8] uppercase font-medium">
             Product Gallery
           </span>
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mt-2 text-white font-sans">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mt-2 text-white font-sans">
             Designed for real-world systems.
           </h2>
-          <p className="text-[#94a3b8] max-w-2xl mx-auto text-sm md:text-base font-light mt-4 font-sans">
+          <p className="text-slate-300 max-w-2xl mx-auto text-sm md:text-base font-light mt-4 font-sans">
             Explore the intelligent systems, AI products, automation platforms, and full-stack solutions built under SAKRA VISION.
           </p>
         </div>
 
-        {/* Controls: Search and Categories */}
-        <div className="flex flex-col lg:flex-row justify-between items-center gap-6 mb-16 max-w-5xl mx-auto z-10 relative">
-          
-          {/* Category Filter Chips (Apple Style) */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 w-full lg:w-auto scrollbar-none max-w-full">
-            {['All', 'AI Platforms', 'RAG / LLM', 'Automation', 'Full Stack', 'Civic-Tech'].map((category) => (
+        {/* Controls: Wrapped Categories & Search */}
+        <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4 sm:gap-6 mb-10 max-w-5xl mx-auto z-10 relative">
+          <div
+            role="group"
+            aria-label="Filter projects by category"
+            className="flex flex-wrap items-center justify-center lg:justify-start gap-2 w-full lg:w-auto"
+          >
+            {CATEGORIES.map((category) => (
               <button
                 key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-xl text-xs font-semibold tracking-wide whitespace-nowrap transition-all duration-250 cursor-pointer ${
-                  selectedCategory === category 
-                    ? 'bg-white text-black border border-white' 
-                    : 'bg-white/5 border border-white/5 text-[#94a3b8] hover:text-white hover:bg-white/10'
+                type="button"
+                aria-pressed={selectedCategory === category}
+                onClick={() => setSelectedCategory?.(category)}
+                className={`px-3.5 sm:px-4 py-2 min-h-[42px] rounded-xl text-xs font-semibold tracking-wide whitespace-nowrap transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8] ${
+                  selectedCategory === category
+                    ? 'bg-white text-black border border-white'
+                    : 'bg-white/[0.06] border border-white/15 text-slate-200 hover:text-white hover:bg-white/10'
                 }`}
               >
                 {category}
@@ -56,147 +80,180 @@ export default function Projects({ selectedCategory, setSelectedCategory, search
             ))}
           </div>
 
-          {/* Search Bar */}
           <div className="w-full lg:w-80 relative">
+            <label htmlFor="projects-gallery-search" className="sr-only">
+              Search projects
+            </label>
             <input
-              type="text"
+              id="projects-gallery-search"
+              type="search"
               placeholder="Search specs, stack, features..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-black/60 border border-white/10 rounded-2xl py-3 px-5 pr-12 text-sm text-[#cbd5e1] placeholder-[#64748b] focus:outline-none focus:border-[#0071e3]/60 focus:ring-1 focus:ring-[#0071e3]/40 transition-all duration-300 font-sans"
+              onChange={(e) => setSearchQuery?.(e.target.value)}
+              className="w-full bg-black/70 border border-white/15 rounded-2xl py-3 px-4 pr-11 text-base sm:text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:border-[#38bdf8] focus:ring-1 focus:ring-[#38bdf8]/50 transition-all duration-200 font-sans min-h-[44px]"
             />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94a3b8]">
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300">
               {searchQuery ? (
-                <button onClick={() => setSearchQuery('')} className="hover:text-white cursor-pointer">
+                <button
+                  type="button"
+                  aria-label="Clear search query"
+                  onClick={() => setSearchQuery?.('')}
+                  className="p-2 hover:text-white cursor-pointer rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
+                >
                   <X className="w-4 h-4" />
                 </button>
               ) : (
-                <Eye className="w-4 h-4 text-[#0071e3] animate-pulse" />
+                <Search aria-hidden="true" className="w-4 h-4 mr-1 text-[#38bdf8]" />
               )}
             </div>
           </div>
-
         </div>
 
-        {/* Grid of Projects (3D Container) */}
-        <motion.div 
-          layout
-          className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-5xl mx-auto perspective-container z-10 relative"
-        >
+        {/* Grid of Projects */}
+        <motion.div layout className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 max-w-5xl mx-auto z-10 relative">
           <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project) => (
-              <motion.div 
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4 }}
-                key={project.id}
-                className="apple-glass rounded-[2rem] p-8 border border-white/5 text-left relative overflow-hidden transition-all duration-300 flex flex-col justify-between gap-6 group card-3d select-none cursor-default"
-              >
-                {/* Glow backdrop */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-b from-[#0071e3]/5 to-transparent rounded-full blur-3xl pointer-events-none group-hover:from-[#0071e3]/10 transition-all duration-300" />
-                
-                {/* 3D preserver wrapping children */}
-                <div className="flex flex-col gap-4">
-                  
-                  {/* Category & Status */}
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <span className="text-[10px] font-mono font-bold tracking-widest text-[#38bdf8] uppercase">
-                        {project.category}
-                      </span>
-                      <h3 className="text-2xl font-bold tracking-tight text-white group-hover:text-[#38bdf8] transition-colors duration-250 mt-1">
-                        {project.title}
-                      </h3>
+            {filteredProjects.map((project) => {
+              const hasLiveLink = Boolean(project.liveLink && project.liveLink !== '#');
+
+              return (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ duration: 0.3 }}
+                  key={project.id}
+                  className="h-full"
+                >
+                  <TiltCard className="apple-glass rounded-3xl sm:rounded-[2rem] p-6 sm:p-8 border border-white/10 text-left relative overflow-hidden flex flex-col justify-between gap-6 group hover:shadow-[0_20px_50px_rgba(0,113,227,0.12)] hover:border-[#38bdf8]/35 cursor-default h-full min-h-[340px]">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-b from-[#0071e3]/8 to-transparent rounded-full blur-3xl pointer-events-none group-hover:from-[#0071e3]/15 transition-all duration-300" />
+
+                    <div className="flex flex-col gap-3.5">
+                      <div className="flex justify-between items-start gap-3">
+                        <div className="min-w-0">
+                          <span className="text-xs font-mono font-semibold tracking-wider text-[#38bdf8] uppercase">
+                            {project.category}
+                          </span>
+                          <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#38bdf8] transition-colors duration-200 mt-1">
+                            {project.title}
+                          </h3>
+                        </div>
+
+                        <span
+                          className={`shrink-0 flex items-center gap-1.5 text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-white/5 border ${
+                            project.status === 'Live'
+                              ? 'text-emerald-300 border-emerald-500/30'
+                              : project.status === 'In Development'
+                                ? 'text-amber-300 border-amber-500/30'
+                                : 'text-[#38bdf8] border-[#0071e3]/30'
+                          }`}
+                        >
+                          <span
+                            aria-hidden="true"
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              project.status === 'Live'
+                                ? 'bg-emerald-400'
+                                : project.status === 'In Development'
+                                  ? 'bg-amber-400'
+                                  : 'bg-[#38bdf8]'
+                            }`}
+                          />
+                          {project.status}
+                        </span>
+                      </div>
+
+                      <p className="text-xs sm:text-sm italic text-slate-300 tracking-wide">
+                        &ldquo;{project.tagline}&rdquo;
+                      </p>
+
+                      <p className="text-slate-200 text-sm leading-relaxed font-normal font-sans">
+                        {project.shortDesc}
+                      </p>
+
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {project.techStack.map((tech, i) => (
+                          <span
+                            key={i}
+                            className="text-xs font-mono tracking-wide text-slate-200 bg-black/60 border border-white/15 px-2.5 py-1 rounded-md"
+                          >
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                    
-                    {/* Minimal status indicator */}
-                    <span className={`flex items-center gap-1.5 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-white/5 border border-white/10 ${
-                      project.status === 'Live' ? 'text-emerald-400 border-emerald-950/20' :
-                      project.status === 'In Development' ? 'text-amber-400 border-amber-950/20' :
-                      'text-[#38bdf8] border-[#0071e3]/20'
-                    }`}>
-                      <span className={`w-1 h-1 rounded-full ${
-                        project.status === 'Live' ? 'bg-emerald-400 animate-ping' :
-                        project.status === 'In Development' ? 'bg-amber-400' :
-                        'bg-[#38bdf8]'
-                      }`} /> 
-                      {project.status}
-                    </span>
-                  </div>
 
-                  {/* Tagline */}
-                  <div className="text-xs italic text-[#94a3b8] tracking-wide">
-                    "{project.tagline}"
-                  </div>
+                    <div className="grid grid-cols-2 gap-3 pt-5 border-t border-white/10 mt-auto relative z-20">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenProject(project, e.currentTarget);
+                        }}
+                        className="apple-dark-button py-2.5 min-h-[44px] rounded-xl text-xs sm:text-[13px] font-bold text-center cursor-pointer shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
+                      >
+                        More Info
+                      </button>
 
-                  {/* Short Description */}
-                  <p className="text-[#cbd5e1] text-xs md:text-sm leading-relaxed font-light font-sans">
-                    {project.shortDesc}
-                  </p>
-
-                  {/* Tech stack chips */}
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {project.techStack.map((tech, i) => (
-                      <span key={i} className="text-[9px] font-mono tracking-wider text-[#94a3b8] bg-black/60 border border-white/5 px-2 py-0.5 rounded-md">
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* CTAs */}
-                <div className="grid grid-cols-2 gap-3 pt-5 border-t border-white/5 mt-auto relative z-20">
-                  <button 
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedProject(project);
-                    }}
-                    className="apple-dark-button py-2 rounded-xl text-xs font-bold text-center cursor-pointer shadow-sm"
-                  >
-                    More Info
-                  </button>
-                  
-                  <a 
-                    href={project.liveLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => project.liveLink === '#' && e.preventDefault()}
-                    className={`apple-button py-2 rounded-xl text-xs font-bold text-center cursor-pointer ${
-                      project.liveLink === '#' ? 'opacity-40 pointer-events-none' : ''
-                    }`}
-                  >
-                    View Product
-                  </a>
-                </div>
-
-              </motion.div>
-            ))}
+                      {hasLiveLink ? (
+                        <a
+                          href={project.liveLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="apple-button py-2.5 min-h-[44px] rounded-xl text-xs sm:text-[13px] font-bold text-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                        >
+                          <span>View Product</span>
+                          <ExternalLink className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled
+                          aria-disabled="true"
+                          aria-label={`Live web demo unavailable for ${project.title}`}
+                          title="Offline or desktop utility — view details via More Info"
+                          className="min-h-[44px] py-2.5 px-3 rounded-xl text-xs sm:text-[13px] font-semibold text-center text-slate-300/80 bg-white/[0.05] border border-white/15 cursor-not-allowed inline-flex items-center justify-center"
+                        >
+                          Local / Offline
+                        </button>
+                      )}
+                    </div>
+                  </TiltCard>
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </motion.div>
 
-        {/* Empty Search State */}
         {filteredProjects.length === 0 && (
-          <div className="text-center py-12 max-w-md mx-auto">
-            <HelpCircle className="w-10 h-10 text-[#0071e3]/50 mx-auto mb-4 animate-bounce" />
+          <div role="status" className="text-center py-12 max-w-md mx-auto">
+            <div className="w-12 h-12 rounded-2xl bg-[#0071e3]/10 border border-[#38bdf8]/25 flex items-center justify-center mx-auto mb-4">
+              <HelpCircle className="w-6 h-6 text-[#38bdf8]" aria-hidden="true" />
+            </div>
             <h3 className="text-base font-bold text-white">No Products Match</h3>
-            <p className="text-[#94a3b8] text-xs mt-1">
-              No SAKRA products found matching your search. Try clearing filters.
+            <p className="text-slate-300 text-xs sm:text-sm mt-1">
+              No SAKRA VISION products match your search. Try clearing filters.
             </p>
             <button
+              type="button"
               onClick={() => {
-                setSelectedCategory('All');
-                setSearchQuery('');
+                setSelectedCategory?.('All');
+                setSearchQuery?.('');
               }}
-              className="mt-4 apple-dark-button px-5 py-2.5 rounded-xl text-xs font-bold uppercase cursor-pointer"
+              className="mt-4 apple-dark-button px-5 py-2.5 min-h-[44px] rounded-xl text-xs font-bold uppercase cursor-pointer"
             >
               Reset Filters
             </button>
           </div>
         )}
-
       </div>
+
+      {!externalSetSelectedProject && (
+        <ProjectModal
+          selectedProject={localSelectedProject}
+          setSelectedProject={setLocalSelectedProject}
+          returnFocusRef={lastTriggerRef}
+        />
+      )}
     </section>
   );
 }

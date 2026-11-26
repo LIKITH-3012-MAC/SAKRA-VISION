@@ -12,35 +12,40 @@ export default function WhyUs() {
   ];
 
   return (
-    <section className="py-24 bg-[#020617]/40 relative border-t border-white/5">
-      <div className="max-w-6xl mx-auto px-6">
-        
+    <section className="py-24 bg-[#020617]/40 relative border-t border-white/10">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <span className="text-xs font-mono tracking-widest text-[#0071e3] uppercase">
+        <div className="text-center mb-14 sm:mb-16">
+          <span className="text-xs font-mono tracking-widest text-[#38bdf8] uppercase font-medium">
             Value Proposition
           </span>
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mt-2 text-white font-sans">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mt-2 text-white font-sans">
             Why SAKRA VISION?
           </h2>
-          <p className="text-[#94a3b8] max-w-xl mx-auto text-sm font-light mt-4 font-sans">
+          <p className="text-slate-300 max-w-xl mx-auto text-sm md:text-base font-light mt-4 font-sans">
             We do not just build isolated code scripts. We engineer complete end-to-end ecosystems that can be deployed, tested, and utilized in real environments.
           </p>
         </div>
 
         {/* Highlight Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 relative z-10">
           {points.map((item, i) => (
-            <div key={i} className="apple-glass p-8 rounded-3xl border border-white/5 text-left transition-all duration-300 hover:translate-y-[-5px] hover:border-[#0071e3]/40 group select-none cursor-default shadow-md">
-              <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center mb-6 border border-white/10">
-                <CheckCircle2 className="w-5 h-5 text-[#38bdf8]" />
+            <div
+              key={i}
+              className="apple-glass p-7 sm:p-8 rounded-3xl border border-white/10 text-left transition-all duration-300 hover:-translate-y-1 hover:border-[#38bdf8]/40 group select-none cursor-default shadow-md"
+            >
+              <div className="w-10 h-10 rounded-xl bg-black/80 flex items-center justify-center mb-6 border border-white/15">
+                <CheckCircle2 className="w-5 h-5 text-[#38bdf8]" aria-hidden="true" />
               </div>
-              <h3 className="text-base font-bold mb-2 text-white tracking-wide font-sans">{item.title}</h3>
-              <p className="text-[#94a3b8] text-xs md:text-sm leading-relaxed font-light font-sans">{item.desc}</p>
+              <h3 className="text-base font-bold mb-2 text-white tracking-wide font-sans">
+                {item.title}
+              </h3>
+              <p className="text-slate-300 text-sm leading-relaxed font-normal font-sans">
+                {item.desc}
+              </p>
             </div>
           ))}
         </div>
-
       </div>
     </section>
   );

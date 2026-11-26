@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
 import { Cpu, Eye, Terminal, Layers, Zap, Globe, Shield, Cloud, ArrowRight } from 'lucide-react';
 import SEO from '../components/SEO';
 import TiltCard from '../components/TiltCard';
@@ -35,6 +34,7 @@ export default function CapabilitiesView({ setActiveView }) {
       useCase: 'Enterprise command dashboards, custom checkout setups.'
     },
     {
+      id: 'automation',
       title: 'Automation Systems',
       desc: 'Scripting infrastructure, cron-based database validators, verification webhooks, and complex third-party API workflow automations.',
       icon: Zap,
@@ -66,97 +66,89 @@ export default function CapabilitiesView({ setActiveView }) {
 
   return (
     <div className="w-full relative bg-black pt-28 pb-20">
-      <SEO 
+      <SEO
         title="Sakra Vision Services | AI Automation, Web Development & Event Tech"
         description="Explore Sakra Vision services including AI automation, web development, event registration platforms, cloud applications, and digital product development."
       />
-      <div className="max-w-7xl mx-auto px-6">
-        
+      <div className="max-w-7xl mx-auto px-5 sm:px-6">
         {/* Header */}
-        <div className="text-center mb-16">
-          <span className="text-xs font-mono tracking-widest text-[#0071e3] uppercase">Capabilities</span>
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mt-2 text-white font-sans">
+        <div className="text-center mb-14 sm:mb-16">
+          <span className="text-xs font-mono tracking-widest text-[#38bdf8] uppercase font-medium">
+            Capabilities
+          </span>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mt-2 text-white font-sans">
             Tailored AI capabilities.
-          </h2>
-          <p className="text-[#94a3b8] mt-6 max-w-xl mx-auto text-base font-light font-sans">
+          </h1>
+          <p className="text-slate-300 mt-4 sm:mt-6 max-w-xl mx-auto text-sm sm:text-base font-light font-sans">
             Choose a service category to learn how Sakra Vision can help you build or automate your project.
           </p>
-          <div className="mt-6 flex justify-center gap-4">
-            <button 
+          <div className="mt-6 flex flex-wrap justify-center gap-3 sm:gap-4">
+            <button
+              type="button"
               onClick={() => setActiveView('inquire')}
-              className="px-6 py-2 bg-white text-black text-xs font-medium rounded-full cursor-pointer flex items-center gap-2 hover:bg-gray-200 transition-colors"
+              className="px-6 py-2.5 min-h-[44px] bg-white text-black text-xs font-semibold rounded-full cursor-pointer inline-flex items-center gap-2 hover:bg-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
             >
-              Contact Sakra Vision <ArrowRight className="w-3 h-3" />
+              <span>Contact Sakra Vision</span>
+              <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
-            <button 
+            <button
+              type="button"
               onClick={() => {
                 const autoElement = document.getElementById('automation');
-                if (autoElement) autoElement.scrollIntoView({ behavior: 'smooth' });
+                if (autoElement) autoElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
               }}
-              className="px-6 py-2 bg-white/5 border border-white/10 text-white text-xs font-medium rounded-full cursor-pointer hover:bg-white/10 transition-colors"
+              className="px-6 py-2.5 min-h-[44px] bg-white/[0.06] border border-white/15 text-white text-xs font-semibold rounded-full cursor-pointer hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
             >
               View AI Automation Solutions
             </button>
           </div>
         </div>
 
-        {/* Capabilities Deck Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Balanced 1/2/4-Column Grid (zero orphan cards across 8 items) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-7">
           {capabilities.map((item, idx) => {
             const Icon = item.icon;
             return (
-              <TiltCard 
-                key={idx}
-                className="apple-glass p-8 rounded-3xl text-left border border-white/5 relative overflow-hidden flex flex-col justify-between min-h-[300px] hover:shadow-[0_20px_50px_rgba(0,113,227,0.15)] hover:border-[#38bdf8]/30 group cursor-default select-none"
-              >
-                <div className="absolute top-0 right-0 w-24 h-24 bg-white/[0.01] rounded-full blur-2xl pointer-events-none group-hover:bg-[#0071e3]/[0.05]" />
-                
-                <div style={{ transformStyle: 'preserve-3d' }}>
-                  {/* Icon */}
-                  <div 
-                    className="w-12 h-12 rounded-2xl bg-black/60 border border-white/10 flex items-center justify-center mb-6 text-[#38bdf8] transition-transform duration-300"
-                    style={{ transform: 'translateZ(35px)' }}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  
-                  <h3 
-                    className="text-lg font-bold text-white mb-2 font-sans transition-transform duration-300"
-                    style={{ transform: 'translateZ(25px)' }}
-                  >
-                    {item.title}
-                  </h3>
-                  <p 
-                    className="text-[#94a3b8] text-xs leading-relaxed font-light mb-4 font-sans transition-transform duration-300"
-                    style={{ transform: 'translateZ(15px)' }}
-                  >
-                    {item.desc}
-                  </p>
-                </div>
+              <div key={idx} id={item.id || undefined} className="scroll-mt-24 h-full">
+                <TiltCard className="h-full apple-glass p-6 sm:p-7 rounded-3xl text-left border border-white/10 relative overflow-hidden flex flex-col hover:shadow-[0_20px_50px_rgba(0,113,227,0.14)] hover:border-[#38bdf8]/35 group cursor-default select-none">
+                  <div
+                    aria-hidden="true"
+                    className="absolute top-0 right-0 w-24 h-24 bg-white/[0.01] rounded-full blur-2xl pointer-events-none group-hover:bg-[#0071e3]/[0.06]"
+                  />
 
-                <div 
-                  className="mt-4 pt-4 border-t border-white/5 space-y-2.5 transition-transform duration-300"
-                  style={{ transform: 'translateZ(10px)' }}
-                >
-                  {/* Tech stack */}
-                  <div className="flex flex-wrap gap-1">
-                    {item.tech.map((t, i) => (
-                      <span key={i} className="text-[9px] font-mono tracking-wider text-[#cbd5e1] bg-white/5 border border-white/10 px-2 py-0.5 rounded">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                  {/* Use Cases */}
-                  <div className="text-[10px] font-mono text-slate-500">
-                    <span className="text-[#0071e3] font-bold">Use Case:</span> {item.useCase}
-                  </div>
-                </div>
+                  <div className="flex-1 flex flex-col">
+                    <div className="w-11 h-11 rounded-2xl bg-black/70 border border-white/15 flex items-center justify-center mb-5 text-[#38bdf8]">
+                      <Icon className="w-5 h-5" aria-hidden="true" />
+                    </div>
 
-              </TiltCard>
+                    <h2 className="text-lg font-bold text-white mb-2 font-sans">
+                      {item.title}
+                    </h2>
+                    <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-normal font-sans">
+                      {item.desc}
+                    </p>
+                  </div>
+
+                  <div className="mt-5 pt-4 border-t border-white/10 space-y-3">
+                    <div className="flex flex-wrap gap-1.5">
+                      {item.tech.map((t, i) => (
+                        <span
+                          key={i}
+                          className="text-xs font-mono tracking-wide text-slate-200 bg-white/[0.06] border border-white/15 px-2.5 py-0.5 rounded-md"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="text-xs font-mono text-slate-300 leading-relaxed">
+                      <span className="text-[#38bdf8] font-semibold">Use Case:</span> {item.useCase}
+                    </div>
+                  </div>
+                </TiltCard>
+              </div>
             );
           })}
         </div>
-
       </div>
     </div>
   );

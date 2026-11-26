@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, MapPin, ShieldCheck, CheckCircle2, AlertTriangle } from 'lucide-react';
 import api from '../utils/api';
 import ConsultationModule from './ConsultationModule';
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MEETING_URL = 'https://meet.google.com/grg-hytm-ahw';
 
 const Contact = () => {
   const turnstileContainerRef = useRef(null);
@@ -17,9 +21,10 @@ const Contact = () => {
     consent: false
   });
 
+  const [fieldErrors, setFieldErrors] = useState({});
   const [turnstileToken, setTurnstileToken] = useState('');
   const [isVerified, setIsVerified] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState('idle'); // 'idle', 'submitting', 'success', 'error'
+  const [submitStatus, setSubmitStatus] = useState('idle');
   const [status, setStatus] = useState({ type: null, message: '' });
   const [loading, setLoading] = useState(false);
 
@@ -31,36 +36,50 @@ const Contact = () => {
         try {
           widgetId = window.turnstile.render(turnstileContainerRef.current, {
             sitekey: '0x4AAAAAADitIbxDQDzUGUKm',
+            size: window.innerWidth < 400 ? 'compact' : 'normal',
             callback: (token) => {
               setTurnstileToken(token);
               setIsVerified(true);
+              setStatus({ type: null, message: '' });
+              if (submitStatus === 'error') setSubmitStatus('idle');
             },
             'error-callback': () => {
-              setStatus({ type: 'error', message: 'CAPTCHA load failed. Please refresh.' });
+              setSubmitStatus('error');
+              setStatus({
+                type: 'error',
+                message: 'Security verification failed to load. Please refresh or check browser blockers.'
+              });
             }
           });
         } catch (err) {
-          console.error("Turnstile render error:", err);
+          console.error('Turnstile render error:', err);
         }
       }
     }, 500);
 
     return () => {
       clearInterval(renderInterval);
-      if (widgetId && window.turnstile) {
+      if (widgetId !== null && window.turnstile) {
         try {
           window.turnstile.remove(widgetId);
         } catch (e) {}
       }
     };
-  }, [isVerified]);
+  }, [isVerified, submitStatus]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    if (fieldErrors[name]) {
+      setFieldErrors((prev) => {
+        const copy = { ...prev };
+        delete copy[name];
+        return copy;
+      });
+    }
   };
 
   const handleReset = () => {
@@ -74,6 +93,7 @@ const Contact = () => {
       message: '',
       consent: false
     });
+    setFieldErrors({});
     setTurnstileToken('');
     setIsVerified(false);
     setSubmitStatus('idle');
@@ -88,38 +108,45 @@ const Contact = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const errors = {};
+    const trimmedName = formData.name.trim();
+    const trimmedEmail = formData.email.trim();
+    const trimmedMessage = formData.message.trim();
+
+    if (trimmedName.length < 2) {
+      errors.name = 'Name must be at least 2 characters.';
+    }
+    if (!EMAIL_PATTERN.test(trimmedEmail)) {
+      errors.email = 'Please enter a valid email address.';
+    }
+    if (trimmedMessage.length < 10) {
+      errors.message = 'Message must be at least 10 characters.';
+    }
+    if (!formData.consent) {
+      errors.consent = 'You must consent to allow SAKRA VISION to contact you.';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setSubmitStatus('error');
+      setStatus({ type: 'error', message: Object.values(errors)[0] });
+      return;
+    }
+
+    setFieldErrors({});
     setSubmitStatus('submitting');
     setLoading(true);
     setStatus({ type: null, message: '' });
 
-    if (formData.name.length < 2) {
-      setStatus({ type: 'error', message: 'Name must be at least 2 characters.' });
-      setSubmitStatus('error');
-      setLoading(false);
-      return;
-    }
-    if (formData.message.length < 10) {
-      setStatus({ type: 'error', message: 'Message must be at least 10 characters.' });
-      setSubmitStatus('error');
-      setLoading(false);
-      return;
-    }
-    if (!formData.consent) {
-      setStatus({ type: 'error', message: 'You must consent to terms.' });
-      setSubmitStatus('error');
-      setLoading(false);
-      return;
-    }
-
     try {
       const response = await api.post('/api/clients', {
-        full_name: formData.name,
-        email: formData.email,
-        phone: formData.phone || undefined,
-        company: formData.company || undefined,
+        full_name: trimmedName,
+        email: trimmedEmail,
+        phone: formData.phone.trim() || undefined,
+        company: formData.company.trim() || undefined,
         project_type: formData.project_type,
         timeline: formData.timeline,
-        message: formData.message,
+        message: trimmedMessage,
         consent: formData.consent,
         captcha_token: turnstileToken
       });
@@ -129,7 +156,7 @@ const Contact = () => {
         setSubmitStatus(clientConfSent ? 'success_email' : 'success_no_email');
       }
     } catch (error) {
-      console.error("Submission error:", error);
+      console.error('Submission error:', error);
       setSubmitStatus('error');
       const backendError = error.response?.data?.message || error.response?.data?.detail;
       setStatus({
@@ -142,212 +169,232 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="relative py-24 px-6 max-w-6xl mx-auto bg-black text-left">
-      {/* Background radial glows */}
-      <div className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-[#0071e3]/5 blur-[130px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-1/4 left-0 w-[400px] h-[400px] bg-[#38bdf8]/5 blur-[130px] rounded-full pointer-events-none" />
+    <section id="contact" className="relative py-24 px-5 sm:px-6 max-w-6xl mx-auto bg-black text-left">
+      <div aria-hidden="true" className="absolute top-1/4 right-0 w-[400px] h-[400px] bg-[#0071e3]/5 blur-[130px] rounded-full pointer-events-none" />
+      <div aria-hidden="true" className="absolute bottom-1/4 left-0 w-[400px] h-[400px] bg-[#38bdf8]/5 blur-[130px] rounded-full pointer-events-none" />
 
-      {/* Section Header */}
-      <div className="text-center mb-16 text-left md:text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="text-xs font-mono tracking-widest text-[#0071e3] uppercase">Get In Touch</span>
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mt-2 text-white font-sans">
-            Start a Project with SAKRA VISION.
-          </h2>
-          <p className="text-[#94a3b8] mt-4 max-w-2xl mx-auto text-sm md:text-base font-light font-sans leading-relaxed">
-            Tell us what you're building. We'll explore the architecture, intelligence, and product experience required to turn the idea into reality.
-          </p>
-        </motion.div>
+      <div className="text-center mb-14 sm:mb-16">
+        <span className="text-xs font-mono tracking-widest text-[#38bdf8] uppercase font-medium">
+          Get In Touch
+        </span>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight mt-2 text-white font-sans">
+          Start a Project with SAKRA VISION.
+        </h2>
+        <p className="text-slate-300 mt-4 max-w-2xl mx-auto text-sm md:text-base font-light font-sans leading-relaxed">
+          Tell us what you&apos;re building. We&apos;ll explore the architecture, intelligence, and product experience required to turn the idea into reality.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-5xl mx-auto relative z-10">
-        
-        {/* Left Column: Consultation Module + Studio Hub info */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 max-w-5xl mx-auto relative z-10">
+        {/* Left Column */}
         <div className="lg:col-span-5 flex flex-col gap-8">
-          <ConsultationModule onStartProject={scrollToForm} />
+          <ConsultationModule
+            onStartProject={scrollToForm}
+            onBookMeeting={() => window.open(MEETING_URL, '_blank', 'noopener,noreferrer')}
+          />
 
-          <motion.div
-            initial={{ opacity: 0, x: -25 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="apple-glass p-8 rounded-3xl flex flex-col justify-between"
-          >
+          <div className="apple-glass p-6 sm:p-8 rounded-3xl flex flex-col justify-between border border-white/15">
             <div>
-              <h3 className="text-xl font-bold text-white mb-6 font-sans">Studio Hub</h3>
-              <p className="text-[#94a3b8] leading-relaxed mb-8 font-light text-sm font-sans">
-                We operate as a global AI lab and product studio, engineering intelligence into production-level codebases. Let's create something remarkable together.
+              <h3 className="text-xl font-bold text-white mb-5 font-sans">Studio Hub</h3>
+              <p className="text-slate-300 leading-relaxed mb-7 font-normal text-sm font-sans">
+                We operate as a global AI lab and product studio, engineering intelligence into production-level codebases. Let&apos;s create something remarkable together.
               </p>
 
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#38bdf8] flex-shrink-0">
-                    ✉️
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.06] border border-white/15 flex items-center justify-center text-[#38bdf8] flex-shrink-0">
+                    <Mail className="w-4 h-4" aria-hidden="true" />
                   </div>
-                  <div>
-                    <h4 className="text-[10px] text-slate-500 uppercase font-mono tracking-widest">Email Us</h4>
-                    <p className="text-white font-mono mt-1 text-xs md:text-sm flex flex-col gap-0.5">
-                      <a href="mailto:likith.anumakonda@gmail.com" className="hover:text-[#38bdf8] transition-colors">likith.anumakonda@gmail.com</a>
-                      <a href="mailto:likith.naidu@icloud.com" className="hover:text-[#38bdf8] transition-colors">likith.naidu@icloud.com</a>
+                  <div className="min-w-0">
+                    <h4 className="text-xs text-slate-300 uppercase font-mono tracking-wider font-semibold">
+                      Email Us
+                    </h4>
+                    <p className="text-white font-mono mt-1 text-xs md:text-sm flex flex-col gap-1 break-all">
+                      <a href="mailto:likith.anumakonda@gmail.com" className="hover:text-[#38bdf8] transition-colors">
+                        likith.anumakonda@gmail.com
+                      </a>
+                      <a href="mailto:likith.naidu@icloud.com" className="hover:text-[#38bdf8] transition-colors">
+                        likith.naidu@icloud.com
+                      </a>
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#38bdf8] flex-shrink-0">
-                    📍
+                  <div className="w-10 h-10 rounded-xl bg-white/[0.06] border border-white/15 flex items-center justify-center text-[#38bdf8] flex-shrink-0">
+                    <MapPin className="w-4 h-4" aria-hidden="true" />
                   </div>
                   <div>
-                    <h4 className="text-[10px] text-slate-500 uppercase font-mono tracking-widest">Location</h4>
+                    <h4 className="text-xs text-slate-300 uppercase font-mono tracking-wider font-semibold">
+                      Location
+                    </h4>
                     <p className="text-white mt-1 text-xs md:text-sm">AI Innovation Center, India / Remote</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="border-t border-white/5 pt-8 mt-8">
-              <span className="text-[10px] font-mono text-[#0071e3] block mb-2">Tagline</span>
+            <div className="border-t border-white/10 pt-7 mt-8">
+              <span className="text-xs font-mono text-[#38bdf8] block mb-1.5">Tagline</span>
               <p className="text-base font-bold text-white italic font-sans">
-                "Engineering Intelligence Into Reality"
+                &ldquo;Engineering Intelligence Into Reality&rdquo;
               </p>
             </div>
-          </motion.div>
+          </div>
         </div>
 
-        {/* Right Column: Contact Form Control Panel */}
-        <motion.div
+        {/* Right Column: Contact Form */}
+        <div
           ref={formRef}
-          initial={{ opacity: 0, x: 25 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="lg:col-span-7 apple-glass p-8 rounded-3xl relative shadow-2xl min-h-[450px]"
+          className="lg:col-span-7 apple-glass p-5 sm:p-8 rounded-3xl relative shadow-2xl min-h-[450px] border border-white/15 scroll-mt-24"
         >
           <AnimatePresence mode="wait">
             {submitStatus === 'success_email' || submitStatus === 'success_no_email' || submitStatus === 'success' ? (
               <motion.div
                 key="success-card"
-                initial={{ opacity: 0, scale: 0.95 }}
+                role="status"
+                aria-live="polite"
+                initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.3 }}
                 className="py-12 px-4 text-center flex flex-col items-center justify-center min-h-[400px] w-full"
               >
-                <div className="w-16 h-16 rounded-full bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-[#38bdf8] mb-6 blue-rim mx-auto">
-                  <svg className="w-8 h-8 text-[#38bdf8]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
+                <div className="w-16 h-16 rounded-full bg-blue-500/15 border border-[#38bdf8]/40 flex items-center justify-center text-[#38bdf8] mb-6 blue-rim mx-auto">
+                  <CheckCircle2 className="w-8 h-8" aria-hidden="true" />
                 </div>
-                <h3 className="text-2xl font-bold text-white font-sans tracking-tight mb-3">Inquiry submitted successfully.</h3>
-                <p className="text-[#cbd5e1] font-light text-sm leading-relaxed mb-8 max-w-sm font-sans mx-auto whitespace-pre-line">
+                <h3 className="text-2xl font-bold text-white font-sans tracking-tight mb-3">
+                  Inquiry submitted successfully.
+                </h3>
+                <p className="text-slate-200 font-normal text-sm leading-relaxed mb-8 max-w-sm font-sans mx-auto">
                   {submitStatus === 'success_email' ? (
                     <>
-                      A confirmation email has been sent to your email address.<br />
+                      A confirmation email has been sent to your email address.
+                      <br />
                       SAKRA VISION will contact you soon.
                     </>
                   ) : (
-                    <>
-                      SAKRA VISION received your request and will contact you soon.
-                    </>
+                    <>SAKRA VISION received your request and will contact you soon.</>
                   )}
                 </p>
                 <button
+                  type="button"
                   onClick={handleReset}
-                  className="apple-button w-full max-w-xs justify-center text-sm cursor-pointer"
+                  className="apple-button w-full max-w-xs justify-center text-sm cursor-pointer min-h-[46px]"
                 >
                   Back to Overview
                 </button>
               </motion.div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+              <form onSubmit={handleSubmit} noValidate className="space-y-5 sm:space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 text-left">
                   <div>
-                    <label htmlFor="name" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Name *</label>
+                    <label htmlFor="contact-name" className="block text-xs font-mono text-slate-200 uppercase tracking-wider mb-2">
+                      Name *
+                    </label>
                     <input
                       type="text"
-                      id="name"
+                      id="contact-name"
                       name="name"
                       required
+                      aria-invalid={Boolean(fieldErrors.name)}
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors"
+                      className={`w-full bg-black/70 border ${
+                        fieldErrors.name ? 'border-rose-500/70' : 'border-white/15'
+                      } focus:border-[#38bdf8] focus:ring-1 focus:ring-[#38bdf8]/50 rounded-xl px-4 py-3 text-white text-base sm:text-sm placeholder-slate-400 focus:outline-none transition-colors min-h-[46px]`}
                       placeholder="Your name"
                     />
+                    {fieldErrors.name && (
+                      <p className="text-xs text-rose-300 mt-1.5 font-sans">{fieldErrors.name}</p>
+                    )}
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Email *</label>
+                    <label htmlFor="contact-email" className="block text-xs font-mono text-slate-200 uppercase tracking-wider mb-2">
+                      Email *
+                    </label>
                     <input
                       type="email"
-                      id="email"
+                      id="contact-email"
                       name="email"
                       required
+                      aria-invalid={Boolean(fieldErrors.email)}
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors"
+                      className={`w-full bg-black/70 border ${
+                        fieldErrors.email ? 'border-rose-500/70' : 'border-white/15'
+                      } focus:border-[#38bdf8] focus:ring-1 focus:ring-[#38bdf8]/50 rounded-xl px-4 py-3 text-white text-base sm:text-sm placeholder-slate-400 focus:outline-none transition-colors min-h-[46px]`}
                       placeholder="email@example.com"
                     />
+                    {fieldErrors.email && (
+                      <p className="text-xs text-rose-300 mt-1.5 font-sans">{fieldErrors.email}</p>
+                    )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 text-left">
                   <div>
-                    <label htmlFor="phone" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Phone</label>
+                    <label htmlFor="contact-phone" className="block text-xs font-mono text-slate-200 uppercase tracking-wider mb-2">
+                      Phone
+                    </label>
                     <input
                       type="tel"
-                      id="phone"
+                      id="contact-phone"
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors"
+                      className="w-full bg-black/70 border border-white/15 focus:border-[#38bdf8] focus:ring-1 focus:ring-[#38bdf8]/50 rounded-xl px-4 py-3 text-white text-base sm:text-sm placeholder-slate-400 focus:outline-none transition-colors min-h-[46px]"
                       placeholder="+91 XXXXX XXXXX"
                     />
                   </div>
                   <div>
-                    <label htmlFor="company" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Company</label>
+                    <label htmlFor="contact-company" className="block text-xs font-mono text-slate-200 uppercase tracking-wider mb-2">
+                      Company
+                    </label>
                     <input
                       type="text"
-                      id="company"
+                      id="contact-company"
                       name="company"
                       value={formData.company}
                       onChange={handleChange}
-                      className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors"
+                      className="w-full bg-black/70 border border-white/15 focus:border-[#38bdf8] focus:ring-1 focus:ring-[#38bdf8]/50 rounded-xl px-4 py-3 text-white text-base sm:text-sm placeholder-slate-400 focus:outline-none transition-colors min-h-[46px]"
                       placeholder="Enterprise Inc."
                     />
                   </div>
                 </div>
 
-                {/* Dropdowns Grid (2 Columns: Project Type & Timeline) */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 text-left">
                   <div>
-                    <label htmlFor="project_type" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Project Type</label>
+                    <label htmlFor="contact-project-type" className="block text-xs font-mono text-slate-200 uppercase tracking-wider mb-2">
+                      Project Type
+                    </label>
                     <select
-                      id="project_type"
+                      id="contact-project-type"
                       name="project_type"
                       value={formData.project_type}
                       onChange={handleChange}
-                      className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 rounded-xl px-3 py-3 text-[#cbd5e1] text-xs md:text-sm focus:outline-none transition-colors cursor-pointer"
+                      style={{ colorScheme: 'dark' }}
+                      className="w-full bg-black/70 border border-white/15 focus:border-[#38bdf8] rounded-xl px-3.5 py-3 text-slate-100 text-base sm:text-sm focus:outline-none transition-colors cursor-pointer min-h-[46px]"
                     >
                       <option value="AI Application">AI Application</option>
                       <option value="Computer Vision">Computer Vision</option>
-                      <option value="LLM & RAG Solution">LLM & RAG Solution</option>
+                      <option value="LLM & RAG Solution">LLM &amp; RAG Solution</option>
                       <option value="Automation System">Automation System</option>
                       <option value="Full-Stack Product">Full-Stack Product</option>
                       <option value="AI Agentic Workflow">AI Agentic Workflow</option>
                     </select>
                   </div>
                   <div>
-                    <label htmlFor="timeline" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Timeline</label>
+                    <label htmlFor="contact-timeline" className="block text-xs font-mono text-slate-200 uppercase tracking-wider mb-2">
+                      Timeline
+                    </label>
                     <select
-                      id="timeline"
+                      id="contact-timeline"
                       name="timeline"
                       value={formData.timeline}
                       onChange={handleChange}
-                      className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 rounded-xl px-3 py-3 text-[#cbd5e1] text-xs md:text-sm focus:outline-none transition-colors cursor-pointer"
+                      style={{ colorScheme: 'dark' }}
+                      className="w-full bg-black/70 border border-white/15 focus:border-[#38bdf8] rounded-xl px-3.5 py-3 text-slate-100 text-base sm:text-sm focus:outline-none transition-colors cursor-pointer min-h-[46px]"
                     >
                       <option value="Within 1 month">Within 1 month</option>
                       <option value="1-3 months">1-3 months</option>
@@ -358,62 +405,72 @@ const Contact = () => {
                 </div>
 
                 <div className="text-left">
-                  <label htmlFor="message" className="block text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-2">Message *</label>
+                  <label htmlFor="contact-message" className="block text-xs font-mono text-slate-200 uppercase tracking-wider mb-2">
+                    Message *
+                  </label>
                   <textarea
-                    id="message"
+                    id="contact-message"
                     name="message"
                     required
                     rows="4"
+                    aria-invalid={Boolean(fieldErrors.message)}
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full bg-black/60 border border-white/10 focus:border-[#0071e3]/80 focus:ring-1 focus:ring-[#0071e3]/45 rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-colors resize-none"
+                    className={`w-full bg-black/70 border ${
+                      fieldErrors.message ? 'border-rose-500/70' : 'border-white/15'
+                    } focus:border-[#38bdf8] focus:ring-1 focus:ring-[#38bdf8]/50 rounded-xl px-4 py-3 text-white text-base sm:text-sm placeholder-slate-400 focus:outline-none transition-colors resize-y`}
                     placeholder="Describe your project specification details..."
                   />
+                  {fieldErrors.message && (
+                    <p className="text-xs text-rose-300 mt-1.5 font-sans">{fieldErrors.message}</p>
+                  )}
                 </div>
 
-                <div className="flex items-start gap-3 text-left">
-                  <input
-                    type="checkbox"
-                    id="consent"
-                    name="consent"
-                    required
-                    checked={formData.consent}
-                    onChange={handleChange}
-                    className="mt-1 accent-[#0071e3] bg-black border border-white/10 rounded cursor-pointer"
-                  />
-                  <label htmlFor="consent" className="text-xs text-slate-500 leading-relaxed cursor-pointer select-none">
-                    I agree to allow SAKRA VISION to contact me regarding this request.
-                  </label>
+                <div className="text-left">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id="contact-consent"
+                      name="consent"
+                      required
+                      checked={formData.consent}
+                      onChange={handleChange}
+                      className="mt-0.5 w-5 h-5 accent-[#0071e3] bg-black border border-white/25 rounded cursor-pointer shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
+                    />
+                    <label htmlFor="contact-consent" className="text-xs sm:text-sm text-slate-200 leading-relaxed cursor-pointer select-none">
+                      I agree to allow SAKRA VISION to contact me regarding this request.
+                    </label>
+                  </div>
+                  {fieldErrors.consent && (
+                    <p className="text-xs text-rose-300 mt-1.5 font-sans pl-8">{fieldErrors.consent}</p>
+                  )}
                 </div>
 
-                {/* Security Verification Section */}
-                <div className="border border-white/5 bg-black/40 rounded-2xl p-6 relative overflow-hidden blue-rim">
-                  {/* Header */}
-                  <div className="flex items-start gap-3.5 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-[#38bdf8] flex-shrink-0">
-                      <svg className="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                      </svg>
+                <div className="border border-white/15 bg-black/45 rounded-2xl p-4 sm:p-6 relative overflow-hidden blue-rim">
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/15 border border-[#38bdf8]/35 flex items-center justify-center text-[#38bdf8] flex-shrink-0">
+                      <ShieldCheck className="w-4 h-4" aria-hidden="true" />
                     </div>
                     <div className="text-left">
-                      <h4 className="text-sm font-semibold text-white font-sans tracking-wide">Security Verification</h4>
-                      <p className="text-xs text-[#94a3b8] mt-1 font-light leading-relaxed">
+                      <h4 className="text-sm font-semibold text-white font-sans tracking-wide">
+                        Security Verification
+                      </h4>
+                      <p className="text-xs text-slate-300 mt-1 font-normal leading-relaxed">
                         Complete the secure verification to confirm you are human before submitting your inquiry.
                       </p>
                     </div>
                   </div>
 
-                  {/* Turnstile Container / Success State */}
-                  <div className="mt-4 relative min-h-[50px] flex flex-col justify-center items-start">
+                  <div className="mt-4 relative min-h-[56px] w-full max-w-full overflow-hidden flex flex-col justify-center items-start">
                     {!isVerified ? (
-                      <div ref={turnstileContainerRef} className="cf-turnstile"></div>
+                      <div ref={turnstileContainerRef} className="cf-turnstile max-w-full" />
                     ) : (
                       <motion.div
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-2 text-emerald-400 font-medium text-sm text-left"
+                        className="flex items-center gap-2 text-emerald-300 font-medium text-sm text-left"
                       >
-                        <span>✅</span>
+                        <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />
                         <span>Verification successful</span>
                       </motion.div>
                     )}
@@ -423,15 +480,12 @@ const Contact = () => {
                 <button
                   type="submit"
                   disabled={!isVerified || loading}
-                  className="apple-button w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="apple-button w-full min-h-[48px] cursor-pointer disabled:opacity-55 disabled:cursor-not-allowed"
                 >
                   {submitStatus === 'submitting' ? (
                     <span className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Submitting Securely...
+                      <span className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                      <span>Submitting Securely...</span>
                     </span>
                   ) : !isVerified ? (
                     'Complete Verification First'
@@ -440,16 +494,16 @@ const Contact = () => {
                   )}
                 </button>
 
-                {/* Status updates */}
                 <AnimatePresence mode="wait">
                   {submitStatus === 'error' && status.message && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
+                      role="alert"
+                      initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 text-xs font-mono flex items-start gap-3 text-left"
+                      exit={{ opacity: 0, y: -8 }}
+                      className="p-4 rounded-xl border border-rose-500/35 bg-rose-500/15 text-rose-200 text-xs font-mono flex items-start gap-3 text-left"
                     >
-                      <span className="text-base">🚨</span>
+                      <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" aria-hidden="true" />
                       <span>{status.message}</span>
                     </motion.div>
                   )}
@@ -457,11 +511,10 @@ const Contact = () => {
               </form>
             )}
           </AnimatePresence>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
 };
 
 export default Contact;
-
