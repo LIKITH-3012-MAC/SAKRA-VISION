@@ -327,8 +327,8 @@ function App() {
             <Footer />
           </motion.div>
 
-          {/* Interactive AI Agent Chatbot Overlay */}
-          {!showIntro && <Chatbot />}
+            {/* Interactive AI Agent Chatbot Overlay */}
+          {!showIntro && <Chatbot onNavigate={handleNavigate} />}
         </div>
       </HelmetProvider>
     </MotionConfig>

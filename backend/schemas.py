@@ -53,23 +53,46 @@ class ChatMessageItem(BaseModel):
     sender: str
     text: str
 
+
+DANGEROUS_CHAT_HTML_PATTERN = re.compile(
+    r"<\s*/?\s*(script|iframe|object|embed|svg|style|form|input|button|img|link|meta|body|html|div|span)\b[^>]*>",
+    re.IGNORECASE,
+)
+
+
+def sanitize_chat_message_text(val: str) -> str:
+    if not isinstance(val, str):
+        return val
+    cleaned = val.strip()
+    if re.search(r"javascript\s*:", cleaned, re.IGNORECASE) or DANGEROUS_CHAT_HTML_PATTERN.search(cleaned):
+        raise ValueError("Potentially unsafe HTML or script markup is not allowed in chat messages.")
+    return cleaned
+
+
 class ChatRequest(BaseModel):
-    message: str = Field(..., min_length=1, max_length=1000)
+    message: str = Field(..., min_length=1, max_length=1200)
     history: Optional[list[ChatMessageItem]] = Field(default=None)
+    preferred_language: Optional[str] = Field(None, max_length=30)
 
     @field_validator("message")
     @classmethod
     def sanitize_chat_message(cls, v: str) -> str:
-        return sanitize_and_validate(v)
+        return sanitize_chat_message_text(v)
+
 
 class ChatResponse(BaseModel):
     success: bool
     reply: str
+    source: Optional[str] = "groq"
+    language: Optional[str] = "english"
+    model: Optional[str] = None
+    fallback_reason: Optional[str] = None
+
 
 class ChatFeedbackRequest(BaseModel):
     message_id: str = Field(..., min_length=1, max_length=100)
     conversation_id: Optional[str] = Field(None, max_length=100)
-    feedback: str = Field(..., max_length=20)  # "LIKE" or "DISLIKE"
+    feedback: str = Field(..., max_length=20)  # "LIKE", "DISLIKE", or "CLEAR"
     user_query: Optional[str] = Field(None, max_length=2000)
     response_snapshot: Optional[str] = Field(None, max_length=10000)
     session_id: Optional[str] = Field(None, max_length=100)
@@ -78,8 +101,8 @@ class ChatFeedbackRequest(BaseModel):
     @classmethod
     def validate_feedback(cls, v: str) -> str:
         v_upper = v.upper().strip()
-        if v_upper not in ("LIKE", "DISLIKE"):
-            raise ValueError("Feedback must be either 'LIKE' or 'DISLIKE'.")
+        if v_upper not in ("LIKE", "DISLIKE", "CLEAR"):
+            raise ValueError("Feedback must be 'LIKE', 'DISLIKE', or 'CLEAR'.")
         return v_upper
 
 class ChatFeedbackResponse(BaseModel):

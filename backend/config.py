@@ -5,18 +5,18 @@ class Settings(BaseSettings):
     APP_ENV: str = "development"
     APP_NAME: str = "SAKRA VISION Backend"
     
-    ALLOWED_ORIGINS: str = "http://localhost:5173"
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
     
     SECRET_TOKEN: str = "shivayya"
     
-    DB_HOST: str
+    DB_HOST: str = ""
     DB_PORT: int = 3306
     DB_NAME: str = "defaultdb"
-    DB_USER: str
-    DB_PASSWORD: str
+    DB_USER: str = ""
+    DB_PASSWORD: str = ""
     DB_SSL_CA: str = ""
     
-    RESEND_API_KEY: str
+    RESEND_API_KEY: str = ""
     RESEND_FROM_EMAIL: str = "SAKRA-VISION <noreply@mail.likith-portfolio.online>"
     RESEND_TO_EMAIL: str = "likith.anumakonda@gmail.com"
     
@@ -26,8 +26,14 @@ class Settings(BaseSettings):
     TURNSTILE_SECRET_KEY: str = ""
     RATE_LIMIT_CLIENTS: str = "60/minute"
     RATE_LIMIT_CHAT: str = "60/minute"
+    RATE_LIMIT_INQUIRY: str = "30/minute"
 
     GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "llama-3.1-8b-instant"
+    GROQ_MAX_TOKENS: int = 700
+    GROQ_TEMPERATURE: float = 0.3
+    GROQ_TIMEOUT_SECONDS: float = 15.0
+    GROQ_API_URL: str = "https://api.groq.com/openai/v1/chat/completions"
 
     # Centralized Meeting & Consultation Configuration
     MEETING_URL: str = "https://meet.google.com/grg-hytm-ahw"

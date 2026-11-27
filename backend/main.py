@@ -179,10 +179,18 @@ async def create_client_inquiry(
 @app.post("/api/chat", response_model=schemas.ChatResponse, dependencies=[Depends(verify_secret_token)])
 @limiter.limit(settings.RATE_LIMIT_CHAT)
 async def chatbot_chat(payload: schemas.ChatRequest, request: Request):
-    bot_reply = await chatbot_service.get_chatbot_reply(payload.message, payload.history)
+    result = await chatbot_service.get_chatbot_reply_payload(
+        payload.message,
+        payload.history,
+        payload.preferred_language,
+    )
     return {
         "success": True,
-        "reply": bot_reply
+        "reply": result["reply"],
+        "source": result["source"],
+        "language": result["language"],
+        "model": result["model"],
+        "fallback_reason": result["fallback_reason"],
     }
 
 # Protected Endpoint: Chatbot Feedback Persistence
@@ -199,10 +207,22 @@ async def chatbot_feedback(
     from datetime import datetime
 
     try:
-        # Search for existing feedback record for message_id + session_id / conversation_id to prevent duplicates
+        # Match feedback by both message_id and session_id to isolate sessions reliably
         existing_fb = db.query(models.ChatbotFeedback).filter(
-            models.ChatbotFeedback.message_id == payload.message_id
+            models.ChatbotFeedback.message_id == payload.message_id,
+            models.ChatbotFeedback.session_id == session_id,
         ).first()
+
+        if payload.feedback == "CLEAR":
+            if existing_fb:
+                db.delete(existing_fb)
+                db.commit()
+                logger.info(f"Cleared feedback for message_id '{payload.message_id}' in session '{session_id}'")
+            return {
+                "success": True,
+                "feedback": "CLEAR",
+                "message": "Feedback selection cleared."
+            }
 
         if existing_fb:
             existing_fb.feedback_type = payload.feedback

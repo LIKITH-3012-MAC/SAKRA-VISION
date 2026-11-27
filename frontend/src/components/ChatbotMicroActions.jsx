@@ -2,57 +2,89 @@ import React, { useState } from 'react';
 import { Copy, Check, ThumbsUp, ThumbsDown, RotateCcw, Share2, Loader2 } from 'lucide-react';
 import api from '../utils/api';
 
-export default function ChatbotMicroActions({ messageId, text, userQuery, onFeedbackSubmit, onRegenerate }) {
+export default function ChatbotMicroActions({
+  messageId,
+  sessionId,
+  text,
+  userQuery,
+  feedback = null, // 'LIKE' | 'DISLIKE' | null
+  feedbackStatus = null, // { type: 'saved' | 'cleared' | 'error', text: string } | null
+  onUpdateFeedback,
+  onRegenerate
+}) {
   const [copied, setCopied] = useState(false);
-  const [feedback, setFeedback] = useState(null); // 'LIKE', 'DISLIKE', null
   const [loadingFeedback, setLoadingFeedback] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(null);
   const [shared, setShared] = useState(false);
 
   const handleCopy = async () => {
     try {
-      const cleanText = (text || '').replace(/[*#_~`[\]()]/g, '');
+      const cleanText = (text || '').replace(/[*#_~`]/g, '');
       await navigator.clipboard.writeText(cleanText);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error("Copy failed:", err);
-    }
+      setTimeout(() => setCopied(false), 1800);
+    } catch {}
   };
 
   const handleFeedback = async (type) => {
-    if (loadingFeedback) return;
+    if (loadingFeedback || !onUpdateFeedback) return;
 
     const previousFeedback = feedback;
+    const previousStatus = feedbackStatus;
     const targetFeedback = feedback === type ? null : type;
-
-    // Optimistic UI state update
-    setFeedback(targetFeedback);
-    setErrorMsg(null);
-
-    if (!targetFeedback) return;
+    const apiAction = targetFeedback || 'CLEAR';
 
     setLoadingFeedback(true);
+    // Clear prior confirmation temporarily while syncing with backend
+    onUpdateFeedback(messageId, targetFeedback, null);
 
     try {
       const resp = await api.post('/api/chat/feedback', {
-        message_id: String(messageId || Date.now()),
-        feedback: targetFeedback,
+        message_id: String(messageId),
+        session_id: String(sessionId || 'web_session'),
+        feedback: apiAction,
         user_query: userQuery || undefined,
-        response_snapshot: typeof text === 'string' ? text : JSON.stringify(text)
+        response_snapshot: typeof text === 'string' ? text.slice(0, 4000) : JSON.stringify(text)
       });
 
       if (resp.data && resp.data.success) {
-        if (onFeedbackSubmit) {
-          onFeedbackSubmit(targetFeedback, messageId);
+        if (!targetFeedback) {
+          onUpdateFeedback(messageId, null, {
+            type: 'cleared',
+            text: 'Feedback selection cleared.'
+          });
+        } else {
+          const label =
+            targetFeedback === 'LIKE'
+              ? previousFeedback === 'DISLIKE'
+                ? 'Feedback updated: Marked helpful · Saved'
+                : 'Thanks! Marked helpful · Saved'
+              : previousFeedback === 'LIKE'
+                ? 'Feedback updated: Marked not helpful · Saved'
+                : 'Feedback recorded: Not helpful · Saved';
+
+          onUpdateFeedback(messageId, targetFeedback, {
+            type: 'saved',
+            text: label
+          });
         }
+      } else {
+        onUpdateFeedback(messageId, previousFeedback, {
+          type: 'error',
+          text: "Couldn't save your feedback right now."
+        });
       }
-    } catch (err) {
-      console.error("Failed to persist feedback:", err);
-      // Rollback optimistic state on error
-      setFeedback(previousFeedback);
-      setErrorMsg("Couldn't save your feedback. Please try again.");
-      setTimeout(() => setErrorMsg(null), 3000);
+    } catch {
+      // Revert strictly to previous state when persistence fails — never claim saved
+      onUpdateFeedback(messageId, previousFeedback, {
+        type: 'error',
+        text: 'Feedback not saved — backend unavailable.'
+      });
+      // Preserve previous saved badge later only if there wasn't an error intention
+      if (previousStatus?.type === 'saved') {
+        setTimeout(() => {
+          onUpdateFeedback(messageId, previousFeedback, previousStatus);
+        }, 3500);
+      }
     } finally {
       setLoadingFeedback(false);
     }
@@ -63,22 +95,20 @@ export default function ChatbotMicroActions({ messageId, text, userQuery, onFeed
       if (navigator.share) {
         await navigator.share({
           title: 'SAKRA VISION AI Intelligence',
-          text: (typeof text === 'string' ? text : '').slice(0, 120) + '...',
+          text: (typeof text === 'string' ? text : '').slice(0, 140),
           url: window.location.href
         });
       } else {
         await handleCopy();
       }
       setShared(true);
-      setTimeout(() => setShared(false), 2000);
-    } catch (err) {}
+      setTimeout(() => setShared(false), 1800);
+    } catch {}
   };
 
   return (
-    <div className="flex flex-col gap-1 w-full text-left">
-      <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-white/5 text-slate-300 opacity-90 group-hover:opacity-100 transition-opacity">
-        
-        {/* Copy Button */}
+    <div className="flex flex-col gap-1.5 w-full text-left">
+      <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-white/10 text-slate-300 opacity-95 group-hover:opacity-100 transition-opacity">
         <button
           type="button"
           onClick={handleCopy}
@@ -89,16 +119,15 @@ export default function ChatbotMicroActions({ messageId, text, userQuery, onFeed
           {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
         </button>
 
-        {/* Like Button */}
         <button
           type="button"
           onClick={() => handleFeedback('LIKE')}
           disabled={loadingFeedback}
           aria-pressed={feedback === 'LIKE'}
-          aria-label="Helpful response"
+          aria-label="Mark helpful response"
           className={`p-2 rounded-lg transition-all duration-200 cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center gap-1 active:scale-[0.93] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8] ${
             feedback === 'LIKE'
-              ? 'text-[#38bdf8] bg-[#0071e3]/20 border border-[#38bdf8]/40 shadow-[0_0_12px_rgba(56,189,248,0.25)] font-semibold'
+              ? 'text-[#38bdf8] bg-[#0071e3]/20 border border-[#38bdf8]/40 font-semibold'
               : 'hover:bg-white/10 hover:text-white border border-transparent'
           }`}
           title="Helpful response"
@@ -106,23 +135,19 @@ export default function ChatbotMicroActions({ messageId, text, userQuery, onFeed
           {loadingFeedback && feedback === 'LIKE' ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin text-[#38bdf8]" />
           ) : (
-            <>
-              <ThumbsUp className={`w-3.5 h-3.5 transition-transform ${feedback === 'LIKE' ? 'scale-110' : ''}`} />
-              {feedback === 'LIKE' && <span className="text-xs font-mono text-[#38bdf8]">✓</span>}
-            </>
+            <ThumbsUp className="w-3.5 h-3.5" />
           )}
         </button>
 
-        {/* Dislike Button */}
         <button
           type="button"
           onClick={() => handleFeedback('DISLIKE')}
           disabled={loadingFeedback}
           aria-pressed={feedback === 'DISLIKE'}
-          aria-label="Not helpful response"
+          aria-label="Mark not helpful response"
           className={`p-2 rounded-lg transition-all duration-200 cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center gap-1 active:scale-[0.93] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8] ${
             feedback === 'DISLIKE'
-              ? 'text-rose-400 bg-rose-500/20 border border-rose-500/40 shadow-[0_0_12px_rgba(244,63,94,0.25)] font-semibold'
+              ? 'text-rose-400 bg-rose-500/20 border border-rose-500/40 font-semibold'
               : 'hover:bg-white/10 hover:text-white border border-transparent'
           }`}
           title="Not helpful response"
@@ -130,18 +155,14 @@ export default function ChatbotMicroActions({ messageId, text, userQuery, onFeed
           {loadingFeedback && feedback === 'DISLIKE' ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-400" />
           ) : (
-            <>
-              <ThumbsDown className={`w-3.5 h-3.5 transition-transform ${feedback === 'DISLIKE' ? 'scale-110' : ''}`} />
-              {feedback === 'DISLIKE' && <span className="text-xs font-mono text-rose-400">✓</span>}
-            </>
+            <ThumbsDown className="w-3.5 h-3.5" />
           )}
         </button>
 
-        {/* Regenerate Option */}
         {onRegenerate && (
           <button
             type="button"
-            onClick={onRegenerate}
+            onClick={() => onRegenerate(userQuery)}
             aria-label="Regenerate response"
             className="p-2 rounded-lg hover:bg-white/10 hover:text-white transition-all duration-200 cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center active:scale-[0.95] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38bdf8]"
             title="Regenerate response"
@@ -150,7 +171,6 @@ export default function ChatbotMicroActions({ messageId, text, userQuery, onFeed
           </button>
         )}
 
-        {/* Share Button */}
         <button
           type="button"
           onClick={handleShare}
@@ -162,11 +182,22 @@ export default function ChatbotMicroActions({ messageId, text, userQuery, onFeed
         </button>
       </div>
 
-      {/* Error state alert */}
-      {errorMsg && (
-        <span role="alert" className="text-xs font-mono text-rose-400 mt-1 block">
-          {errorMsg}
-        </span>
+      {/* Single Per-Message Confirmation / Error Strip */}
+      {feedbackStatus && (
+        <div
+          role={feedbackStatus.type === 'error' ? 'alert' : 'status'}
+          className={`text-[11px] font-mono px-2.5 py-1.5 rounded-lg border ${
+            feedbackStatus.type === 'error'
+              ? 'text-rose-300 bg-rose-500/10 border-rose-500/30'
+              : feedbackStatus.type === 'cleared'
+                ? 'text-slate-300 bg-white/[0.04] border-white/10'
+                : feedback === 'DISLIKE'
+                  ? 'text-rose-200 bg-rose-500/10 border-rose-500/30'
+                  : 'text-[#7dd3fc] bg-[#0071e3]/15 border-[#38bdf8]/30'
+          }`}
+        >
+          {feedbackStatus.text}
+        </div>
       )}
     </div>
   );
