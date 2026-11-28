@@ -7,4 +7,13 @@
       <image:loc>https://www.sakra-vision.online/sakra-vision-ai-product-studio-logo.png</image:loc>
     </image:image>
   </url>
+  <url>
+    <loc>https://www.sakra-vision.online/leadership/</loc>
+    <image:image>
+      <image:loc>https://www.sakra-vision.online/founder-front.png</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://www.sakra-vision.online/founder-back.jpg</image:loc>
+    </image:image>
+  </url>
 </urlset>
