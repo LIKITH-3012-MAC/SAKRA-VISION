@@ -28,6 +28,18 @@ const Footer = () => {
           </p>
         </div>
 
+        {/* Crawlable section links */}
+        <nav aria-label="SEO navigation" className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-slate-300">
+          <a href="/about/" className="hover:text-[#38bdf8]">About</a>
+          <a href="/services/" className="hover:text-[#38bdf8]">Services</a>
+          <a href="/projects/" className="hover:text-[#38bdf8]">Projects</a>
+          <a href="/research/" className="hover:text-[#38bdf8]">Research</a>
+          <a href="/technology/" className="hover:text-[#38bdf8]">Technology</a>
+          <a href="/leadership/" className="hover:text-[#38bdf8]">Leadership</a>
+          <a href="/faq/" className="hover:text-[#38bdf8]">FAQ</a>
+          <a href="/contact/" className="hover:text-[#38bdf8]">Contact</a>
+        </nav>
+
         {/* Story Tagline */}
         <div className="text-center">
           <p className="text-xs text-slate-300 font-mono tracking-wider uppercase">
