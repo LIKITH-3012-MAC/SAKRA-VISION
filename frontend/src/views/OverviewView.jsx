@@ -169,10 +169,13 @@ export default function OverviewView({ setActiveView, navigateToSection }) {
                 />
 
                 <img
-                  src="/SAKRAVISION.png"
-                  alt="SAKRA VISION Brand Asset"
-                  width="320"
-                  height="213"
+                  src="/sakra-vision-ai-product-studio-logo.png"
+                  alt="Official SAKRA VISION logo — AI product studio building intelligent AI and automation systems"
+                  width="1536"
+                  height="1024"
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
                   className="w-full h-full object-contain p-6 relative z-10 mix-blend-lighten transition-transform duration-500 ease-out group-hover/brand:scale-[1.03]"
                 />
 
