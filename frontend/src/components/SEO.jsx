@@ -2,8 +2,8 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 export default function SEO({ 
-  title = "Sakra Vision AI Product Studio | AI Automation & Web Apps by Likith Naidu",
-  description = "Sakra Vision is an AI product studio founded by Likith Naidu Anumakonda, building AI automation tools, event registration systems, web applications, and cloud software solutions.",
+  title = "SAKRA VISION | AI Product Studio in India — AI, LLM & Automation",
+  description = "SAKRA VISION is an AI product studio in India founded by Likith Naidu Anumakonda. We build AI applications, computer vision systems, LLM/RAG tools and intelligent automation products.",
   keywords = "Sakra Vision AI Product Studio, Sakra Vision by Likith Naidu, Sakra Vision Online, Sakra Vision AI Automation, Sakra Vision Web Development, Sakra Vision Event Tech, Sakra Vision Cloud Software, AI product studio India, AI innovation company",
   canonical = "https://www.sakra-vision.online/",
   ogType = "website",
@@ -19,7 +19,7 @@ export default function SEO({
       <link rel="apple-touch-icon" href="/SAKRAVISION.png" />
 
       <meta property="og:type" content={ogType} />
-      <meta property="og:site_name" content="Sakra Vision AI Product Studio" />
+      <meta property="og:site_name" content="SAKRA VISION" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={canonical} />
