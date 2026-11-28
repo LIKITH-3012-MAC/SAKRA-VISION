@@ -1,17 +1,17 @@
 {
-  "name": "Sakra Vision AI Product Studio",
-  "short_name": "SAKRA VISION",
-  "description": "SAKRA VISION is an AI product studio established in 2026 by Likith Naidu Anumakonda, building AI applications, LLM/RAG tools, computer vision systems, automation platforms, and full-stack web products.",
+  "name": "SAKRA VISION AI Product Studio",
+  "short_name": "SAKRA",
+  "description": "SAKRA VISION is an AI product studio in India founded by Likith Naidu Anumakonda.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#030712",
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/SAKRAVISION.png",
-      "sizes": "512x512",
+      "src": "/sakra-vision-ai-product-studio-logo.png",
+      "sizes": "1536x1024",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
